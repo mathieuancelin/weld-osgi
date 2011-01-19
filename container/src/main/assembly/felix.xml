@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+ <id>all</id>
+  <formats>
+    <format>dir</format>
+  </formats>
+  <dependencySets>
+    <dependencySet>
+        <useProjectArtifact>false</useProjectArtifact>
+        <outputDirectory>modules</outputDirectory>
+        <includes>
+          <include>org.apache.felix.gogo:org.apache.felix.gogo.commands</include>
+          <include>org.apache.felix.gogo:org.apache.felix.gogo.runtime</include>
+          <include>com.sample.osgi:bundle1</include>
+          <include>com.sample.osgi:bundle2</include>
+          <include>com.sample.osgi:bundle-api</include>
+          <include>com.sample.osgi:gui</include>
+          <include>org.jboss.weld.osgi:weld-osgi</include>
+          <include>org.apache.felix:org.apache.felix.bundlerepository</include>
+          <include>org.apache.felix:org.apache.felix.shell.tui</include>
+          <include>org.apache.felix:org.apache.felix.shell</include>
+        </includes>
+    </dependencySet>
+    <dependencySet>
+        <useProjectArtifact>false</useProjectArtifact>
+        <outputDirectory></outputDirectory>
+        <includes>
+          <include>org.apache.felix:org.apache.felix.main</include>
+        </includes>
+    </dependencySet>
+  </dependencySets>
+  <files>
+    <file>
+      <source>${project.build.directory}/felix.jar</source>
+      <outputDirectory>bin</outputDirectory>
+    </file>
+    <file>
+      <source>${project.build.directory}/config.properties</source>
+      <outputDirectory>conf</outputDirectory>
+    </file>
+  </files>
+</assembly>
