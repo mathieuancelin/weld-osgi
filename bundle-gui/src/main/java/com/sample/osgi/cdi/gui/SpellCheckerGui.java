@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.JButton;
@@ -13,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.jboss.weld.environment.osgi.integration.OSGiService;
+import org.jboss.weld.environment.osgi.integration.Publish;
 import org.jboss.weld.environment.osgi.integration.Services;
 import org.jboss.weld.environment.osgi.integration.Startable;
 
@@ -21,6 +23,7 @@ import org.jboss.weld.environment.osgi.integration.Startable;
  * @author Mathieu ANCELIN
  */
 @Startable
+@Publish
 @Singleton
 public class SpellCheckerGui extends JFrame {
 
@@ -38,7 +41,6 @@ public class SpellCheckerGui extends JFrame {
 
     public SpellCheckerGui() {
         super();
-        System.out.println("creation du GUI");
         initComponents();      
     }
     
@@ -128,6 +130,7 @@ public class SpellCheckerGui extends JFrame {
         this.setVisible(true);
     }
 
+    @PreDestroy
     public void stop() {
         this.dispose();
     }

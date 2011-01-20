@@ -43,13 +43,11 @@
                              com.sample.osgi.cdi.activator;
                              com.sample.osgi.cdi.gui;
                              com.sample.osgi.cdi.starter;
-                             javax.annotation;
                         </_exportcontents>
                         <Export-Package>
                             com.sample.osgi.cdi.activator;
                             com.sample.osgi.cdi.gui;
                             com.sample.osgi.cdi.starter;
-                            javax.annotation;
                         </Export-Package>
                         <Import-Package>
                             com.sample.osgi.cdi.services;
@@ -64,7 +62,7 @@
                             org.jboss.weld.environment.osgi.integration;
                             org.jboss.weld.environment.osgi;
                         </Import-Package>
-                        <Bundle-Activator>com.sample.osgi.cdi.activator.GuiActivator</Bundle-Activator>
+                        <!--<Bundle-Activator>com.sample.osgi.cdi.activator.GuiActivator</Bundle-Activator>-->
                     </instructions>
                 </configuration>
             </plugin>

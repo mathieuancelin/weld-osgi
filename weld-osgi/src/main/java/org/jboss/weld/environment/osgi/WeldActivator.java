@@ -126,9 +126,9 @@ public class WeldActivator implements BundleActivator, BundleListener
                 for (String className : classes) {
                     Class<?> clazz = null;
                     try {
-                        clazz = getClass().getClassLoader().loadClass(className);
+                        clazz = bundle.loadClass(className);
                     } catch (Exception e) {
-                        // e.printStackTrace(); // silently ignore :-)
+                        //e.printStackTrace(); // silently ignore :-)
                     }
                     if (clazz != null) {
                         boolean publishable = clazz.isAnnotationPresent(Publish.class);
@@ -136,9 +136,8 @@ public class WeldActivator implements BundleActivator, BundleListener
                         boolean instatiation = publishable | startable;
                         Object service = null;
                         if (instatiation) {
-                            // instanciation, so component is starting (@PostConstruct)
+                            // instanciation, so component is starting (@PostConstruct) or not :(
                             try {
-                                System.out.println("instaciate " + clazz);
                                 service = container.instance().select(clazz).get();
                             } catch (Throwable e) {
                                 e.printStackTrace();
