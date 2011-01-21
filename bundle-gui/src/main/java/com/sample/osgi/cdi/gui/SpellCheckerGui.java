@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,7 +23,6 @@ import org.jboss.weld.environment.osgi.integration.Startable;
  */
 @Startable
 @Publish
-@Singleton
 public class SpellCheckerGui extends JFrame {
 
     private JTextField input = null;
@@ -132,7 +130,6 @@ public class SpellCheckerGui extends JFrame {
 
     @PreDestroy
     public void stop() {
-        System.out.println("stopping pannel");
         this.dispose();
     }
 }
