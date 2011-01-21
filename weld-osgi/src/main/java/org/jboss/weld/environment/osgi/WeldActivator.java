@@ -1,12 +1,6 @@
 package org.jboss.weld.environment.osgi;
 
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
-import org.jboss.weld.environment.osgi.discovery.bundle.WeldOSGiBundleDeployment;
-import org.jboss.weld.environment.osgi.events.ContainerInitialized;
-import org.jboss.weld.environment.osgi.events.ContainerShutdown;
-import org.jboss.weld.environment.osgi.integration.Publish;
-import org.jboss.weld.environment.osgi.integration.Startable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -24,10 +18,10 @@ import org.osgi.framework.ServiceListener;
 public class WeldActivator implements BundleActivator, BundleListener
         , ServiceListener, WeldContainerFetcher {
 
-    private ConcurrentHashMap<Long, BundleWeldContainer> containers;
+    private final ConcurrentHashMap<Long, Weld> containers;
 
     public WeldActivator() {
-        containers = new ConcurrentHashMap<Long, BundleWeldContainer>();
+        containers = new ConcurrentHashMap<Long, Weld>();
     }
 
     @Override
@@ -37,53 +31,63 @@ public class WeldActivator implements BundleActivator, BundleListener
         context.addServiceListener(this);
         for (Bundle bundle : context.getBundles()) {
             if (!containers.containsKey(bundle.getBundleId())) {
-                if (bundle.getState() >= Bundle.RESOLVED) {
-                    BundleWeldContainer container = new BundleWeldContainer(bundle);
+                if (bundle.getState() >= Bundle.STARTING) {
+                    Weld container = new Weld(bundle);
                     containers.putIfAbsent(bundle.getBundleId(), container);
                 }
             }
         }
-        for (BundleWeldContainer container : containers.values()) {
-            container.start();
-            container.registerAndLaunchComponents();
+        for (Weld container : containers.values()) {
+            boolean started = container.initialize();
+            if (!started) {
+                containers.remove(context.getBundle().getBundleId());
+            }
         }
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        for (BundleWeldContainer container : containers.values()) {
-            container.stop();
+        for (Weld container : containers.values()) {
+            container.shutdown();
         }
     }
 
     @Override
     public void bundleChanged(BundleEvent event) {
-        for (BundleWeldContainer container : containers.values()) {
-            container.fire(event);
-        }
-        if (BundleEvent.RESOLVED == event.getType()) {
+        
+        if (event.getType() == BundleEvent.STARTED) {
             if (!containers.containsKey(event.getBundle().getBundleId())) {
-                BundleWeldContainer container =  new BundleWeldContainer(event.getBundle());
-                BundleWeldContainer cont = containers.putIfAbsent(
+                Weld container =  new Weld(event.getBundle());
+                Weld cont = containers.putIfAbsent(
                         event.getBundle().getBundleId(), container);
                 if (cont == null) {
-                    containers.get(event.getBundle().getBundleId()).start();
-                    containers.get(event.getBundle().getBundleId()).registerAndLaunchComponents();
+                    Weld weld = containers.get(event.getBundle().getBundleId());
+                    boolean started = weld.initialize();
+                    if (!started) {
+                        containers.remove(event.getBundle().getBundleId());
+                    }
                 }
             }
         }
-        if (BundleEvent.UNRESOLVED == event.getType()) {
+        if (BundleEvent.STOPPED == event.getType()) {
             if (containers.containsKey(event.getBundle().getBundleId())) {
+                Weld container = containers.get(event.getBundle().getBundleId());
+                container.shutdown();
                 containers.remove(event.getBundle().getBundleId());
             }
         }
+//        for (Weld container : containers.values()) {
+//            if (container != null) {
+//                container.getContainer().event().select(BundleEvent.class).fire(event);
+//            }
+//        }
     }
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        for (BundleWeldContainer container : containers.values()) {
-            container.fire(event);
-        }
+//        for (Weld container : containers.values()) {
+//            container.getContainer().event().select(ServiceEvent.class).fire(event);
+//        }
     }
 
     @Override
@@ -92,83 +96,6 @@ public class WeldActivator implements BundleActivator, BundleListener
             return containers.get(bundle.getBundleId()).getContainer();
         } else {
             throw new RuntimeException("No container attached to the current bundle.");
-        }
-    }
-
-    private class BundleWeldContainer {
-        
-        private ShutdownManager manager;
-        private final Bundle bundle;
-        private WeldContainer container;
-        private Weld weld;
-        private boolean started = false;
-
-        public BundleWeldContainer(Bundle bundle) {
-            this.bundle = bundle;
-        }
-
-        public BundleWeldContainer start() {
-            if (!started) {
-                weld = new Weld();
-                container = weld.initialize(bundle);
-                container.event().select(ContainerInitialized.class).fire(new ContainerInitialized());
-                manager = container.instance().select(ShutdownManager.class).get();
-                started = true;
-                return this;
-            }
-            return this;
-        }
-
-        public void registerAndLaunchComponents() {
-            if (started) {
-                WeldOSGiBundleDeployment deployment = weld.getDeployment();
-                Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
-                for (String className : classes) {
-                    Class<?> clazz = null;
-                    try {
-                        clazz = bundle.loadClass(className);
-                    } catch (Exception e) {
-                        //e.printStackTrace(); // silently ignore :-)
-                    }
-                    if (clazz != null) {
-                        boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                        boolean startable = clazz.isAnnotationPresent(Startable.class);
-                        boolean instatiation = publishable | startable;
-                        Object service = null;
-                        if (instatiation) {
-                            // instanciation, so component is starting (@PostConstruct) or not :(
-                            try {
-                                service = container.instance().select(clazz).get();
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (publishable) {
-                            // register service
-                            if (service != null) {
-                                bundle.getBundleContext().registerService(className, service, null);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public void stop() {
-            if (started) {
-                container.event().fire(new ContainerShutdown());
-                manager.shutdown();
-            }
-        }
-
-        public void fire(Object event) {
-            if (started) {
-                container.event().fire(event);
-            }
-        }
-
-        public WeldContainer getContainer() {
-            return container;
         }
     }
 }

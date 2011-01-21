@@ -18,6 +18,8 @@ package org.jboss.weld.environment.osgi;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -29,6 +31,10 @@ import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
 import org.jboss.weld.environment.osgi.discovery.bundle.WeldOSGiResourceLoader;
 import org.jboss.weld.environment.osgi.discovery.bundle.WeldOSGiBundleDeployment;
+import org.jboss.weld.environment.osgi.events.ContainerInitialized;
+import org.jboss.weld.environment.osgi.events.ContainerShutdown;
+import org.jboss.weld.environment.osgi.integration.Publish;
+import org.jboss.weld.environment.osgi.integration.Startable;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
@@ -54,15 +60,29 @@ import org.osgi.framework.Bundle;
 public class Weld {
 
     private ShutdownManager shutdownManager;
-    private Bundle bundle;
+    private final Bundle bundle;
     private WeldOSGiBundleDeployment deployment;
+    private WeldContainer container;
+    private boolean started = false;
+
+    public Weld(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
 
     /**
      * Boots Weld and creates and returns a WeldContainer instance, through which
      * beans and events can be accessed.
      */
-    public WeldContainer initialize(Bundle bundle) {
-        this.bundle = bundle;
+    public boolean initialize() {
+        started = false;
+        Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
+        if (beansXml == null) {
+            return started;
+        }
         ResourceLoader resourceLoader = new WeldOSGiResourceLoader(bundle);
         Bootstrap bootstrap = null;
         bootstrap = (Bootstrap) new WeldBootstrap();
@@ -72,13 +92,53 @@ public class Weld {
         // Start the container
         bootstrap.startInitialization();
         bootstrap.deployBeans();
-        //getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(ShutdownManager.class)), ShutdownManager.class).setBootstrap(bootstrap);
         bootstrap.validateBeans();
         bootstrap.endInitialization();
         // Set up the ShutdownManager for later
         this.shutdownManager = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(ShutdownManager.class)), ShutdownManager.class);
         this.shutdownManager.setBootstrap(bootstrap);
-        WeldContainer container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(WeldContainer.class)), WeldContainer.class);
+        container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(WeldContainer.class)), WeldContainer.class);
+        container.event().select(ContainerInitialized.class).fire(new ContainerInitialized());
+        registerAndLaunchComponents();
+        started = true;
+        return started;
+    }
+
+    private void registerAndLaunchComponents() {
+        //if (started) {
+            Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
+            for (String className : classes) {
+                Class<?> clazz = null;
+                try {
+                    clazz = bundle.loadClass(className);
+                } catch (Exception e) {
+                    //e.printStackTrace(); // silently ignore :-)
+                }
+                if (clazz != null) {
+                    boolean publishable = clazz.isAnnotationPresent(Publish.class);
+                    boolean startable = clazz.isAnnotationPresent(Startable.class);
+                    boolean instatiation = publishable | startable;
+                    Object service = null;
+                    if (instatiation) {
+                        // instanciation, so component is starting (@PostConstruct) or not :(
+                        try {
+                            service = container.instance().select(clazz).get();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (publishable) {
+                        // register service
+                        if (service != null) {
+                            bundle.getBundleContext().registerService(className, service, null);
+                        }
+                    }
+                }
+            }
+       // }
+    }
+
+    public WeldContainer getContainer() {
         return container;
     }
 
@@ -86,28 +146,6 @@ public class Weld {
         return new WeldOSGiBundleDeployment(bundle, resourceLoader, bootstrap);
     }
 
-    /**
-     * Utility method allowing managed instances of beans to provide entry points
-     * for non-managed beans (such as {@link WeldContainer}). Should only called
-     * once Weld has finished booting.
-     *
-     * @param manager the BeanManager to use to access the managed instance
-     * @param type the type of the Bean
-     * @param bindings the bean's qualifiers
-     * @return a managed instance of the bean
-     * @throws IllegalArgumentException if the given type represents a type
-     *            variable
-     * @throws IllegalArgumentException if two instances of the same qualifier
-     *            type are given
-     * @throws IllegalArgumentException if an instance of an annotation that is
-     *            not a qualifier type is given
-     * @throws UnsatisfiedResolutionException if no beans can be resolved * @throws
-     *            AmbiguousResolutionException if the ambiguous dependency
-     *            resolution rules fail
-     * @throws IllegalArgumentException if the given type is not a bean type of
-     *            the given bean
-     *
-     */
     protected <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {
         final Bean<?> bean = manager.resolve(manager.getBeans(type));
         if (bean == null) {
@@ -117,14 +155,11 @@ public class Weld {
         return type.cast(manager.getReference(bean, type, cc));
     }
 
-    /**
-     * Shuts down Weld.
-     */
     public void shutdown() {
-        shutdownManager.shutdown();
-    }
-
-    public WeldOSGiBundleDeployment getDeployment() {
-        return deployment;
+        if (started) {
+            container.event().select(ContainerShutdown.class).fire(new ContainerShutdown());
+            shutdownManager.shutdown();
+            started = false;
+        }
     }
 }
