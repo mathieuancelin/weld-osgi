@@ -132,6 +132,7 @@ public class SpellCheckerGui extends JFrame {
 
     @PreDestroy
     public void stop() {
+        System.out.println("stopping pannel");
         this.dispose();
     }
 }
