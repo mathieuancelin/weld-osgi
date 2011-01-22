@@ -13,8 +13,9 @@
         <module>bundle-gui</module>
         <module>bundle-api</module>
         <module>container</module>
-        <module>weld-osgi</module>
-        <module>weld-bundle</module>
+        <module>weld-osgi-api</module>
+		<module>weld-osgi-impl</module>
+        <module>weld-osgi-bundle</module>
     </modules>
     <repositories>
         <repository>

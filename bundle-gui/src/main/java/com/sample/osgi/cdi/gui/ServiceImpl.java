@@ -2,7 +2,7 @@ package com.sample.osgi.cdi.gui;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import org.jboss.weld.environment.osgi.integration.Startable;
+import org.jboss.weld.environment.osgi.api.Startable;
 
 @Startable
 public class ServiceImpl {

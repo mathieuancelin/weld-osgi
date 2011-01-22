@@ -25,6 +25,11 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>
@@ -42,25 +47,22 @@
                         <_exportcontents>
                              com.sample.osgi.cdi.activator;
                              com.sample.osgi.cdi.gui;
-                             com.sample.osgi.cdi.starter;
                         </_exportcontents>
                         <Export-Package>
                             com.sample.osgi.cdi.activator;
                             com.sample.osgi.cdi.gui;
-                            com.sample.osgi.cdi.starter;
                         </Export-Package>
                         <Import-Package>
                             com.sample.osgi.cdi.services;
-                            org.osgi.framework; javax.swing;
+                            org.osgi.framework;
+                            javax.swing;
                             javax.annotation;
                             javax.enterprise.event;
                             javax.enterprise.inject;
                             javax.enterprise.inject.spi;
                             javax.enterprise.context.spi;
                             javax.inject;
-                            org.jboss.weld.environment.osgi.events;
-                            org.jboss.weld.environment.osgi.integration;
-                            org.jboss.weld.environment.osgi;
+                            org.jboss.weld.environment.osgi.api;
                         </Import-Package>
                         <!--<Bundle-Activator>com.sample.osgi.cdi.activator.GuiActivator</Bundle-Activator>-->
                     </instructions>
