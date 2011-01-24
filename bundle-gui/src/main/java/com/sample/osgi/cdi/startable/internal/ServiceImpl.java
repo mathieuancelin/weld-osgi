@@ -1,4 +1,4 @@
-package com.sample.osgi.cdi.gui;
+package com.sample.osgi.cdi.startable.internal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

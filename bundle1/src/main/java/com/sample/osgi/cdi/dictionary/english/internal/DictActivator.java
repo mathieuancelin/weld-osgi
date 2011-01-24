@@ -1,7 +1,6 @@
-package com.sample.osgi.cdi.activator;
+package com.sample.osgi.cdi.dictionary.english.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
-import com.sample.osgi.cdi.services.impl.EnglishDictionaryServiceImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

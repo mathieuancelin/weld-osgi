@@ -1,6 +1,6 @@
-package com.sample.osgi.cdi.activator;
+package com.sample.osgi.cdi.gui.internal;
 
-import com.sample.osgi.cdi.gui.SpellCheckerGui;
+import com.sample.osgi.cdi.gui.internal.SpellCheckerGui;
 import org.jboss.weld.environment.osgi.api.WeldOSGiContainer;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

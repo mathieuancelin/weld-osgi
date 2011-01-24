@@ -1,4 +1,4 @@
-package com.sample.osgi.cdi.services.impl;
+package com.sample.osgi.cdi.dictionary.english.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import java.util.ArrayList;

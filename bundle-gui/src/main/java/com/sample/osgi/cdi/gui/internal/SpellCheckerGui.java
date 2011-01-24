@@ -1,4 +1,4 @@
-package com.sample.osgi.cdi.gui;
+package com.sample.osgi.cdi.gui.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import com.sample.osgi.cdi.services.SpellCheckerService;

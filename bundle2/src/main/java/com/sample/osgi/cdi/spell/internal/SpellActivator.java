@@ -1,8 +1,7 @@
-package com.sample.osgi.cdi.activator;
+package com.sample.osgi.cdi.spell.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import com.sample.osgi.cdi.services.SpellCheckerService;
-import com.sample.osgi.cdi.services.impl.SpellCheckerServiceImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
