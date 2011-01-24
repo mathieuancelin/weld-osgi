@@ -16,8 +16,9 @@ import org.osgi.framework.ServiceListener;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class WeldActivator implements BundleActivator, BundleListener
-        , ServiceListener, WeldOSGiContainer {
+public class WeldActivator implements BundleActivator,
+                                      BundleListener,
+                                      WeldOSGiContainer {
 
     private final ConcurrentHashMap<Long, Weld> containers;
 
@@ -29,7 +30,7 @@ public class WeldActivator implements BundleActivator, BundleListener
     public void start(BundleContext context) throws Exception {
         context.registerService(WeldOSGiContainer.class.getName(), this, null);
         context.addBundleListener(this);
-        context.addServiceListener(this);
+
         for (Bundle bundle : context.getBundles()) {
             if (!containers.containsKey(bundle.getBundleId())) {
                 if (bundle.getState() >= Bundle.STARTING) {
@@ -81,13 +82,6 @@ public class WeldActivator implements BundleActivator, BundleListener
 //            if (container != null) {
 //                container.getContainer().event().select(BundleEvent.class).fire(event);
 //            }
-//        }
-    }
-
-    @Override
-    public void serviceChanged(ServiceEvent event) {
-//        for (Weld container : containers.values()) {
-//            container.getContainer().event().select(ServiceEvent.class).fire(event);
 //        }
     }
 
