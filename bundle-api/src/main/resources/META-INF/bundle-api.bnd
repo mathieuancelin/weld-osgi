@@ -1,0 +1,3 @@
+-exportcontents com.sample.osgi.cdi.services
+
+Export-Package com.sample.osgi.cdi.services

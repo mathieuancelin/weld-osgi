@@ -3,11 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.weld.osgi</groupId>
+  <parent>
+    <groupId>org.jboss.weld.osgi</groupId>
+    <artifactId>osgi-cdi</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
   <artifactId>weld-osgi-api</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Weld OSGi :: API</name>
+
   <dependencies>
     <dependency>
       <groupId>javax.enterprise</groupId>
@@ -15,44 +20,18 @@
       <version>1.0-SP4</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.1.0</version>
-        <extensions>true</extensions>
         <configuration>
-          <instructions>
-            <_exportcontents>
-              org.jboss.weld.environment.osgi.api;
-            </_exportcontents>
-            <Export-Package>org.jboss.weld.environment.osgi.api</Export-Package>
-          </instructions>
           <unpackBundle>true</unpackBundle>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
     </plugins>
   </build>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 
   <repositories>
     <repository>

@@ -3,11 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jboss.weld.osgi</groupId>
+  <parent>
+    <groupId>org.jboss.weld.osgi</groupId>
+    <artifactId>osgi-cdi</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
   <artifactId>weld-osgi</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>Weld OSGi :: Bundle</name>
+
   <dependencies>
     <dependency>
       <groupId>org.jboss.weld.osgi</groupId>
@@ -101,78 +106,14 @@
     </dependency>
   </dependencies>
   <build>
+
+
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.1.0</version>
-        <extensions>true</extensions>
         <configuration>
-          <instructions>
-            <_include>-osgi.bundle</_include>
-            <Embed-Dependency>*; scope=compile; inline=true, slf4j-jdk14; inline=true</Embed-Dependency>
-            <_exportcontents>
-              javax.inject;
-              javax.decorator;
-              javax.annotation;
-              javax.interceptor;
-              javax.enterprise.*;
-              version=1.0,
-              org.jboss.weld.context;
-              org.jboss.weld.ejb;
-              org.jboss.weld.bean;
-              org.jboss.weld.bean.builtin;
-              org.jboss.weld.bean.proxy;
-              org.jboss.weld.environment.osgi;
-              org.jboss.weld.environment.osgi.integration;
-              org.jboss.weld.environment.osgi.*;
-              org.jboss.weld.bootstrap;
-              org.jboss.weld.bootstrap.*;
-              org.jboss.weld.*.api.*;
-              org.jboss.weld.*.spi.*;
-              org.jboss.weld;
-              org.jboss.weld.event;
-              org.jboss.weld.injection;
-              org.jboss.weld.introspector;
-              org.jboss.weld.introspector.jlr;
-              org.jboss.weld.manager;
-              org.jboss.weld.servlet;
-              org.jboss.weld.util;
-              org.jboss.interceptor.*;
-              version=1.0,
-              org.jboss.weld.el;
-              version=1.0,
-              org.jboss.weld.jsf;
-              version=1.0
-            </_exportcontents>
-            <Import-Package>
-              javax.annotation; org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.5.10; resolution:=optional,
-              ch.qos.cal10n; version=0.7.2;
-              resolution:=optional
-            </Import-Package>
-            <Private-Package>
-              !javax.interceptor.*, org.slf4j.*; -split-package:=merge-first, ch.qos.cal10n.*
-            </Private-Package>
-            <DynamicImport-Package>*</DynamicImport-Package>
-            <Bundle-Activator>org.jboss.weld.environment.osgi.WeldActivator</Bundle-Activator>
-          </instructions>
           <unpackBundle>true</unpackBundle>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
     </plugins>
