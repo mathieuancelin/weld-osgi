@@ -32,10 +32,11 @@ public class WeldActivator implements BundleActivator,
         context.addBundleListener(this);
 
         for (Bundle bundle : context.getBundles()) {
-            if (!containers.containsKey(bundle.getBundleId())) {
+            long bundleId = bundle.getBundleId();
+            if (!containers.containsKey(bundleId)) {
                 if (bundle.getState() >= Bundle.STARTING) {
                     Weld container = new Weld(bundle);
-                    containers.putIfAbsent(bundle.getBundleId(), container);
+                    containers.putIfAbsent(bundleId, container);
                 }
             }
         }
@@ -56,26 +57,27 @@ public class WeldActivator implements BundleActivator,
 
     @Override
     public void bundleChanged(BundleEvent event) {
+
+        long bundleId = event.getBundle().getBundleId();
         
         if (event.getType() == BundleEvent.STARTED) {
-            if (!containers.containsKey(event.getBundle().getBundleId())) {
+            if (!containers.containsKey(bundleId)) {
                 Weld container =  new Weld(event.getBundle());
-                Weld cont = containers.putIfAbsent(
-                        event.getBundle().getBundleId(), container);
+                Weld cont = containers.putIfAbsent(bundleId, container);
                 if (cont == null) {
-                    Weld weld = containers.get(event.getBundle().getBundleId());
+                    Weld weld = containers.get(bundleId);
                     boolean started = weld.initialize();
                     if (!started) {
-                        containers.remove(event.getBundle().getBundleId());
+                        containers.remove(bundleId);
                     }
                 }
             }
         }
         if (BundleEvent.STOPPED == event.getType()) {
-            if (containers.containsKey(event.getBundle().getBundleId())) {
-                Weld container = containers.get(event.getBundle().getBundleId());
+            if (containers.containsKey(bundleId)) {
+                Weld container = containers.get(bundleId);
                 container.shutdown();
-                containers.remove(event.getBundle().getBundleId());
+                containers.remove(bundleId);
             }
         }
 //        for (Weld container : containers.values()) {
