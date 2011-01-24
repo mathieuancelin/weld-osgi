@@ -13,14 +13,11 @@
   </properties>
 
   <modules>
-    <module>bundle1</module>
-    <module>bundle2</module>
-    <module>bundle-gui</module>
-    <module>bundle-api</module>
     <module>container</module>
     <module>weld-osgi-api</module>
     <module>weld-osgi-impl</module>
     <module>weld-osgi-bundle</module>
+    <module>sample</module>
   </modules>
 
   <repositories>
