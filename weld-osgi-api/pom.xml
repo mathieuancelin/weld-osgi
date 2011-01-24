@@ -53,4 +53,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+  <repositories>
+    <repository>
+      <id>jboss-for-cdi-api</id>
+      <url>http://maven.glassfish.org/content/repositories/JBoss/</url>
+      <releases>
+          <enabled>true</enabled>
+      </releases>
+      <snapshots>
+          <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+  </repositories>
 </project>
