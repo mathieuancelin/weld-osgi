@@ -1,7 +1,8 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.bootstrap.api.helpers.IsolatedStaticSingletonProvider;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainerFactory;
 import org.jboss.weld.environment.osgi.integration.WeldFactory;
@@ -12,7 +13,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Entry point of the OSGi Bundle. Start the Weld container et listen to bundle
@@ -32,12 +33,15 @@ public class CDIActivator implements BundleActivator, BundleListener
 
     @Override
     public void start(BundleContext context) throws Exception {
+        // TODO : get ride of this direct reference        
         // TODO : need to find something better
-        ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
-        if (ref == null) {
+        SingletonProvider.initialize(new IsolatedStaticSingletonProvider());
+        ServiceTracker tracker = new ServiceTracker(context, CDIOSGiContainerFactory.class.getName(), null);
+        factory = (CDIOSGiContainerFactory) tracker.waitForService(10000);
+        //ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
+        if (factory == null) {
+            //throw new RuntimeException("Service unavailbale");
             factory = new WeldFactory(); // TODO : get ride of this direct instanciation
-        } else {
-            factory = (CDIOSGiContainerFactory) context.getService(ref);
         }
         context.addBundleListener(this);
         context.addServiceListener(this);
@@ -62,6 +66,7 @@ public class CDIActivator implements BundleActivator, BundleListener
         for (CDIOSGiContainer container : containers.values()) {
             container.shutdown();
         }
+        SingletonProvider.reset();
     }
 
     @Override
@@ -88,18 +93,18 @@ public class CDIActivator implements BundleActivator, BundleListener
                 containers.remove(event.getBundle().getBundleId());
             }
         }
-//        for (Weld container : containers.values()) {
-//            if (container != null) {
-//                container.getContainer().event().select(BundleEvent.class).fire(event);
-//            }
-//        }
+        for (CDIOSGiContainer container : containers.values()) {
+            if (container != null) {
+                container.getContainer().event().select(BundleEvent.class).fire(event);
+            }
+        }
     }
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-//        for (Weld container : containers.values()) {
-//            container.getContainer().event().select(ServiceEvent.class).fire(event);
-//        }
+        for (CDIOSGiContainer container : containers.values()) {
+            container.getContainer().event().select(ServiceEvent.class).fire(event);
+        }
     }
 
 //    @Override
