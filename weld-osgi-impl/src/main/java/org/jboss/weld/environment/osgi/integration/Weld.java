@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +40,7 @@ import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiResourceLoader;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
+import org.jboss.weld.manager.BeanManagerImpl;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
@@ -70,6 +72,7 @@ public class Weld implements CDIOSGiContainer {
     private boolean started = false;
     private Bootstrap bootstrap;
     private boolean hasShutdownBeenCalled = false;
+    private ResourceLoader resourceLoader;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
@@ -91,7 +94,7 @@ public class Weld implements CDIOSGiContainer {
         if (beansXml == null) {
             return started;
         }
-        ResourceLoader resourceLoader = new WeldOSGiResourceLoader(bundle);
+        resourceLoader = new WeldOSGiResourceLoader(bundle);
         bootstrap = (Bootstrap) new WeldBootstrap();
         deployment = createDeployment(resourceLoader, bootstrap);
         // Set up the container
@@ -101,11 +104,9 @@ public class Weld implements CDIOSGiContainer {
         bootstrap.deployBeans();
         bootstrap.validateBeans();
         bootstrap.endInitialization();
-        // Set up the ShutdownManager for later
-//        this.shutdownManager = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(ShutdownManager.class)), ShutdownManager.class);
-//        this.shutdownManager.setBootstrap(bootstrap);
         container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
         container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
+        System.out.println("\n\n init loading \n\n");
         registerAndLaunchComponents();
         started = true;
         return started;
@@ -118,6 +119,7 @@ public class Weld implements CDIOSGiContainer {
             Class<?> clazz = null;
             try {
                 clazz = bundle.loadClass(className);
+                //clazz = resourceLoader.classForName(className);
             } catch (Exception e) {
                 //e.printStackTrace(); // silently ignore :-)
             }
@@ -137,7 +139,7 @@ public class Weld implements CDIOSGiContainer {
                 if (publishable) {
                     // register service
                     if (service != null) {
-                        bundle.getBundleContext().registerService(className, service, null);
+                        bundle.getBundleContext().registerService(clazz.getName(), service, null);
                     }
                 }
             }
