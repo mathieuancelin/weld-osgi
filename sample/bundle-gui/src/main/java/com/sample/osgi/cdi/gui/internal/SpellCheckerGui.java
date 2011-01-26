@@ -12,11 +12,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import org.jboss.weld.environment.osgi.api.OSGiService;
-import org.jboss.weld.environment.osgi.api.Publish;
-import org.jboss.weld.environment.osgi.api.Services;
-import org.jboss.weld.environment.osgi.api.Startable;
-
+import org.jboss.weld.environment.osgi.api.extension.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.Publish;
+import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.Startable;
 
 /**
  *
