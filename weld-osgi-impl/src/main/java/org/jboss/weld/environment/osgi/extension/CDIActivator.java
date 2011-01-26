@@ -35,7 +35,7 @@ public class CDIActivator implements BundleActivator, BundleListener
         // TODO : need to find something better
         ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
         if (ref == null) {
-            factory = new WeldFactory();
+            factory = new WeldFactory(); // TODO : get ride of this direct instanciation
         } else {
             factory = (CDIOSGiContainerFactory) context.getService(ref);
         }
