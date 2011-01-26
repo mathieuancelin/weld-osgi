@@ -1,5 +1,7 @@
-package org.jboss.weld.environment.osgi.integration;
+package org.jboss.weld.environment.osgi.extension.services;
 
+import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
+import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import java.lang.reflect.ParameterizedType;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;

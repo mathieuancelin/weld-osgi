@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.weld.environment.osgi;
+package org.jboss.weld.environment.osgi.integration;
 
 import javax.enterprise.context.ApplicationScoped;
 import org.jboss.weld.bootstrap.api.Bootstrap;

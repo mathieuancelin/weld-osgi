@@ -1,6 +1,7 @@
-package org.jboss.weld.environment.osgi;
+package org.jboss.weld.environment.osgi.extension;
 
 import java.util.concurrent.ConcurrentHashMap;
+import org.jboss.weld.environment.osgi.integration.Weld;
 import org.jboss.weld.environment.osgi.api.WeldOSGiContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;

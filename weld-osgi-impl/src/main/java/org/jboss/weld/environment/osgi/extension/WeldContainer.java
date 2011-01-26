@@ -14,14 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.weld.environment.osgi;
+package org.jboss.weld.environment.osgi.extension;
 
+import org.jboss.weld.environment.osgi.extension.beans.InstanceManager;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.osgi.beans.InstanceManager;
+import org.jboss.weld.environment.osgi.integration.Weld;
 
 /**
  * Provides convenient access to beans and events, particularly helpful when

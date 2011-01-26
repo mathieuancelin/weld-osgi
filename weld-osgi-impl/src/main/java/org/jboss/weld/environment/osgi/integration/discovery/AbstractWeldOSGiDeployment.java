@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.discovery;
+package org.jboss.weld.environment.osgi.integration.discovery;
 
 import javax.enterprise.inject.spi.Extension;
 

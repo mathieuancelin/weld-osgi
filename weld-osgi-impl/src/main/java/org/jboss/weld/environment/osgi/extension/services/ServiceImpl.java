@@ -1,8 +1,9 @@
-package org.jboss.weld.environment.osgi.integration;
+package org.jboss.weld.environment.osgi.extension.services;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import org.jboss.weld.environment.osgi.api.Service;
+import org.jboss.weld.environment.osgi.extension.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;

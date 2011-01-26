@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.weld.environment.osgi.discovery.bundle;
+package org.jboss.weld.environment.osgi.integration.discovery.bundle;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.environment.osgi.discovery.ImmutableBeanDeploymentArchive;
+import org.jboss.weld.environment.osgi.integration.discovery.ImmutableBeanDeploymentArchive;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
