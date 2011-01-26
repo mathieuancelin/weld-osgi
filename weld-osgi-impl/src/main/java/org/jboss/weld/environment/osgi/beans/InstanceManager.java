@@ -20,8 +20,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.osgi.WeldContainer;
-
 /**
  * A managed bean which holds all of the injected instances of managed beans and
  * events. It is primarily used as a delegate for the {@link WeldContainer} class's instance()
