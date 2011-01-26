@@ -21,8 +21,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-
-import org.jboss.weld.environment.osgi.integration.Weld;
+import org.jboss.weld.environment.osgi.api.integration.CDIContainer;
 
 /**
  * Provides convenient access to beans and events, particularly helpful when
@@ -30,19 +29,19 @@ import org.jboss.weld.environment.osgi.integration.Weld;
  * <p>
  * An instance of this class can be obtained using the Weld class by calling:
  * <code>
- * WeldContainer weld = new Weld().initialize();
+ * CDIContainerImpl weld = new Weld().initialize();
  * </code>
- * @see Weld
  *
  * @author Peter Royle
  */
-public class WeldContainer {
+public class CDIContainerImpl implements CDIContainer {
 
     private final InstanceManager instanceManager;
     private final BeanManager beanManager;
 
     @Inject
-    protected WeldContainer(InstanceManager instanceManager, BeanManager beanManager) {
+    protected CDIContainerImpl(InstanceManager instanceManager
+            , BeanManager beanManager) {
         this.instanceManager = instanceManager;
         this.beanManager = beanManager;
     }
@@ -53,6 +52,7 @@ public class WeldContainer {
      * Foo foo = weld.instance().select(Foo.class).get();
      * </code>
      */
+    @Override
     public Instance<Object> instance() {
         return instanceManager.getInstances();
     }
@@ -63,6 +63,7 @@ public class WeldContainer {
      * weld.event().select(Bar.class).fire(new Bar());
      * </code>
      */
+    @Override
     public Event<Object> event() {
         return instanceManager.getEvents();
     }
@@ -70,6 +71,7 @@ public class WeldContainer {
     /**
      * Provides direct access to the BeanManager.
      */
+    @Override
     public BeanManager getBeanManager() {
         return beanManager;
     }

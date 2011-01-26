@@ -16,11 +16,13 @@
  */
 package org.jboss.weld.environment.osgi.integration;
 
-import org.jboss.weld.environment.osgi.extension.WeldContainer;
+import org.jboss.weld.environment.osgi.extension.CDIContainerImpl;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -30,10 +32,11 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
-import org.jboss.weld.environment.osgi.api.ContainerInitialized;
-import org.jboss.weld.environment.osgi.api.ContainerShutdown;
-import org.jboss.weld.environment.osgi.api.Publish;
-import org.jboss.weld.environment.osgi.api.Startable;
+import org.jboss.weld.environment.osgi.api.extension.CDIContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.CDIContainerShutdown;
+import org.jboss.weld.environment.osgi.api.extension.Publish;
+import org.jboss.weld.environment.osgi.api.extension.Startable;
+import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiResourceLoader;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -49,7 +52,7 @@ import org.osgi.framework.Bundle;
  * </p>
  * 
  * <pre>
- * WeldContainer weld = new Weld().initialize();
+ * CDIContainerImpl weld = new Weld().initialize();
  * weld.instance().select(Foo.class).get();
  * weld.event().select(Bar.class).fire(new Bar());
  * weld.shutdown();
@@ -58,27 +61,30 @@ import org.osgi.framework.Bundle;
  * @author Peter Royle
  * @author Pete Muir
  */
-public class Weld {
+public class Weld implements CDIOSGiContainer {
 
-    private ShutdownManager shutdownManager;
+    private final static Logger LOGGER = Logger.getLogger(Weld.class.getName());
     private final Bundle bundle;
     private WeldOSGiBundleDeployment deployment;
-    private WeldContainer container;
+    private CDIContainerImpl container;
     private boolean started = false;
     private Bootstrap bootstrap;
+    private boolean hasShutdownBeenCalled = false;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
     }
 
+    @Override
     public boolean isStarted() {
         return started;
     }
 
     /**
-     * Boots Weld and creates and returns a WeldContainer instance, through which
+     * Boots Weld and creates and returns a CDIContainerImpl instance, through which
      * beans and events can be accessed.
      */
+    @Override
     public boolean initialize() {
         started = false;
         Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
@@ -96,10 +102,10 @@ public class Weld {
         bootstrap.validateBeans();
         bootstrap.endInitialization();
         // Set up the ShutdownManager for later
-        this.shutdownManager = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(ShutdownManager.class)), ShutdownManager.class);
-        this.shutdownManager.setBootstrap(bootstrap);
-        container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(WeldContainer.class)), WeldContainer.class);
-        container.event().select(ContainerInitialized.class).fire(new ContainerInitialized());
+//        this.shutdownManager = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(ShutdownManager.class)), ShutdownManager.class);
+//        this.shutdownManager.setBootstrap(bootstrap);
+        container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
+        container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
         registerAndLaunchComponents();
         started = true;
         return started;
@@ -107,47 +113,48 @@ public class Weld {
 
     private void registerAndLaunchComponents() {
         //if (started) {
-            Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
-            for (String className : classes) {
-                Class<?> clazz = null;
-                try {
-                    clazz = bundle.loadClass(className);
-                } catch (Exception e) {
-                    //e.printStackTrace(); // silently ignore :-)
-                }
-                if (clazz != null) {
-                    boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                    boolean startable = clazz.isAnnotationPresent(Startable.class);
-                    boolean instatiation = publishable | startable;
-                    Object service = null;
-                    if (instatiation) {
-                        // instanciation, so component is starting (@PostConstruct) or not :(
-                        try {
-                            service = container.instance().select(clazz).get();
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
+        Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
+        for (String className : classes) {
+            Class<?> clazz = null;
+            try {
+                clazz = bundle.loadClass(className);
+            } catch (Exception e) {
+                //e.printStackTrace(); // silently ignore :-)
+            }
+            if (clazz != null) {
+                boolean publishable = clazz.isAnnotationPresent(Publish.class);
+                boolean startable = clazz.isAnnotationPresent(Startable.class);
+                boolean instatiation = publishable | startable;
+                Object service = null;
+                if (instatiation) {
+                    // instanciation, so component is starting (@PostConstruct) or not :(
+                    try {
+                        service = container.instance().select(clazz).get();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
-                    if (publishable) {
-                        // register service
-                        if (service != null) {
-                            bundle.getBundleContext().registerService(className, service, null);
-                        }
+                }
+                if (publishable) {
+                    // register service
+                    if (service != null) {
+                        bundle.getBundleContext().registerService(className, service, null);
                     }
                 }
             }
-       // }
+        }
+        // }
     }
 
-    public WeldContainer getContainer() {
+    @Override
+    public CDIContainerImpl getContainer() {
         return container;
     }
 
-    protected WeldOSGiBundleDeployment createDeployment(ResourceLoader resourceLoader, Bootstrap bootstrap) {
+    private WeldOSGiBundleDeployment createDeployment(ResourceLoader resourceLoader, Bootstrap bootstrap) {
         return new WeldOSGiBundleDeployment(bundle, resourceLoader, bootstrap);
     }
 
-    protected <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {
+    private <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {
         final Bean<?> bean = manager.resolve(manager.getBeans(type));
         if (bean == null) {
             throw new UnsatisfiedResolutionException("Unable to resolve a bean for " + type + " with bindings " + Arrays.asList(bindings));
@@ -156,12 +163,19 @@ public class Weld {
         return type.cast(manager.getReference(bean, type, cc));
     }
 
+    @Override
     public void shutdown() {
         if (started) {
-            container.event().select(ContainerShutdown.class).fire(new ContainerShutdown());
-            bootstrap.shutdown();
-            //shutdownManager.shutdown();
-            started = false;
+            synchronized (this) {
+                if (!hasShutdownBeenCalled) {
+                    hasShutdownBeenCalled = true;
+                    container.event().select(CDIContainerShutdown.class).fire(new CDIContainerShutdown());
+                    bootstrap.shutdown();
+                    started = false;
+                } else {
+                    LOGGER.log(Level.INFO, "Skipping spurious call to shutdown");
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.extension;
+package org.jboss.weld.environment.osgi.extension.services;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

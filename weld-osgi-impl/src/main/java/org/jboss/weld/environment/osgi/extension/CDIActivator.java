@@ -1,8 +1,10 @@
 package org.jboss.weld.environment.osgi.extension;
 
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import org.jboss.weld.environment.osgi.integration.Weld;
-import org.jboss.weld.environment.osgi.api.WeldOSGiContainer;
+import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
+import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainerFactory;
+import org.jboss.weld.environment.osgi.integration.WeldFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -10,6 +12,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Entry point of the OSGi Bundle. Start the Weld container et listen to bundle
@@ -17,29 +20,36 @@ import org.osgi.framework.ServiceListener;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class WeldActivator implements BundleActivator, BundleListener
-        , ServiceListener, WeldOSGiContainer {
+public class CDIActivator implements BundleActivator, BundleListener
+        , ServiceListener {
 
-    private final ConcurrentHashMap<Long, Weld> containers;
+    private final ConcurrentHashMap<Long, CDIOSGiContainer> containers;
+    private CDIOSGiContainerFactory factory;
 
-    public WeldActivator() {
-        containers = new ConcurrentHashMap<Long, Weld>();
+    public CDIActivator() {
+        containers = new ConcurrentHashMap<Long, CDIOSGiContainer>();
     }
 
     @Override
     public void start(BundleContext context) throws Exception {
-        context.registerService(WeldOSGiContainer.class.getName(), this, null);
+        // TODO : need to find something better
+        ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
+        if (ref == null) {
+            factory = new WeldFactory();
+        } else {
+            factory = (CDIOSGiContainerFactory) context.getService(ref);
+        }
         context.addBundleListener(this);
         context.addServiceListener(this);
         for (Bundle bundle : context.getBundles()) {
             if (!containers.containsKey(bundle.getBundleId())) {
                 if (bundle.getState() >= Bundle.STARTING) {
-                    Weld container = new Weld(bundle);
+                    CDIOSGiContainer container = factory.getContainer(bundle);
                     containers.putIfAbsent(bundle.getBundleId(), container);
                 }
             }
         }
-        for (Weld container : containers.values()) {
+        for (CDIOSGiContainer container : containers.values()) {
             boolean started = container.initialize();
             if (!started) {
                 containers.remove(context.getBundle().getBundleId());
@@ -49,7 +59,7 @@ public class WeldActivator implements BundleActivator, BundleListener
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        for (Weld container : containers.values()) {
+        for (CDIOSGiContainer container : containers.values()) {
             container.shutdown();
         }
     }
@@ -59,12 +69,12 @@ public class WeldActivator implements BundleActivator, BundleListener
         
         if (event.getType() == BundleEvent.STARTED) {
             if (!containers.containsKey(event.getBundle().getBundleId())) {
-                Weld container =  new Weld(event.getBundle());
-                Weld cont = containers.putIfAbsent(
+                CDIOSGiContainer container =  factory.getContainer(event.getBundle());
+                CDIOSGiContainer maybeExistingContainer = containers.putIfAbsent(
                         event.getBundle().getBundleId(), container);
-                if (cont == null) {
-                    Weld weld = containers.get(event.getBundle().getBundleId());
-                    boolean started = weld.initialize();
+                if (maybeExistingContainer == null) {
+                    CDIOSGiContainer existingContainer = containers.get(event.getBundle().getBundleId());
+                    boolean started = existingContainer.initialize();
                     if (!started) {
                         containers.remove(event.getBundle().getBundleId());
                     }
@@ -73,7 +83,7 @@ public class WeldActivator implements BundleActivator, BundleListener
         }
         if (BundleEvent.STOPPED == event.getType()) {
             if (containers.containsKey(event.getBundle().getBundleId())) {
-                Weld container = containers.get(event.getBundle().getBundleId());
+                CDIOSGiContainer container = containers.get(event.getBundle().getBundleId());
                 container.shutdown();
                 containers.remove(event.getBundle().getBundleId());
             }

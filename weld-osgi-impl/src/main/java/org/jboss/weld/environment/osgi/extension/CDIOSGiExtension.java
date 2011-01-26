@@ -1,6 +1,5 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import org.jboss.weld.environment.osgi.extension.WeldContainer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -24,11 +23,10 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
-import org.jboss.weld.environment.osgi.integration.ShutdownManager;
-import org.jboss.weld.environment.osgi.api.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 
 import org.jboss.weld.environment.osgi.extension.beans.InstanceManager;
-import org.jboss.weld.environment.osgi.extension.DynamicServiceHandler;
+import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
@@ -42,15 +40,15 @@ import org.osgi.framework.FrameworkUtil;
  * 
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class WeldOSGiExtension implements Extension {
+public class CDIOSGiExtension implements Extension {
 
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-        event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
+//        event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addAnnotatedType(manager.createAnnotatedType(InstanceManager.class));
-        event.addAnnotatedType(manager.createAnnotatedType(WeldContainer.class));
+        event.addAnnotatedType(manager.createAnnotatedType(CDIContainerImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
