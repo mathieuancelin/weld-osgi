@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.api;
+package org.jboss.weld.environment.osgi.api.extension;
 
 /**
  *

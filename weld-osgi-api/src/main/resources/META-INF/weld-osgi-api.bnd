@@ -1,3 +1,5 @@
--exportcontents org.jboss.weld.environment.osgi.api
+-exportcontents org.jboss.weld.environment.osgi.api.extension; \
+                org.jboss.weld.environment.osgi.api.integration;
 
-Export-Package org.jboss.weld.environment.osgi.api
+Export-Package org.jboss.weld.environment.osgi.api.extension; \
+               org.jboss.weld.environment.osgi.api.integration;
