@@ -53,8 +53,6 @@ public class BundleScanner {
         // TODO : jars
         List<String> discoveredClasses = new ArrayList<String>();
         List<URL> discoveredBeanXmlUrls = new ArrayList<URL>();
-//        Bundle[] bundles = context.getBundles();
-//        for (Bundle bundle : bundles) {
         Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
         if (beansXml != null) {
             while (beansXml.hasMoreElements()) {
@@ -65,12 +63,10 @@ public class BundleScanner {
                 while (beanClasses.hasMoreElements()) {
                     URL url = (URL) beanClasses.nextElement();
                     String clazz = url.getFile().substring(1).replace("/", ".").replace(".class", "");
-                    //System.out.println(bundle.getSymbolicName() + " : " + clazz);
                     discoveredClasses.add(clazz);
                 }
             }
         }
-//        }
         return new ImmutableBeanDeploymentArchive("classpath",
                 discoveredClasses, bootstrap.parse(discoveredBeanXmlUrls));
     }
