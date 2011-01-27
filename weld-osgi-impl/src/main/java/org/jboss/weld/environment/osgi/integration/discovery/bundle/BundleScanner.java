@@ -67,7 +67,7 @@ public class BundleScanner {
                 }
             }
         }
-        return new ImmutableBeanDeploymentArchive("classpath",
+        return new ImmutableBeanDeploymentArchive("bundle-classpath",
                 discoveredClasses, bootstrap.parse(discoveredBeanXmlUrls));
     }
 }
