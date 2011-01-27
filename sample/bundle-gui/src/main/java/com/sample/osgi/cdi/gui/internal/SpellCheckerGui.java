@@ -2,7 +2,6 @@ package com.sample.osgi.cdi.gui.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import com.sample.osgi.cdi.services.SpellCheckerService;
-import com.sample.osgi.cdi.startable.internal.ServiceImpl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,16 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
-import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Services;
-import org.jboss.weld.environment.osgi.api.extension.Startable;
 
 /**
  *
  * @author Mathieu ANCELIN
  */
-@Startable
-@Publish
 @Singleton
 public class SpellCheckerGui extends JFrame {
 
@@ -39,10 +34,6 @@ public class SpellCheckerGui extends JFrame {
 
     @Inject @OSGiService
     private DictionaryService osgiService;
-
-
-    @Inject
-    private ServiceImpl fakeService;
 
     public SpellCheckerGui() {
         super();
@@ -105,7 +96,6 @@ public class SpellCheckerGui extends JFrame {
     }
 
     private void check() {
-        fakeService.call();
         String text = input.getText();
         if (text == null)
             text = "";
@@ -131,12 +121,10 @@ public class SpellCheckerGui extends JFrame {
         osgiService.checkWord(text);
     }
 
-    @PostConstruct
     public void start() {
         this.setVisible(true);
     }
 
-    @PreDestroy
     public void stop() {
         this.dispose();
     }
