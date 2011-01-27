@@ -30,6 +30,7 @@ import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
+import org.jboss.weld.environment.osgi.extension.services.BundleContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -57,7 +58,7 @@ public class CDIOSGiExtension implements Extension {
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
 
     public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
-        //event.addContext(new OSGIContext());
+        event.addContext(new BundleContext());
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator(); 
                                                 iterator.hasNext();) {
             Type type =  iterator.next();

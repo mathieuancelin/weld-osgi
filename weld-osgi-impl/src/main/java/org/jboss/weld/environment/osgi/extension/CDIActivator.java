@@ -16,8 +16,8 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Entry point of the OSGi Bundle. Start the Weld container et listen to bundle
- * installation.
+ * Entry point of the OSGi Bundle. Start the Weld container and listen to bundle
+ * events.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
@@ -40,7 +40,7 @@ public class CDIActivator implements BundleActivator, BundleListener
         factory = (CDIOSGiContainerFactory) tracker.waitForService(10000);
         //ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
         if (factory == null) {
-            //throw new RuntimeException("Service unavailbale");
+            //throw new RuntimeException("Service unavailbale"); // TODO : uncomment
             factory = new WeldFactory(); // TODO : get ride of this direct instanciation
         }
         context.addBundleListener(this);
@@ -106,13 +106,4 @@ public class CDIActivator implements BundleActivator, BundleListener
             container.getContainer().event().select(ServiceEvent.class).fire(event);
         }
     }
-
-//    @Override
-//    public WeldContainer getContainer(Bundle bundle) {
-//        if (containers.containsKey(bundle.getBundleId())) {
-//            return containers.get(bundle.getBundleId()).getContainer();
-//        } else {
-//            throw new RuntimeException("No container attached to the current bundle.");
-//        }
-//    }
 }
