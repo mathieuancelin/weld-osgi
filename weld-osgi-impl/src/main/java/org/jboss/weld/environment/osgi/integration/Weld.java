@@ -24,7 +24,7 @@ import org.jboss.weld.environment.osgi.api.extension.CDIContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
-import org.jboss.weld.environment.osgi.extension.services.BundleContext;
+import org.jboss.weld.environment.osgi.extension.context.BundleContext;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiResourceLoader;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
 import org.jboss.weld.resources.spi.ResourceLoader;
