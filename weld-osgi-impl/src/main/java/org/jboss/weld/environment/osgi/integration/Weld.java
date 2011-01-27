@@ -80,7 +80,6 @@ public class Weld implements CDIOSGiContainer {
     }
 
     private void registerAndLaunchComponents() {
-        //if (started) {
         Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
         for (String className : classes) {
             Class<?> clazz = null;
@@ -120,7 +119,6 @@ public class Weld implements CDIOSGiContainer {
                 }
             }
         }
-        // }
     }
 
     @Override
