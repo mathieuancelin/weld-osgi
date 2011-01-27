@@ -57,25 +57,29 @@ public class Weld implements CDIOSGiContainer {
     @Override
     public boolean initialize() {
         started = false;
-        Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
-        if (beansXml == null) {
-            return started;
+        try {
+            Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
+            if (beansXml == null) {
+                return started;
+            }
+            resourceLoader = new WeldOSGiResourceLoader(bundle);
+            bootstrap = (Bootstrap) new WeldBootstrap();
+            deployment = createDeployment(resourceLoader, bootstrap);
+            // Set up the container
+            bootstrap.startContainer(Environments.SE, deployment);
+            // Start the container
+            bootstrap.startInitialization();
+            bootstrap.deployBeans();
+            bootstrap.validateBeans();
+            bootstrap.endInitialization();
+            container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
+            container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
+            System.out.println(String.format("Registering/Starting OSGi Service for bundle %s", bundle.getSymbolicName()));
+            registerAndLaunchComponents();
+            started = true;
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
-        resourceLoader = new WeldOSGiResourceLoader(bundle);
-        bootstrap = (Bootstrap) new WeldBootstrap();
-        deployment = createDeployment(resourceLoader, bootstrap);
-        // Set up the container
-        bootstrap.startContainer(Environments.SE, deployment);
-        // Start the container
-        bootstrap.startInitialization();
-        bootstrap.deployBeans();
-        bootstrap.validateBeans();
-        bootstrap.endInitialization();
-        container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
-        container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
-        LOGGER.log(Level.INFO, "Registering/Starting OSGi Service for bundle {0}", bundle.getSymbolicName());
-        registerAndLaunchComponents();
-        started = true;
         return started;
     }
 
@@ -149,6 +153,7 @@ public class Weld implements CDIOSGiContainer {
                     BundleContext.invalidateBundle(bundle);
                     bootstrap.shutdown();
                     started = false;
+                    System.out.println("Shutdown Weld container for bundle " + bundle.getSymbolicName());
                 } else {
                     LOGGER.log(Level.INFO, "Skipping spurious call to shutdown");
                 }
