@@ -75,6 +75,8 @@ public class Weld implements CDIOSGiContainer {
             bootstrap.endInitialization();
             container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
             container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
+
+            // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
             registerAndLaunchComponents();
             started = true;
@@ -85,6 +87,7 @@ public class Weld implements CDIOSGiContainer {
     }
 
     private void registerAndLaunchComponents() {
+        // TODO all of this should be part of the extension ....
         Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
         for (String className : classes) {
             Class<?> clazz = null;
@@ -162,6 +165,7 @@ public class Weld implements CDIOSGiContainer {
 
     @Override
     public void shutdown() {
+        // TODO this should also be part of the extension ...
         if (started) {
             synchronized (this) {
                 if (!hasShutdownBeenCalled) {

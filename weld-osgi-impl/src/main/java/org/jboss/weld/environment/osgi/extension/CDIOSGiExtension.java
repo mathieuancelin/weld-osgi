@@ -51,6 +51,8 @@ public class CDIOSGiExtension implements Extension {
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addScope(BundleScoped.class, true, false);
         event.addAnnotatedType(manager.createAnnotatedType(InstanceManager.class));
+
+        // TODO Why do we need this ? I plan to remove that CDIContainer stuff ...
         event.addAnnotatedType(manager.createAnnotatedType(CDIContainerImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
