@@ -48,7 +48,7 @@ public class SpellCheckerGui extends JFrame {
         input = new javax.swing.JTextField();
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
-        checkButton.setText("Check");
+        checkButton.setText("Check 1");
         checkButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -56,7 +56,7 @@ public class SpellCheckerGui extends JFrame {
             }
         });
 
-        checkButton2.setText("Check2");
+        checkButton2.setText("Check 2");
         checkButton2.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -69,17 +69,15 @@ public class SpellCheckerGui extends JFrame {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(checkButton, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
         getContentPane().add(checkButton2, gridBagConstraints);
 
         result.setPreferredSize(new java.awt.Dimension(175, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(result, gridBagConstraints);
