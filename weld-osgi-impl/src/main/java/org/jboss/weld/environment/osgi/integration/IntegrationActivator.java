@@ -96,7 +96,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
 
             BundleContext bundleContext = bundle.getBundleContext();
             regs.add(
-            bundleContext.registerService(Event.class.getName(),
+                    bundleContext.registerService(Event.class.getName(),
                                           container.getContainer().event(),
                                           null));
 
