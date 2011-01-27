@@ -5,7 +5,6 @@ import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.jboss.weld.bootstrap.api.helpers.IsolatedStaticSingletonProvider;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainerFactory;
-import org.jboss.weld.environment.osgi.integration.WeldFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -33,15 +32,15 @@ public class CDIActivator implements BundleActivator, BundleListener
 
     @Override
     public void start(BundleContext context) throws Exception {
-        // TODO : get ride of this direct reference        
-        // TODO : need to find something better
         SingletonProvider.initialize(new IsolatedStaticSingletonProvider());
         ServiceTracker tracker = new ServiceTracker(context, CDIOSGiContainerFactory.class.getName(), null);
+        tracker.open();
+
+        // TODO not very dynamic ;)
         factory = (CDIOSGiContainerFactory) tracker.waitForService(10000);
         //ServiceReference ref = context.getServiceReference(CDIOSGiContainerFactory.class.getName());
         if (factory == null) {
-            //throw new RuntimeException("Service unavailbale"); // TODO : uncomment
-            factory = new WeldFactory(); // TODO : get ride of this direct instanciation
+            throw new RuntimeException("Service unavailbale");
         }
         context.addBundleListener(this);
         context.addServiceListener(this);

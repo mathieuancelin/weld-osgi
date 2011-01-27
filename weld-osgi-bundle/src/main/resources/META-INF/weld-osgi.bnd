@@ -39,4 +39,4 @@ Private-Package !javax.interceptor.*, \
                 ch.qos.cal10n.*
 
 DynamicImport-Package *
-Bundle-Activator org.jboss.weld.environment.osgi.extension.CDIActivator
+Bundle-Activator org.jboss.weld.environment.osgi.Activator
