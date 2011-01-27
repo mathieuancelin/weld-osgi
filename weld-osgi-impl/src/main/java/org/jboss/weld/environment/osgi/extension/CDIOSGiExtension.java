@@ -31,6 +31,8 @@ import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
 import org.jboss.weld.environment.osgi.extension.services.BundleContext;
+import org.jboss.weld.environment.osgi.extension.services.BundleScoped;
+import org.jboss.weld.environment.osgi.integration.ShutdownManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -47,12 +49,14 @@ public class CDIOSGiExtension implements Extension {
                             = new HashMap<Type, Set<InjectionPoint>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-//        event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
+        event.addScope(BundleScoped.class, true, false);
         event.addAnnotatedType(manager.createAnnotatedType(InstanceManager.class));
         event.addAnnotatedType(manager.createAnnotatedType(CDIContainerImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
+        event.addAnnotatedType(manager.createAnnotatedType(BundleContext.class));
+        event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addQualifier(OSGiService.class);
     }
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff

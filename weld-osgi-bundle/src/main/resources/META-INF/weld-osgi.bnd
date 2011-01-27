@@ -26,7 +26,8 @@ Embed-Dependency *; scope=compile; inline=true, \
                 org.jboss.weld.manager; \
                 org.jboss.weld.servlet; \
                 org.jboss.weld.util; \
-                org.jboss.interceptor.*; version=1.0, \
+                org.jboss.interceptor.*; \
+                javassist.*; \
                 org.jboss.weld.el; version=1.0, \
                 org.jboss.weld.jsf; version=1.0
 

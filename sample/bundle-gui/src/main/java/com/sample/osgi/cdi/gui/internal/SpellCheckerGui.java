@@ -2,13 +2,14 @@ package com.sample.osgi.cdi.gui.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import com.sample.osgi.cdi.services.SpellCheckerService;
+import com.sample.osgi.cdi.startable.internal.ServiceImpl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,8 +18,6 @@ import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.ServiceEvent;
 
 /**
  *
@@ -26,6 +25,7 @@ import org.osgi.framework.ServiceEvent;
  */
 @Startable
 @Publish
+@Singleton
 public class SpellCheckerGui extends JFrame {
 
     private JTextField input = null;
@@ -39,6 +39,10 @@ public class SpellCheckerGui extends JFrame {
 
     @Inject @OSGiService
     private DictionaryService osgiService;
+
+
+    @Inject
+    private ServiceImpl fakeService;
 
     public SpellCheckerGui() {
         super();
@@ -101,6 +105,7 @@ public class SpellCheckerGui extends JFrame {
     }
 
     private void check() {
+        fakeService.call();
         String text = input.getText();
         if (text == null)
             text = "";
@@ -124,14 +129,6 @@ public class SpellCheckerGui extends JFrame {
         if (text == null)
             text = "";
         osgiService.checkWord(text);
-    }
-
-    public void listenServiceEvents(@Observes ServiceEvent event) {
-        System.out.println("listen " + event);
-    }
-
-    public void listenBundleEvents(@Observes BundleEvent event) {
-        System.out.println("listen " + event);
     }
 
     @PostConstruct
