@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +17,8 @@ import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceEvent;
 
 /**
  *
@@ -121,6 +124,14 @@ public class SpellCheckerGui extends JFrame {
         if (text == null)
             text = "";
         osgiService.checkWord(text);
+    }
+
+    public void listenServiceEvents(@Observes ServiceEvent event) {
+        System.out.println("listen " + event);
+    }
+
+    public void listenBundleEvents(@Observes BundleEvent event) {
+        System.out.println("listen " + event);
     }
 
     @PostConstruct
