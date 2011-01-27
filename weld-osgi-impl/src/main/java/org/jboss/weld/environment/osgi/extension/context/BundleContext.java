@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.extension.services;
+package org.jboss.weld.environment.osgi.extension.context;
 
 import java.lang.annotation.Annotation;
 import java.util.concurrent.ConcurrentHashMap;
