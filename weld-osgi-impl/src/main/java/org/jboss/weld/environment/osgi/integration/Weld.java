@@ -62,6 +62,7 @@ public class Weld implements CDIOSGiContainer {
             if (beansXml == null) {
                 return started;
             }
+            System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
             resourceLoader = new WeldOSGiResourceLoader(bundle);
             bootstrap = (Bootstrap) new WeldBootstrap();
             deployment = createDeployment(resourceLoader, bootstrap);
@@ -74,7 +75,7 @@ public class Weld implements CDIOSGiContainer {
             bootstrap.endInitialization();
             container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
             container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
-            System.out.println(String.format("Registering/Starting OSGi Service for bundle %s", bundle.getSymbolicName()));
+            System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
             registerAndLaunchComponents();
             started = true;
         } catch (Throwable t) {
@@ -111,14 +112,30 @@ public class Weld implements CDIOSGiContainer {
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
-                    if (service != null) {
-                        service.toString(); // TODO : Okay, it's really ugly, but I have no choice with these lazy proxies
+                    if (publishable) {
+                        // register service
+                        if (service != null) {
+                            
+                            // registering interfaces
+                            if (service.getClass().getInterfaces().length > 0) {
+                                for (Class interf : service.getClass().getInterfaces()) {
+                                    // TODO : Beurk !!!!!!!!!!!!!, there must me some kind of helper somewhere
+                                    if (!interf.getName().equals("java.io.Serializable") &&
+                                        !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
+                                        !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
+                                        !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
+                                    System.out.println("Registering OSGi service " + interf.getName());
+                                    bundle.getBundleContext().registerService(interf.getName(), service, null);
+                                }   }
+                            } else {
+                                System.out.println("Registering OSGi service " + clazz.getName());
+                                bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                            }
+                        }
                     }
-                }
-                if (publishable) {
-                    // register service
-                    if (service != null) {
-                        bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                    if (service != null && startable) {
+                        System.out.println("Starting " + className);
+                        service.toString(); // TODO : Okay, it's really ugly, but I have no choice with these lazy proxies
                     }
                 }
             }
@@ -148,12 +165,12 @@ public class Weld implements CDIOSGiContainer {
         if (started) {
             synchronized (this) {
                 if (!hasShutdownBeenCalled) {
+                    System.out.println("Stopping Weld container for bundle " + bundle.getSymbolicName());
                     hasShutdownBeenCalled = true;
                     container.event().select(CDIContainerShutdown.class).fire(new CDIContainerShutdown());
                     BundleContext.invalidateBundle(bundle);
                     bootstrap.shutdown();
                     started = false;
-                    System.out.println("Shutdown Weld container for bundle " + bundle.getSymbolicName());
                 } else {
                     LOGGER.log(Level.INFO, "Skipping spurious call to shutdown");
                 }
