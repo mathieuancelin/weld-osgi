@@ -118,21 +118,29 @@ public class Weld implements CDIOSGiContainer {
                     if (publishable) {
                         // register service
                         if (service != null) {
-                            
-                            // registering interfaces
-                            if (service.getClass().getInterfaces().length > 0) {
-                                for (Class interf : service.getClass().getInterfaces()) {
-                                    // TODO : Beurk !!!!!!!!!!!!!, there must me some kind of helper somewhere
-                                    if (!interf.getName().equals("java.io.Serializable") &&
-                                        !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
-                                        !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
-                                        !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
-                                    System.out.println("Registering OSGi service " + interf.getName());
-                                    bundle.getBundleContext().registerService(interf.getName(), service, null);
-                                }   }
+                            Publish publish = clazz.getAnnotation(Publish.class);
+                            Class[] contracts = publish.contracts();
+                            if (contracts.length != 0) {
+                                for (Class contract : contracts) {
+                                    System.out.println("Registering OSGi service " + contract.getName());
+                                    bundle.getBundleContext().registerService(contract.getName(), service, null);
+                                }
                             } else {
-                                System.out.println("Registering OSGi service " + clazz.getName());
-                                bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                                // registering interfaces
+                                if (service.getClass().getInterfaces().length > 0) {
+                                    for (Class interf : service.getClass().getInterfaces()) {
+                                        // TODO : Beurk !!!!!!!!!!!!!, there must me some kind of helper somewhere
+                                        if (!interf.getName().equals("java.io.Serializable") &&
+                                            !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
+                                            !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
+                                            !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
+                                        System.out.println("Registering OSGi service " + interf.getName());
+                                        bundle.getBundleContext().registerService(interf.getName(), service, null);
+                                    }   }
+                                } else {
+                                    System.out.println("Registering OSGi service " + clazz.getName());
+                                    bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                                }
                             }
                         }
                     }
