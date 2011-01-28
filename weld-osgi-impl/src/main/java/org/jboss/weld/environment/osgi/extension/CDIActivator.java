@@ -15,8 +15,11 @@ public class CDIActivator implements BundleActivator,
                                      BundleListener,
                                      ServiceListener {
 
+    private BundleContext context;
+
     @Override
     public void start(BundleContext context) throws Exception {
+        this.context = context;
         context.addBundleListener(this);
         context.addServiceListener(this);
     }
@@ -27,7 +30,6 @@ public class CDIActivator implements BundleActivator,
 
     @Override
     public void bundleChanged(BundleEvent event) {
-        BundleContext context = event.getBundle().getBundleContext();
         ServiceReference[] references = findReferences(context, Event.class);
 
         if (references != null) {
@@ -39,15 +41,10 @@ public class CDIActivator implements BundleActivator,
     }
 
     private ServiceReference[] findReferences(BundleContext context, Class<?> type) {
-        if (context == null) {
-            return null;
-        }
         ServiceReference[] references = null;
         try {
             references = context.getServiceReferences(type.getName(), null);
         } catch (InvalidSyntaxException e) {
-            // Ignored
-        } catch (NullPointerException e) {
             // Ignored
         }
         return references;
@@ -55,7 +52,6 @@ public class CDIActivator implements BundleActivator,
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        BundleContext context = event.getServiceReference().getBundle().getBundleContext();
         ServiceReference[] references = findReferences(context, Event.class);
 
         if (references != null) {
