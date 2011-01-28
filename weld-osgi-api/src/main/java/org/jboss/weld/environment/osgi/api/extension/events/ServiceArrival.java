@@ -1,33 +1,16 @@
 package org.jboss.weld.environment.osgi.api.extension.events;
 
-import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 /**
  *
  * @author mathieu
  */
-public class ServiceArrival {
+public class ServiceArrival extends AbstractServiceEvent {
 
-    private final ServiceReference ref;
-    private final Object service;
-
-    public ServiceArrival(
-            ServiceReference ref, Object service) {
-        this.ref = ref;
-        this.service = service;
+     public ServiceArrival(
+            ServiceReference ref, BundleContext context) {
+        super(ref, context);
     }
-
-    public ServiceReference getRef() {
-        return ref;
-    }
-
-    public Object getService() {
-        return service;
-    }
-
-    public Bundle getRegisteringBundle() {
-        return ref.getBundle();
-    }
-    
 }
