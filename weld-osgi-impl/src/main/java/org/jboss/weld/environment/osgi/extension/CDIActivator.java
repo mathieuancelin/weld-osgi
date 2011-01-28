@@ -44,6 +44,8 @@ public class CDIActivator implements BundleActivator,
             references = context.getServiceReferences(type.getName(), null);
         } catch (InvalidSyntaxException e) {
             // Ignored
+        } catch (NullPointerException e) {
+            // Ignored
         }
         return references;
     }
