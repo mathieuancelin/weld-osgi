@@ -5,9 +5,13 @@ import com.sample.osgi.cdi.gui.internal.SpellCheckerGui;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 
 @Startable
 @Publish
@@ -26,5 +30,11 @@ public class AppStarter implements Starter {
     @Override
     public void stop() {
         gui.stop();
+    }
+
+    public void listenServiceArrival(@Observes ServiceArrival arrival) {
+        if (arrival.isTyped(Instance.class)) {
+            arrival.type(Instance.class).getService().select(SpellCheckerGui.class);
+        }
     }
 }
