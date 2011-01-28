@@ -65,7 +65,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             case BundleEvent.STARTED:
                 startManagement(event.getBundle());
                 break;
-            case BundleEvent.STOPPING:
+            case BundleEvent.STOPPED:
                 stopManagement(event.getBundle());
                 break;
         }
@@ -74,12 +74,14 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     private void stopManagement(Bundle bundle) {
         Holder holder = managed.get(bundle.getBundleId());
         if (holder != null) {
-
             Collection<ServiceRegistration> regs = holder.registrations;
             for (ServiceRegistration reg : regs) {
-                reg.unregister();
+                try {
+                    reg.unregister();
+                } catch (IllegalStateException e) {
+                    // Ignore
+                }
             }
-
             holder.container.shutdown();
             managed.remove(bundle.getBundleId());
         }
@@ -91,31 +93,33 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         container.initialize();
 
         if (container.isStarted()) {
-
+            
             Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
 
             BundleContext bundleContext = bundle.getBundleContext();
-            regs.add(
-                    bundleContext.registerService(Event.class.getName(),
-                                          container.getContainer().event(),
-                                          null));
+            try {
+                regs.add(
+                        bundleContext.registerService(Event.class.getName(),
+                                              container.getContainer().event(),
+                                              null));
 
-            regs.add(
-                    bundleContext.registerService(BeanManager.class.getName(),
-                            container.getContainer().event(),
-                            null));
+                regs.add(
+                        bundleContext.registerService(BeanManager.class.getName(),
+                                container.getContainer().getBeanManager(),
+                                null));
 
-            regs.add(
-                    bundleContext.registerService(Instance.class.getName(),
-                            container.getContainer().event(),
-                            null));
-
+                regs.add(
+                        bundleContext.registerService(Instance.class.getName(),
+                                container.getContainer().instance(),
+                                null));
+            } catch (Throwable t) {
+                // Ignore
+            }
             Holder holder = new Holder();
             holder.container = container;
             holder.registrations = regs;
             holder.bundle = bundle;
             managed.put(bundle.getBundleId(), holder);
-
         }
     }
 
