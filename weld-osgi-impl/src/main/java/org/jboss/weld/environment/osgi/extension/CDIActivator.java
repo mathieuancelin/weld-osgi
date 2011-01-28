@@ -39,6 +39,9 @@ public class CDIActivator implements BundleActivator,
     }
 
     private ServiceReference[] findReferences(BundleContext context, Class<?> type) {
+        if (context == null) {
+            return null;
+        }
         ServiceReference[] references = null;
         try {
             references = context.getServiceReferences(type.getName(), null);
