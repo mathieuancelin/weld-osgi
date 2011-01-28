@@ -3,11 +3,9 @@ package org.jboss.weld.environment.osgi.extension;
 import org.osgi.framework.*;
 
 import javax.enterprise.event.Event;
-import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
-import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 
 /**
  * It seems we cannot get the BundleContext in the Extension, so
