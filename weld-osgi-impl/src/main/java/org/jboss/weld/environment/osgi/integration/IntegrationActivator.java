@@ -10,6 +10,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
+import org.jboss.weld.environment.osgi.api.extension.Service;
 
 /**
  * Created by IntelliJ IDEA.

@@ -28,6 +28,13 @@ public class ServiceImpl<T> implements Service<T> {
             throw new IllegalStateException("Can't have a null bundle.");
     }
 
+    public ServiceImpl(Type t, Bundle bundle) {
+        serviceClass = (Class) t;
+        serviceName = serviceClass.getName();
+        declaringClass = null;
+        this.bundle = bundle;
+    }
+
     @Override
     public T get() {
         if (service == null) {

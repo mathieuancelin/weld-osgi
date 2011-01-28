@@ -3,9 +3,11 @@ package org.jboss.weld.environment.osgi.extension;
 import org.osgi.framework.*;
 
 import javax.enterprise.event.Event;
+import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 
 /**
  * It seems we cannot get the BundleContext in the Extension, so
@@ -61,23 +63,21 @@ public class CDIActivator implements BundleActivator,
             for (ServiceReference reference : references) {
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 e.select(ServiceEvent.class).fire(event);
+                ServiceReference ref = event.getServiceReference();
                 switch (event.getType()) {
                     case ServiceEvent.MODIFIED:
                         ServiceChanged changed = 
-                                new ServiceChanged(event.getServiceReference(),
-                                    context.getService(event.getServiceReference()));
+                            new ServiceChanged(ref, context);
                         e.select(ServiceChanged.class).fire(changed);
                         break;
                     case ServiceEvent.REGISTERED:
-                        ServiceArrival arrival = 
-                                new ServiceArrival(event.getServiceReference(),
-                                    context.getService(event.getServiceReference()));
+                        ServiceArrival arrival =
+                            new ServiceArrival(ref, context);
                         e.select(ServiceArrival.class).fire(arrival);
                         break;
                     case ServiceEvent.UNREGISTERING:
                         ServiceDeparture departure =
-                                new ServiceDeparture(event.getServiceReference(),
-                                    context.getService(event.getServiceReference()));
+                            new ServiceDeparture(ref, context);
                         e.select(ServiceDeparture.class).fire(departure);
                         break;
                 }
