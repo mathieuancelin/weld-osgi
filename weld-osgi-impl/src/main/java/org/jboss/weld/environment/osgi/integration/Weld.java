@@ -19,8 +19,8 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
-import org.jboss.weld.environment.osgi.api.extension.CDIContainerInitialized;
-import org.jboss.weld.environment.osgi.api.extension.CDIContainerShutdown;
+import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
