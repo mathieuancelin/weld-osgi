@@ -13,4 +13,9 @@ public class ServiceDeparture extends AbstractServiceEvent {
             ServiceReference ref, BundleContext context) {
         super(ref, context);
     }
+
+    @Override
+    public EventType eventType() {
+        return EventType.SERVICE_DEPARTURE;
+    }
 }

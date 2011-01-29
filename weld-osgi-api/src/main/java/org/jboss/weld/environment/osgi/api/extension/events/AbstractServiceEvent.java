@@ -16,6 +16,10 @@ import org.osgi.framework.ServiceReference;
  */
 public abstract class AbstractServiceEvent {
 
+    public static enum EventType {
+        SERVICE_ARRIVAL, SERVICE_DEPARTURE, SERVICE_CHANGED
+    }
+
     private final ServiceReference ref;
     private final BundleContext context;
     private List<String> classesNames;
@@ -28,6 +32,8 @@ public abstract class AbstractServiceEvent {
         this.ref = ref;
         this.context = context;
     }
+
+    public abstract EventType eventType();
 
     public ServiceReference getRef() {
         return ref;
