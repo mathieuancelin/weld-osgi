@@ -103,7 +103,7 @@ public class CDIActivator implements BundleActivator,
             broadcaster.select(eventClass,
                     new FilterAnnotation(clazz)).fire(event);
         }
-        broadcaster.select(eventClass).fire(event);
+        //broadcaster.select(eventClass).fire(event);
     }
 
     private static class FilterAnnotation
