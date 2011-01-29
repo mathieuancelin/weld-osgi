@@ -15,5 +15,6 @@ import javax.inject.Qualifier;
 @Target({ PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Filter {
-    String value() default "";
+    //String value() default "";
+    Class value() default Object.class;
 }

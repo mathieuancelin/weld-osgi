@@ -32,9 +32,7 @@ public class AppStarter implements Starter {
         gui.stop();
     }
 
-    public void listenServiceArrival(
-            @Observes @Filter("javax.enterprise.inject.Instance")
-            ServiceArrival arrival) {
+    public void listenServiceArrival(@Observes @Filter(Instance.class) ServiceArrival arrival) {
         System.out.println("event");
         if (arrival.isTyped(Instance.class)) {
             arrival.type(Instance.class).getService().select(SpellCheckerGui.class);

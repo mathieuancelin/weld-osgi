@@ -97,11 +97,11 @@ public class CDIActivator implements BundleActivator,
     }
 
     private static void fireAllEvent(AbstractServiceEvent event, Event broadcaster) {
-        List<String> classesNames = event.getServiceClassNames();
+        List<Class<?>> classes = event.getServiceClasses();
         Class eventClass = event.getClass();
-        for (String classeName : classesNames) {
+        for (Class<?> clazz : classes) {
             broadcaster.select(eventClass,
-                    new FilterAnnotation(classeName)).fire(event);
+                    new FilterAnnotation(clazz)).fire(event);
         }
         broadcaster.select(eventClass).fire(event);
     }
@@ -110,14 +110,14 @@ public class CDIActivator implements BundleActivator,
             extends AnnotationLiteral<Filter>
             implements Filter {
 
-        private final String value;
+        private final Class value;
 
-        public FilterAnnotation(String value) {
+        public FilterAnnotation(Class value) {
             this.value = value;
         }
 
         @Override
-        public String value() {
+        public Class value() {
             return value;
         }
 
