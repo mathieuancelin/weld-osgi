@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
-import org.jboss.weld.environment.osgi.api.extension.Observer;
 
 import org.jboss.weld.environment.osgi.extension.beans.InstanceManager;
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
@@ -33,7 +32,6 @@ import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
 import org.jboss.weld.environment.osgi.extension.context.BundleContext;
 import org.jboss.weld.environment.osgi.extension.context.BundleScoped;
-import org.jboss.weld.environment.osgi.extension.events.ObserverInterceptor;
 import org.jboss.weld.environment.osgi.integration.ShutdownManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -62,8 +60,6 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(BundleContext.class));
         event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addQualifier(OSGiService.class);
-        event.addInterceptorBinding(Observer.class);
-        event.addAnnotatedType(manager.createAnnotatedType(ObserverInterceptor.class));
 
     }
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff

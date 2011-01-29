@@ -9,14 +9,12 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.Filter;
-import org.jboss.weld.environment.osgi.api.extension.Observer;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 
 @Startable
 @Publish
-@Observer
 @ApplicationScoped
 public class AppStarter implements Starter {
 
@@ -34,7 +32,9 @@ public class AppStarter implements Starter {
         gui.stop();
     }
 
-    public void listenServiceArrival(@Observes @Filter("javax.enterprise.inject.Instance") ServiceArrival arrival) {
+    public void listenServiceArrival(
+            @Observes @Filter("javax.enterprise.inject.Instance")
+            ServiceArrival arrival) {
         System.out.println("event");
         if (arrival.isTyped(Instance.class)) {
             arrival.type(Instance.class).getService().select(SpellCheckerGui.class);

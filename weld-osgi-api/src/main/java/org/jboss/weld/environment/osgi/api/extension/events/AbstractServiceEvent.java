@@ -1,5 +1,10 @@
 package org.jboss.weld.environment.osgi.api.extension.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -7,12 +12,16 @@ import org.osgi.framework.ServiceReference;
 
 /**
  *
- * @author mathieu
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public abstract class AbstractServiceEvent {
 
     private final ServiceReference ref;
     private final BundleContext context;
+    private List<String> classesNames;
+    private List<Class<?>> classes;
+    private Map<Class, Boolean> assignable
+            = new HashMap<Class, Boolean>();
 
     public AbstractServiceEvent(
             ServiceReference ref, BundleContext context) {
@@ -25,7 +34,13 @@ public abstract class AbstractServiceEvent {
     }
 
     public <T> TypedService<T> type(Class<T> type) {
-        return TypedService.create(type, context, ref);
+        if (isTyped(type)) {
+            return TypedService.create(type, context, ref);
+        } else {
+            throw new RuntimeException("the type " + type
+                    + " isn't supported for the service. Supported types are "
+                    + getServiceClasses());
+        }
     }
 
     public Object getService() {
@@ -37,23 +52,44 @@ public abstract class AbstractServiceEvent {
     }
 
     public boolean isTyped(Class<?> type) {
-        return type.isAssignableFrom(getServiceClass());
+        boolean typed = false;
+        if (!assignable.containsKey(type)) {
+            for (Class clazz : getServiceClasses()) {
+                if (type.isAssignableFrom(clazz)) {
+                    typed = true;
+                    break;
+                }
+            }
+            assignable.put(type, typed);
+        }
+        return assignable.get(type);
     }
 
     public Bundle getRegisteringBundle() {
         return ref.getBundle();
     }
 
-    public String getServiceClassName() {
-        return ((String[]) ref.getProperty(Constants.OBJECTCLASS))[0];
+    public List<String> getServiceClassNames() {
+        if (classesNames == null) {
+            classesNames = Arrays.asList((String[])
+                    ref.getProperty(Constants.OBJECTCLASS));
+        }
+        return classesNames;
     }
 
-    public Class<?> getServiceClass() {
-        try {
-            return getClass().getClassLoader().loadClass(getServiceClassName());
-        } catch (ClassNotFoundException ex) {
-            return null;
+    public List<Class<?>> getServiceClasses() {
+        if (classes == null) {
+            classes = new ArrayList<Class<?>>();
+            for (String className : getServiceClassNames()) {
+                try {
+                    classes.add(getClass()
+                            .getClassLoader().loadClass(className));
+                } catch (ClassNotFoundException ex) {
+                    return null;
+                }
+            }
         }
+        return classes;
     }
 
     public static class TypedService<T> {
@@ -62,7 +98,8 @@ public abstract class AbstractServiceEvent {
         private final ServiceReference ref;
         private final Class<T> type;
 
-       TypedService(BundleContext context, ServiceReference ref, Class<T> type) {
+       TypedService(BundleContext context,
+               ServiceReference ref, Class<T> type) {
             this.context = context;
             this.ref = ref;
             this.type = type;

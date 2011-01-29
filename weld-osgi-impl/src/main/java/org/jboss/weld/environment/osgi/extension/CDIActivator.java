@@ -1,11 +1,23 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import org.osgi.framework.*;
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.util.AnnotationLiteral;
+import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 
 /**
  * It seems we cannot get the BundleContext in the Extension, so
@@ -62,24 +74,56 @@ public class CDIActivator implements BundleActivator,
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 e.select(ServiceEvent.class).fire(event);
                 ServiceReference ref = event.getServiceReference();
+                AbstractServiceEvent serviceEvent = null;
                 switch (event.getType()) {
                     case ServiceEvent.MODIFIED:
-                        ServiceChanged changed = 
+                        serviceEvent =
                             new ServiceChanged(ref, context);
-                        e.select(ServiceChanged.class).fire(changed);
                         break;
                     case ServiceEvent.REGISTERED:
-                        ServiceArrival arrival =
+                        serviceEvent =
                             new ServiceArrival(ref, context);
-                        e.select(ServiceArrival.class).fire(arrival);
                         break;
                     case ServiceEvent.UNREGISTERING:
-                        ServiceDeparture departure =
+                        serviceEvent =
                             new ServiceDeparture(ref, context);
-                        e.select(ServiceDeparture.class).fire(departure);
                         break;
                 }
+                if (serviceEvent != null) {
+                    fireAllEvent(serviceEvent, e);
+                }
             }
+        }
+    }
+
+    private static void fireAllEvent(AbstractServiceEvent event, Event broadcaster) {
+        List<String> classesNames = event.getServiceClassNames();
+        Class eventClass = event.getClass();
+        for (String classeName : classesNames) {
+            broadcaster.select(eventClass,
+                    new FilterAnnotation(classeName)).fire(event);
+        }
+        broadcaster.select(eventClass).fire(event);
+    }
+
+    private static class FilterAnnotation
+            extends AnnotationLiteral<Filter>
+            implements Filter {
+
+        private final String value;
+
+        public FilterAnnotation(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return Filter.class;
         }
     }
 }
