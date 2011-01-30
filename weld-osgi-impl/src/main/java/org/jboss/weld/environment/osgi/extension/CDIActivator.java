@@ -50,7 +50,11 @@ public class CDIActivator implements BundleActivator,
         if (references != null) {
             for (ServiceReference reference : references) {
                 Event<Object> e = (Event<Object>) context.getService(reference);
-                e.select(BundleEvent.class).fire(event);
+                try {
+                    e.select(BundleEvent.class).fire(event);
+                } catch (Throwable t) {
+                    // Ignore
+                }
             }
         }
     }
@@ -72,7 +76,11 @@ public class CDIActivator implements BundleActivator,
         if (references != null) {
             for (ServiceReference reference : references) {
                 Event<Object> e = (Event<Object>) context.getService(reference);
-                e.select(ServiceEvent.class).fire(event);
+                try {
+                    e.select(ServiceEvent.class).fire(event);
+                } catch (Throwable t) {
+                    // Ignore
+                }
                 ServiceReference ref = event.getServiceReference();
                 AbstractServiceEvent serviceEvent = null;
                 switch (event.getType()) {
@@ -100,8 +108,12 @@ public class CDIActivator implements BundleActivator,
         List<Class<?>> classes = event.getServiceClasses();
         Class eventClass = event.getClass();
         for (Class<?> clazz : classes) {
-            broadcaster.select(eventClass,
+            try {
+                broadcaster.select(eventClass,
                     new FilterAnnotation(clazz)).fire(event);
+            } catch (Throwable t) {
+                // Ignore
+            }
         }
         //broadcaster.select(eventClass).fire(event);
     }

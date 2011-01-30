@@ -90,6 +90,7 @@ public class Weld implements CDIOSGiContainer {
         // TODO all of this should be part of the extension ....
         Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
         for (String className : classes) {
+
             Class<?> clazz = null;
             try {
                 clazz = bundle.loadClass(className);
@@ -122,7 +123,7 @@ public class Weld implements CDIOSGiContainer {
                             Class[] contracts = publish.contracts();
                             if (contracts.length != 0) {
                                 for (Class contract : contracts) {
-                                    System.out.println("Registering OSGi service " + contract.getName());
+                                    System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                                     bundle.getBundleContext().registerService(contract.getName(), service, null);
                                 }
                             } else {
@@ -134,11 +135,11 @@ public class Weld implements CDIOSGiContainer {
                                             !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
                                             !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
                                             !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
-                                        System.out.println("Registering OSGi service " + interf.getName());
+                                        System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
                                         bundle.getBundleContext().registerService(interf.getName(), service, null);
                                     }   }
                                 } else {
-                                    System.out.println("Registering OSGi service " + clazz.getName());
+                                    System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
                                     bundle.getBundleContext().registerService(clazz.getName(), service, null);
                                 }
                             }
@@ -179,9 +180,15 @@ public class Weld implements CDIOSGiContainer {
                 if (!hasShutdownBeenCalled) {
                     System.out.println("Stopping Weld container for bundle " + bundle.getSymbolicName());
                     hasShutdownBeenCalled = true;
-                    container.event().select(CDIContainerShutdown.class).fire(new CDIContainerShutdown());
+                    try {
+                        container.event().select(CDIContainerShutdown.class).fire(new CDIContainerShutdown());
+                    } catch (Throwable t) {
+                        // Ignore
+                    }
                     BundleContext.invalidateBundle(bundle);
-                    bootstrap.shutdown();
+                    try {
+                        bootstrap.shutdown();
+                    } catch (Throwable t) {}
                     started = false;
                 } else {
                     LOGGER.log(Level.INFO, "Skipping spurious call to shutdown");
