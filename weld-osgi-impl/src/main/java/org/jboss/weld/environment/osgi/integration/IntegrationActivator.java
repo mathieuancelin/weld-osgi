@@ -89,7 +89,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     }
 
     private void startManagement(Bundle bundle) {
-        System.out.println("Starting management for bundle " + bundle);
+        //System.out.println("Starting management for bundle " + bundle);
         CDIOSGiContainer container = factory.getContainer(bundle);
         container.initialize();
 
