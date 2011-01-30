@@ -11,6 +11,10 @@
         <includes>
           <include>org.apache.felix.gogo:org.apache.felix.gogo.commands</include>
           <include>org.apache.felix.gogo:org.apache.felix.gogo.runtime</include>
+          <include>com.sample.osgi:paint-api</include>
+          <include>com.sample.osgi:paint-core</include>
+          <include>com.sample.osgi:paint-triangle</include>
+          <include>com.sample.osgi:paint-square</include>
           <include>com.sample.osgi:bundle1</include>
           <include>com.sample.osgi:bundle2</include>
           <include>com.sample.osgi:bundle-api</include>

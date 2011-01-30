@@ -20,6 +20,7 @@
     <module>bundle1</module>
     <module>bundle2</module>
     <module>bundle-gui</module>
+    <module>paint</module>
   </modules>
 
 

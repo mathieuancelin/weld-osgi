@@ -1,0 +1,2 @@
+Export-Package com.sample.osgi.paint.triangle
+DynamicImport-Package *
