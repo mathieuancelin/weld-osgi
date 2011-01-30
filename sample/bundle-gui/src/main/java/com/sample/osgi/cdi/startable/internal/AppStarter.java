@@ -34,6 +34,6 @@ public class AppStarter implements Starter {
 
     public void listenServiceArrival(@Observes @Filter(Instance.class) AbstractServiceEvent event) {
         if (event.eventType() == AbstractServiceEvent.EventType.SERVICE_ARRIVAL)
-            System.out.println(event.type(Instance.class).getService());
+            event.type(Instance.class).getService();
     }
 }
