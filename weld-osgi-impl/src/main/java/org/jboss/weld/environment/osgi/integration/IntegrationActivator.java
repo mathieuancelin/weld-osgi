@@ -10,6 +10,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
+import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 
 /**
@@ -30,7 +31,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     public void start(BundleContext context) throws Exception {
 
         // Init the SingletonProvider
-        SingletonProvider.initialize(new IsolatedStaticSingletonProvider());
+        SingletonProvider.initialize(new TCCLSingletonProvider());
 
         managed = new HashMap<Long, Holder>();
 
