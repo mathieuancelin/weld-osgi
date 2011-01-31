@@ -27,7 +27,7 @@ import org.osgi.framework.ServiceReference;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class CDIActivator implements BundleActivator,
+public class ExtensionActivator implements BundleActivator,
                                      BundleListener,
                                      ServiceListener {
 

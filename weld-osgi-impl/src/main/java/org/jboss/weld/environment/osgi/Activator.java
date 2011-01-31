@@ -1,6 +1,6 @@
 package org.jboss.weld.environment.osgi;
 
-import org.jboss.weld.environment.osgi.extension.CDIActivator;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
 import org.jboss.weld.environment.osgi.integration.IntegrationActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,7 +16,7 @@ public class Activator implements BundleActivator {
 
     private BundleActivator integration = new IntegrationActivator();
 
-    private BundleActivator extension = new CDIActivator();
+    private BundleActivator extension = new ExtensionActivator();
 
     @Override
     public void start(BundleContext context) throws Exception {
