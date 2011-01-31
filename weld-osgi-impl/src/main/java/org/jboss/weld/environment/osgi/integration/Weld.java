@@ -72,6 +72,10 @@ public class Weld implements CDIOSGiContainer {
             bootstrap.deployBeans();
             bootstrap.validateBeans();
             bootstrap.endInitialization();
+
+
+            // Container implementation is part of the extension ...
+            // TODO refactor this :)
             container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
             container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
 
