@@ -26,7 +26,7 @@ import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
 /**
- * Weld Deployment for Java SE environment.
+ * Weld Deployment for OSGi environment.
  * 
  * @author Peter Royle
  */
