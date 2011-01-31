@@ -25,6 +25,7 @@ import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.extension.context.BundleContext;
+import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleScanner;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiResourceLoader;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -40,9 +41,11 @@ public class Weld implements CDIOSGiContainer {
     private Bootstrap bootstrap;
     private boolean hasShutdownBeenCalled = false;
     private ResourceLoader resourceLoader;
+    private BundleScanner scanner;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
+        scanner = new BundleScanner();
     }
 
     @Override
@@ -160,7 +163,7 @@ public class Weld implements CDIOSGiContainer {
     }
 
     private WeldOSGiBundleDeployment createDeployment(ResourceLoader resourceLoader, Bootstrap bootstrap) {
-        return new WeldOSGiBundleDeployment(bundle, resourceLoader, bootstrap);
+        return new WeldOSGiBundleDeployment(bundle, resourceLoader, bootstrap, scanner);
     }
 
     private <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {

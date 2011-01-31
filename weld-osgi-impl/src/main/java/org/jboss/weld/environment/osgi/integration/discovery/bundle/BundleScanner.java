@@ -37,20 +37,9 @@ import org.slf4j.LoggerFactory;
 public class BundleScanner {
 
     private static final Logger log = LoggerFactory.getLogger(BundleScanner.class);
-    private final String[] resources;
-    private final ResourceLoader resourceLoader;
-    private final Bootstrap bootstrap;
-    private final Bundle bundle;
 
-    public BundleScanner(Bundle bundle, ResourceLoader resourceLoader, Bootstrap bootstrap, String... resources) {
-        this.resources = resources;
-        this.resourceLoader = resourceLoader;
-        this.bootstrap = bootstrap;
-        this.bundle = bundle;
-    }
-
-    public BeanDeploymentArchive scan() {
-        // TODO : jars
+    public BeanDeploymentArchive scan(Bundle bundle, Bootstrap bootstrap) {
+        // TODO : use BundleScanner API
         List<String> discoveredClasses = new ArrayList<String>();
         List<URL> discoveredBeanXmlUrls = new ArrayList<URL>();
         Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
