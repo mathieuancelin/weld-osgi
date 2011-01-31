@@ -1,8 +1,6 @@
 package org.jboss.weld.environment.osgi.integration;
 
 import org.jboss.weld.bootstrap.api.SingletonProvider;
-import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
-import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainerFactory;
 import org.osgi.framework.*;
 
 import javax.enterprise.event.Event;
@@ -19,9 +17,6 @@ import java.util.*;
  */
 public class IntegrationActivator implements BundleActivator, BundleListener {
 
-
-    private WeldFactory factory;
-
     private Map<Long, Holder> managed;
 
     @Override
@@ -31,11 +26,6 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         SingletonProvider.initialize(new BundleSingletonProvider());
 
         managed = new HashMap<Long, Holder>();
-
-        factory = new WeldFactory();
-        context.registerService(CDIOSGiContainerFactory.class.getName(),
-                factory,
-                null);
 
         for (Bundle bundle : context.getBundles()) {
             if (Bundle.ACTIVE == bundle.getState()) {
@@ -94,10 +84,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         boolean set = BundleSingletonProvider.currentBundle.get() != null;
         BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         //System.out.println("Starting management for bundle " + bundle);
-        CDIOSGiContainer container = factory.getContainer(bundle);
-        container.initialize();
+        Weld weld = new Weld(bundle);
+        weld.initialize();
 
-        if (container.isStarted()) {
+        if (weld.isStarted()) {
             
             Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
 
@@ -105,23 +95,23 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             try {
                 regs.add(
                         bundleContext.registerService(Event.class.getName(),
-                                              container.getContainer().event(),
+                                              weld.getEvent(),
                                               null));
 
                 regs.add(
                         bundleContext.registerService(BeanManager.class.getName(),
-                                container.getContainer().getBeanManager(),
+                                weld.getBeanManager(),
                                 null));
 
                 regs.add(
                         bundleContext.registerService(Instance.class.getName(),
-                                container.getContainer().instance(),
+                                weld.getInstance(),
                                 null));
             } catch (Throwable t) {
                 // Ignore
             }
             Holder holder = new Holder();
-            holder.container = container;
+            holder.container = weld;
             holder.registrations = regs;
             holder.bundle = bundle;
             managed.put(bundle.getBundleId(), holder);
@@ -132,7 +122,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
 
     private static class Holder {
         Bundle bundle;
-        CDIOSGiContainer container;
+        Weld container;
         Collection<ServiceRegistration> registrations;
     }
 }

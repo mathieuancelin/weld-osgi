@@ -1,18 +1,15 @@
 package org.jboss.weld.environment.osgi.integration;
 
-import org.jboss.weld.environment.osgi.extension.CDIContainerImpl;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Qualifier;
 import org.jboss.weld.bootstrap.WeldBootstrap;
@@ -23,28 +20,27 @@ import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerInitiali
 import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
-import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
+import org.jboss.weld.manager.api.WeldManager;
 import org.osgi.framework.Bundle;
 
-public class Weld implements CDIOSGiContainer {
+public class Weld {
 
     private final static Logger LOGGER = Logger.getLogger(Weld.class.getName());
     private final Bundle bundle;
     private BundleDeployment deployment;
-    private CDIContainerImpl container;
     private boolean started = false;
     private Bootstrap bootstrap;
     private boolean hasShutdownBeenCalled = false;
     private BundleBeanDeploymentArchiveFactory factory;
+    private WeldManager manager;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
         factory = new BundleBeanDeploymentArchiveFactory();
     }
 
-    @Override
     public boolean isStarted() {
         return started;
     }
@@ -53,7 +49,6 @@ public class Weld implements CDIOSGiContainer {
      * Boots Weld and creates and returns a CDIContainerImpl instance, through which
      * beans and events can be accessed.
      */
-    @Override
     public boolean initialize() {
         started = false;
         try {
@@ -72,11 +67,9 @@ public class Weld implements CDIOSGiContainer {
             bootstrap.validateBeans();
             bootstrap.endInitialization();
 
-
-            // Container implementation is part of the extension ...
-            // TODO refactor this :)
-            container = getInstanceByType(bootstrap.getManager(deployment.loadBeanDeploymentArchive(CDIContainerImpl.class)), CDIContainerImpl.class);
-            container.event().select(CDIContainerInitialized.class).fire(new CDIContainerInitialized());
+            // Get this Bundle BeanManager
+            manager = bootstrap.getManager(deployment.getBeanDeploymentArchive());
+            manager.fireEvent(new CDIContainerInitialized());
 
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
@@ -114,7 +107,7 @@ public class Weld implements CDIOSGiContainer {
                             }
                         }
                         Annotation[] annotations = new Annotation[qualifiers.size()];
-                        service = container.instance().select(clazz, annotations).get();
+                        service = manager.instance().select(clazz, annotations).get();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -156,25 +149,10 @@ public class Weld implements CDIOSGiContainer {
         }
     }
 
-    @Override
-    public CDIContainerImpl getContainer() {
-        return container;
-    }
-
     private BundleDeployment createDeployment(Bootstrap bootstrap) {
         return new BundleDeployment(bundle, bootstrap, factory);
     }
 
-    private <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {
-        final Bean<?> bean = manager.resolve(manager.getBeans(type));
-        if (bean == null) {
-            throw new UnsatisfiedResolutionException("Unable to resolve a bean for " + type + " with bindings " + Arrays.asList(bindings));
-        }
-        CreationalContext<?> cc = manager.createCreationalContext(bean);
-        return type.cast(manager.getReference(bean, type, cc));
-    }
-
-    @Override
     public void shutdown() {
         // TODO this should also be part of the extension ...
         if (started) {
@@ -183,7 +161,7 @@ public class Weld implements CDIOSGiContainer {
                     System.out.println("Stopping Weld container for bundle " + bundle.getSymbolicName());
                     hasShutdownBeenCalled = true;
                     try {
-                        container.event().select(CDIContainerShutdown.class).fire(new CDIContainerShutdown());
+                        manager.fireEvent(new CDIContainerShutdown());
                     } catch (Throwable t) {
                         // Ignore
                     }
@@ -196,5 +174,17 @@ public class Weld implements CDIOSGiContainer {
                 }
             }
         }
+    }
+
+    public Event getEvent() {
+        return manager.instance().select(Event.class).get();
+    }
+
+    public BeanManager getBeanManager() {
+        return manager;
+    }
+
+    public Instance<Object> getInstance() {
+        return manager.instance();
     }
 }

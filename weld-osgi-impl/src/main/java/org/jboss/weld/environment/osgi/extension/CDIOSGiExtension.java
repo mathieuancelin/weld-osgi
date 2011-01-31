@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 
-import org.jboss.weld.environment.osgi.extension.beans.InstanceManager;
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
@@ -47,10 +46,6 @@ public class CDIOSGiExtension implements Extension {
                             = new HashMap<Type, Set<InjectionPoint>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-        event.addAnnotatedType(manager.createAnnotatedType(InstanceManager.class));
-
-        // TODO Why do we need this ? I plan to remove that CDIContainer stuff ...
-        event.addAnnotatedType(manager.createAnnotatedType(CDIContainerImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
