@@ -5,11 +5,12 @@ import java.util.List;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.util.AnnotationLiteral;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.jboss.weld.environment.osgi.extension.context.BundleSingletonProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -45,16 +46,21 @@ public class CDIActivator implements BundleActivator,
 
     @Override
     public void bundleChanged(BundleEvent event) {
+
         ServiceReference[] references = findReferences(context, Event.class);
 
         if (references != null) {
             for (ServiceReference reference : references) {
+                boolean set = BundleSingletonProvider.currentBundle.get() != null;
+                BundleSingletonProvider.currentBundle.set(reference.getBundle().getBundleId());
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 try {
                     e.select(BundleEvent.class).fire(event);
                 } catch (Throwable t) {
                     // Ignore
                 }
+                if (!set)
+                    BundleSingletonProvider.currentBundle.remove();
             }
         }
     }
@@ -75,6 +81,8 @@ public class CDIActivator implements BundleActivator,
 
         if (references != null) {
             for (ServiceReference reference : references) {
+                boolean set = BundleSingletonProvider.currentBundle.get() != null;
+                BundleSingletonProvider.currentBundle.set(reference.getBundle().getBundleId());
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 try {
                     e.select(ServiceEvent.class).fire(event);
@@ -100,6 +108,8 @@ public class CDIActivator implements BundleActivator,
                 if (serviceEvent != null) {
                     fireAllEvent(serviceEvent, e);
                 }
+                if (!set)
+                    BundleSingletonProvider.currentBundle.remove();
             }
         }
     }
@@ -119,8 +129,8 @@ public class CDIActivator implements BundleActivator,
     }
 
     private static class FilterAnnotation
-            extends AnnotationLiteral<Filter>
-            implements Filter {
+            extends AnnotationLiteral<Specification>
+            implements Specification {
 
         private final Class value;
 
@@ -135,7 +145,7 @@ public class CDIActivator implements BundleActivator,
 
         @Override
         public Class<? extends Annotation> annotationType() {
-            return Filter.class;
+            return Specification.class;
         }
     }
 }

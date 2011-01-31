@@ -1,7 +1,6 @@
 package org.jboss.weld.environment.osgi.integration;
 
 import org.jboss.weld.bootstrap.api.SingletonProvider;
-import org.jboss.weld.bootstrap.api.helpers.IsolatedStaticSingletonProvider;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainerFactory;
 import org.osgi.framework.*;
@@ -10,8 +9,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
-import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
-import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.extension.context.BundleSingletonProvider;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +29,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     public void start(BundleContext context) throws Exception {
 
         // Init the SingletonProvider
-        SingletonProvider.initialize(new TCCLSingletonProvider());
+        SingletonProvider.initialize(new BundleSingletonProvider());
 
         managed = new HashMap<Long, Holder>();
 
@@ -74,6 +72,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     }
 
     private void stopManagement(Bundle bundle) {
+        boolean set = BundleSingletonProvider.currentBundle.get() != null;
+        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         Holder holder = managed.get(bundle.getBundleId());
         if (holder != null) {
             Collection<ServiceRegistration> regs = holder.registrations;
@@ -87,9 +87,13 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             holder.container.shutdown();
             managed.remove(bundle.getBundleId());
         }
+        if (!set)
+            BundleSingletonProvider.currentBundle.remove();
     }
 
     private void startManagement(Bundle bundle) {
+        boolean set = BundleSingletonProvider.currentBundle.get() != null;
+        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         //System.out.println("Starting management for bundle " + bundle);
         CDIOSGiContainer container = factory.getContainer(bundle);
         container.initialize();
@@ -123,6 +127,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             holder.bundle = bundle;
             managed.put(bundle.getBundleId(), holder);
         }
+        if (!set)
+            BundleSingletonProvider.currentBundle.remove();
     }
 
     private static class Holder {
