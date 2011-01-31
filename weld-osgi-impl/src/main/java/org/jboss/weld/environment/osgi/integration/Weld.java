@@ -63,7 +63,7 @@ public class Weld implements CDIOSGiContainer {
                 return started;
             }
             System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
-            bootstrap = (Bootstrap) new WeldBootstrap();
+            bootstrap = new WeldBootstrap();
             deployment = createDeployment(bootstrap);
             // Set up the container
             bootstrap.startContainer(Environments.SE, deployment);
