@@ -28,17 +28,17 @@ import org.osgi.framework.Bundle;
 /**
  * A simple resource loader.
  * 
- * Uses {@link WeldOSGiResourceLoader}'s classloader if the Thread Context
+ * Uses {@link BundleResourceLoader}'s classloader if the Thread Context
  * Classloader isn't available
  * 
  * @author Pete Muir
  *
  */
-public class WeldOSGiResourceLoader implements ResourceLoader {
+public class BundleResourceLoader implements ResourceLoader {
 
     private final Bundle bundle;
 
-    public WeldOSGiResourceLoader(Bundle bundle) {
+    public BundleResourceLoader(Bundle bundle) {
         this.bundle = bundle;
     }
 

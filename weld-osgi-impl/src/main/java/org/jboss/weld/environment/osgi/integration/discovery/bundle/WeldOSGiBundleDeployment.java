@@ -37,7 +37,7 @@ public class WeldOSGiBundleDeployment extends AbstractWeldOSGiDeployment {
     public WeldOSGiBundleDeployment(Bundle bundle, Bootstrap bootstrap, BundleBeanDeploymentArchiveFactory factory) {
         super(bootstrap);
         this.beanDeploymentArchive = factory.scan(bundle, bootstrap);
-        ResourceLoader loader = new WeldOSGiResourceLoader(bundle);
+        ResourceLoader loader = new BundleResourceLoader(bundle);
         this.beanDeploymentArchive.getServices().add(ResourceLoader.class, loader);
     }
 
