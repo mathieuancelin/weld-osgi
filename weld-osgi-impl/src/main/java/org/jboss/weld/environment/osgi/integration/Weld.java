@@ -25,10 +25,8 @@ import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.extension.context.BundleContext;
-import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleScanner;
-import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiResourceLoader;
+import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
-import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
 public class Weld implements CDIOSGiContainer {
@@ -40,12 +38,11 @@ public class Weld implements CDIOSGiContainer {
     private boolean started = false;
     private Bootstrap bootstrap;
     private boolean hasShutdownBeenCalled = false;
-    private ResourceLoader resourceLoader;
-    private BundleScanner scanner;
+    private BundleBeanDeploymentArchiveFactory factory;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
-        scanner = new BundleScanner();
+        factory = new BundleBeanDeploymentArchiveFactory();
     }
 
     @Override
@@ -66,9 +63,8 @@ public class Weld implements CDIOSGiContainer {
                 return started;
             }
             System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
-            resourceLoader = new WeldOSGiResourceLoader(bundle);
             bootstrap = (Bootstrap) new WeldBootstrap();
-            deployment = createDeployment(resourceLoader, bootstrap);
+            deployment = createDeployment(bootstrap);
             // Set up the container
             bootstrap.startContainer(Environments.SE, deployment);
             // Start the container
@@ -162,8 +158,8 @@ public class Weld implements CDIOSGiContainer {
         return container;
     }
 
-    private WeldOSGiBundleDeployment createDeployment(ResourceLoader resourceLoader, Bootstrap bootstrap) {
-        return new WeldOSGiBundleDeployment(bundle, resourceLoader, bootstrap, scanner);
+    private WeldOSGiBundleDeployment createDeployment(Bootstrap bootstrap) {
+        return new WeldOSGiBundleDeployment(bundle, bootstrap, factory);
     }
 
     private <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {

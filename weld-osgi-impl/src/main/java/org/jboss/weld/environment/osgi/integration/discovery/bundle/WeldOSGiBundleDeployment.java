@@ -34,10 +34,11 @@ public class WeldOSGiBundleDeployment extends AbstractWeldOSGiDeployment {
 
     private final BeanDeploymentArchive beanDeploymentArchive;
 
-    public WeldOSGiBundleDeployment(Bundle bundle, ResourceLoader resourceLoader, Bootstrap bootstrap, BundleScanner scanner) {
+    public WeldOSGiBundleDeployment(Bundle bundle, Bootstrap bootstrap, BundleBeanDeploymentArchiveFactory factory) {
         super(bootstrap);
-        this.beanDeploymentArchive = scanner.scan(bundle, bootstrap);
-        this.beanDeploymentArchive.getServices().add(ResourceLoader.class, resourceLoader);
+        this.beanDeploymentArchive = factory.scan(bundle, bootstrap);
+        ResourceLoader loader = new WeldOSGiResourceLoader(bundle);
+        this.beanDeploymentArchive.getServices().add(ResourceLoader.class, loader);
     }
 
     @Override

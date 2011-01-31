@@ -24,7 +24,6 @@ import java.util.List;
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.environment.osgi.integration.discovery.ImmutableBeanDeploymentArchive;
-import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +33,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class BundleScanner {
+public class BundleBeanDeploymentArchiveFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(BundleScanner.class);
+    private static final Logger log = LoggerFactory.getLogger(BundleBeanDeploymentArchiveFactory.class);
 
     public BeanDeploymentArchive scan(Bundle bundle, Bootstrap bootstrap) {
         // TODO : use BundleScanner API
