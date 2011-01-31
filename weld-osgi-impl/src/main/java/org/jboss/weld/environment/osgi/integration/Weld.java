@@ -24,7 +24,6 @@ import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerShutdown
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
-import org.jboss.weld.environment.osgi.extension.context.BundleContext;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.osgi.framework.Bundle;
@@ -188,7 +187,6 @@ public class Weld implements CDIOSGiContainer {
                     } catch (Throwable t) {
                         // Ignore
                     }
-                    BundleContext.invalidateBundle(bundle);
                     try {
                         bootstrap.shutdown();
                     } catch (Throwable t) {}
