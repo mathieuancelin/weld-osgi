@@ -16,8 +16,8 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
-import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerInitialized;
-import org.jboss.weld.environment.osgi.api.extension.events.CDIContainerShutdown;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
@@ -69,7 +69,7 @@ public class Weld {
 
             // Get this Bundle BeanManager
             manager = bootstrap.getManager(deployment.getBeanDeploymentArchive());
-            manager.fireEvent(new CDIContainerInitialized());
+            manager.fireEvent(new BundleContainerInitialized(bundle.getBundleContext()));
 
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
@@ -161,7 +161,7 @@ public class Weld {
                     System.out.println("Stopping Weld container for bundle " + bundle.getSymbolicName());
                     hasShutdownBeenCalled = true;
                     try {
-                        manager.fireEvent(new CDIContainerShutdown());
+                        manager.fireEvent(new BundleContainerShutdown(bundle.getBundleContext()));
                     } catch (Throwable t) {
                         // Ignore
                     }

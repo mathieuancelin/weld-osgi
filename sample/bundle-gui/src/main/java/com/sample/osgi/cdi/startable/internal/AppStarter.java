@@ -12,6 +12,8 @@ import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 
 @Startable
 @Publish
@@ -35,5 +37,13 @@ public class AppStarter implements Starter {
     public void bindService(@Observes @Specification(Instance.class) AbstractServiceEvent event) {
         if (event.eventType() == AbstractServiceEvent.EventType.SERVICE_ARRIVAL)
             event.type(Instance.class).getService();
+    }
+
+    public void onStartup(@Observes BundleContainerInitialized event) {
+        System.out.println("CDI COntainer for bundle " + event.getBundleContext().getBundle() + " started");
+    }
+
+    public void onShutdown(@Observes BundleContainerShutdown event) {
+        System.out.println("CDI COntainer for bundle " + event.getBundleContext().getBundle() + " stopped");
     }
 }
