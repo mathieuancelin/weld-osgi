@@ -4,6 +4,7 @@ import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Observes;
@@ -42,6 +45,9 @@ public class PaintFrame extends JFrame implements MouseListener {
     private ActionListener actionListener = new ShapeActionListener();
 
     private Map<String, ShapeProvider> providers = new HashMap<String, ShapeProvider>();
+
+    private Map<String, Collection<ShapeComponent>> goneComponents
+            = new HashMap<String, Collection<ShapeComponent>>();
 
     public PaintFrame() {
         super("PaintFrame");
@@ -86,12 +92,31 @@ public class PaintFrame extends JFrame implements MouseListener {
             button.addActionListener(actionListener);
             toolbar.add(button);
             toolbar.validate();
+            if (goneComponents.containsKey(provider.getId())) {
+                for (ShapeComponent comp : goneComponents.get(provider.getId())) {
+                    panel.add(comp);
+                }
+                panel.validate();
+                goneComponents.get(provider.getId()).clear();
+            }
             repaint();
         }
     }
 
     private void removeShape(String name) {
         providers.remove(name);
+        if (!goneComponents.containsKey(name)) {
+            goneComponents.put(name, new ArrayList<ShapeComponent>());
+        }
+        for (Component comp : panel.getComponents()) {
+            ShapeComponent shapeComp = (ShapeComponent) comp;
+            if (shapeComp.getShapeId().equals(name)) {
+                goneComponents.get(name).add(shapeComp);
+                panel.remove(comp);
+            }
+            panel.validate();
+            panel.repaint();
+        }
         if ((selected != null) && selected.equals(name)) {
             selected = null;
         }

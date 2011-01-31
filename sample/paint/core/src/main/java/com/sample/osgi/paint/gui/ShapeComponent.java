@@ -15,6 +15,10 @@ public class ShapeComponent extends JComponent {
         this.shape = shape;
     }
 
+    public String getShapeId() {
+        return shape.getClass().getName();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
