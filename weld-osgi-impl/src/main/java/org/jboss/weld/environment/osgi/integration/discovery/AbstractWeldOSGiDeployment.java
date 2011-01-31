@@ -25,6 +25,8 @@ public abstract class AbstractWeldOSGiDeployment implements Deployment {
 
     public AbstractWeldOSGiDeployment(Bootstrap bootstrap) {
         this.serviceRegistry = new SimpleServiceRegistry();
+
+        // OK, Here we can install our own Extensions instances
         this.extensions = bootstrap.loadExtensions(getClass().getClassLoader());
     }
 
