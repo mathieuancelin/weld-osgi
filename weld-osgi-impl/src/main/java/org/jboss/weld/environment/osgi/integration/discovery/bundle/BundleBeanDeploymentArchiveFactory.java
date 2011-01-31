@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.environment.osgi.integration.discovery.ImmutableBeanDeploymentArchive;
+import org.jboss.weld.environment.osgi.integration.discovery.BundleBeanDeploymentArchive;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,10 @@ public class BundleBeanDeploymentArchiveFactory {
                 }
             }
         }
-        return new ImmutableBeanDeploymentArchive("bundle-classpath",
-                discoveredClasses, bootstrap.parse(discoveredBeanXmlUrls));
+        BundleBeanDeploymentArchive archive = new BundleBeanDeploymentArchive("bundle-bean-deployment-archive-" + bundle.getBundleId());
+        archive.setBeansXml(bootstrap.parse(discoveredBeanXmlUrls));
+        archive.setBeanClasses(discoveredClasses);
+
+        return archive;
     }
 }
