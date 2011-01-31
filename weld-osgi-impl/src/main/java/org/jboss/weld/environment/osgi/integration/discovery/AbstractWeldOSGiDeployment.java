@@ -20,7 +20,6 @@ import org.jboss.weld.bootstrap.spi.Metadata;
  */
 public abstract class AbstractWeldOSGiDeployment implements Deployment {
 
-    public static final String[] RESOURCES = {"META-INF/beans.xml"};
     private final ServiceRegistry serviceRegistry;
     private final Iterable<Metadata<Extension>> extensions;
 
