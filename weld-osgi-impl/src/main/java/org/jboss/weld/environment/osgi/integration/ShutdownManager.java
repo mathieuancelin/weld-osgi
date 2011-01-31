@@ -21,6 +21,9 @@ import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Hmmm, do we need this class, as bootstrap.sutdown is already called from our container.stop() ???
+ */
 @ApplicationScoped
 public class ShutdownManager {
 
