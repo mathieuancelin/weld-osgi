@@ -9,7 +9,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
-import org.jboss.weld.environment.osgi.extension.context.BundleSingletonProvider;
 
 /**
  * Created by IntelliJ IDEA.

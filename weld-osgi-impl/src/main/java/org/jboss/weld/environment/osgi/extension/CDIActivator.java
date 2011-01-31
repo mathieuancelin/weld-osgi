@@ -10,7 +10,7 @@ import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
-import org.jboss.weld.environment.osgi.extension.context.BundleSingletonProvider;
+import org.jboss.weld.environment.osgi.integration.BundleSingletonProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -120,7 +120,7 @@ public class CDIActivator implements BundleActivator,
         for (Class<?> clazz : classes) {
             try {
                 broadcaster.select(eventClass,
-                    new FilterAnnotation(clazz)).fire(event);
+                    new SpecificationAnnotation(clazz)).fire(event);
             } catch (Throwable t) {
                 // Ignore
             }
@@ -128,13 +128,13 @@ public class CDIActivator implements BundleActivator,
         //broadcaster.select(eventClass).fire(event);
     }
 
-    private static class FilterAnnotation
+    private static class SpecificationAnnotation
             extends AnnotationLiteral<Specification>
             implements Specification {
 
         private final Class value;
 
-        public FilterAnnotation(Class value) {
+        public SpecificationAnnotation(Class value) {
             this.value = value;
         }
 

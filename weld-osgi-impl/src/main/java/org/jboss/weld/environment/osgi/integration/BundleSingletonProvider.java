@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.extension.context;
+package org.jboss.weld.environment.osgi.integration;
 
 import java.util.HashMap;
 import java.util.Map;
