@@ -30,11 +30,11 @@ import org.osgi.framework.Bundle;
  * 
  * @author Peter Royle
  */
-public class WeldOSGiBundleDeployment extends AbstractWeldOSGiDeployment {
+public class BundleDeployment extends AbstractWeldOSGiDeployment {
 
     private final BeanDeploymentArchive beanDeploymentArchive;
 
-    public WeldOSGiBundleDeployment(Bundle bundle, Bootstrap bootstrap, BundleBeanDeploymentArchiveFactory factory) {
+    public BundleDeployment(Bundle bundle, Bootstrap bootstrap, BundleBeanDeploymentArchiveFactory factory) {
         super(bootstrap);
         this.beanDeploymentArchive = factory.scan(bundle, bootstrap);
         ResourceLoader loader = new BundleResourceLoader(bundle);

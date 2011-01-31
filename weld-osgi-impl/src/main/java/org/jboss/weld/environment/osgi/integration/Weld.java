@@ -26,14 +26,14 @@ import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.integration.CDIOSGiContainer;
 import org.jboss.weld.environment.osgi.extension.context.BundleContext;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
-import org.jboss.weld.environment.osgi.integration.discovery.bundle.WeldOSGiBundleDeployment;
+import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.osgi.framework.Bundle;
 
 public class Weld implements CDIOSGiContainer {
 
     private final static Logger LOGGER = Logger.getLogger(Weld.class.getName());
     private final Bundle bundle;
-    private WeldOSGiBundleDeployment deployment;
+    private BundleDeployment deployment;
     private CDIContainerImpl container;
     private boolean started = false;
     private Bootstrap bootstrap;
@@ -158,8 +158,8 @@ public class Weld implements CDIOSGiContainer {
         return container;
     }
 
-    private WeldOSGiBundleDeployment createDeployment(Bootstrap bootstrap) {
-        return new WeldOSGiBundleDeployment(bundle, bootstrap, factory);
+    private BundleDeployment createDeployment(Bootstrap bootstrap) {
+        return new BundleDeployment(bundle, bootstrap, factory);
     }
 
     private <T> T getInstanceByType(BeanManager manager, Class<T> type, Annotation... bindings) {
