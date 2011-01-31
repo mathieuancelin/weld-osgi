@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
@@ -32,7 +32,7 @@ public class AppStarter implements Starter {
         gui.stop();
     }
 
-    public void listenServiceArrival(@Observes @Filter(Instance.class) AbstractServiceEvent event) {
+    public void bindService(@Observes @Specification(Instance.class) AbstractServiceEvent event) {
         if (event.eventType() == AbstractServiceEvent.EventType.SERVICE_ARRIVAL)
             event.type(Instance.class).getService();
     }

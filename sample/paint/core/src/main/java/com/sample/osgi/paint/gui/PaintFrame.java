@@ -20,7 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
@@ -68,11 +68,11 @@ public class PaintFrame extends JFrame implements MouseListener {
         selected = name;
     }
 
-    public void listenServicesArrival(@Observes @Filter(ShapeProvider.class) ServiceArrival event) {
+    public void bindService(@Observes @Specification(ShapeProvider.class) ServiceArrival event) {
         addShape(event.type(ShapeProvider.class).getService());
     }
 
-    public void listenServicesDeparture(@Observes @Filter(ShapeProvider.class) ServiceDeparture event) {
+    public void unbindService(@Observes @Specification(ShapeProvider.class) ServiceDeparture event) {
         removeShape(event.type(ShapeProvider.class).getService().getId());
     }
 
