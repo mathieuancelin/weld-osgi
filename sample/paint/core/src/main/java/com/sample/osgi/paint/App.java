@@ -4,12 +4,10 @@ import com.sample.osgi.paint.gui.PaintFrame;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.jboss.weld.environment.osgi.api.extension.Publish;
-import org.jboss.weld.environment.osgi.api.extension.Startable;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 
-@Startable
-@Publish
 @ApplicationScoped
 public class App {
 
@@ -23,5 +21,10 @@ public class App {
     @PreDestroy
     public void stop() {
         frame.stop();
+    }
+
+    public void onStartup(@Observes BundleContainerInitialized event) {
+        System.out.println("CDI Container for bundle "
+                + event.getBundleContext().getBundle() + " started");
     }
 }
