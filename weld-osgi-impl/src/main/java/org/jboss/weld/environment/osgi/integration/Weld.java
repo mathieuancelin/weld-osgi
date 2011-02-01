@@ -163,7 +163,7 @@ public class Weld {
                     try {
                         manager.fireEvent(new BundleContainerShutdown(bundle.getBundleContext()));
                     } catch (Throwable t) {
-                        // Ignore
+                        t.printStackTrace();
                     }
                     try {
                         bootstrap.shutdown();

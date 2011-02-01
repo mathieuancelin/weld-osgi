@@ -57,10 +57,11 @@ public class ExtensionActivator implements BundleActivator,
                 try {
                     e.select(BundleEvent.class).fire(event);
                 } catch (Throwable t) {
-                    // Ignore
+                    t.printStackTrace();
                 }
-                if (!set)
+                if (!set) {
                     BundleSingletonProvider.currentBundle.remove();
+                }
             }
         }
     }
@@ -87,7 +88,7 @@ public class ExtensionActivator implements BundleActivator,
                 try {
                     e.select(ServiceEvent.class).fire(event);
                 } catch (Throwable t) {
-                    // Ignore
+                    t.printStackTrace();
                 }
                 ServiceReference ref = event.getServiceReference();
                 AbstractServiceEvent serviceEvent = null;
@@ -108,8 +109,9 @@ public class ExtensionActivator implements BundleActivator,
                 if (serviceEvent != null) {
                     fireAllEvent(serviceEvent, e);
                 }
-                if (!set)
+                if (!set) {
                     BundleSingletonProvider.currentBundle.remove();
+                }
             }
         }
     }
@@ -122,10 +124,9 @@ public class ExtensionActivator implements BundleActivator,
                 broadcaster.select(eventClass,
                     new SpecificationAnnotation(clazz)).fire(event);
             } catch (Throwable t) {
-                // Ignore
+                t.printStackTrace();
             }
         }
-        //broadcaster.select(eventClass).fire(event);
     }
 
     private static class SpecificationAnnotation

@@ -76,8 +76,9 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             holder.container.shutdown();
             managed.remove(bundle.getBundleId());
         }
-        if (!set)
+        if (!set) {
             BundleSingletonProvider.currentBundle.remove();
+        }
     }
 
     private void startManagement(Bundle bundle) {
@@ -116,8 +117,9 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             holder.bundle = bundle;
             managed.put(bundle.getBundleId(), holder);
         }
-        if (!set)
+        if (!set) {
             BundleSingletonProvider.currentBundle.remove();
+        }
     }
 
     private static class Holder {
