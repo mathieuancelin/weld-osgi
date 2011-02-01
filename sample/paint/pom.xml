@@ -6,7 +6,7 @@
     <artifactId>paint</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Paint</name>
+    <name>Weld OSGi :: Samples :: Paint</name>
     <modules>
         <module>api</module>
         <module>core</module>

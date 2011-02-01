@@ -9,7 +9,7 @@
     </parent>
     <artifactId>paint-triangle</artifactId>
     <packaging>bundle</packaging>
-    <name>Paint :: Triangle</name>
+    <name>Weld OSGi :: Samples :: Paint :: Triangle</name>
     <build>
         <plugins>
             <plugin>

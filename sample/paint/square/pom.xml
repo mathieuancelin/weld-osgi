@@ -9,7 +9,7 @@
     </parent>
     <artifactId>paint-square</artifactId>
     <packaging>bundle</packaging>
-    <name>Paint :: Square</name>
+    <name>Weld OSGi :: Samples :: Paint :: Square</name>
     <build>
         <plugins>
             <plugin>

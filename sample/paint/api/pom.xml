@@ -9,7 +9,7 @@
     </parent>
     <artifactId>paint-api</artifactId>
     <packaging>bundle</packaging>
-    <name>Paint :: api</name>
+    <name>Weld OSGi :: Samples :: Paint :: api</name>
     <build>
         <plugins>
             <plugin>
