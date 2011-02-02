@@ -3,11 +3,7 @@ package org.jboss.weld.environment.osgi.extension;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -25,12 +21,15 @@ import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 
+import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
 import org.jboss.weld.environment.osgi.integration.ShutdownManager;
+import org.jboss.weld.util.collections.ArraySet;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 /**
@@ -55,7 +54,9 @@ public class CDIOSGiExtension implements Extension {
     }
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
 
-    public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
+    public void registerWeldOSGiContexts(@Observes
+                                         AfterBeanDiscovery event,
+                                         BeanManager manager) {
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();
                                                 iterator.hasNext();) {
             Type type =  iterator.next();
@@ -69,6 +70,76 @@ public class CDIOSGiExtension implements Extension {
             }
             addBean(event, type, this.servicesToBeInjected.get(type));
         }
+    }
+
+    public void registerService(@Observes ProcessBean event, BeanManager manager) {
+        Bean<?> bean = event.getBean();
+        if (isAnnotatedWith(bean, Publish.class)) {
+
+            Class<?> clazz = bean.getBeanClass();
+            BundleContext bundleContext = FrameworkUtil.getBundle(clazz).getBundleContext();
+            Set<Class<?>> types = findServiceTypes(clazz);
+
+            registerService(bean, bundleContext, types, manager);
+        }
+    }
+
+    private void registerService(Bean bean,
+                                 BundleContext bundleContext,
+                                 Set<Class<?>> types,
+                                 BeanManager manager) {
+
+        String[] interfaces = convertToStringArray(types);
+        CreationalContext<?> cc = manager.createCreationalContext(bean);
+        Object instance = bean.create(cc);
+        bundleContext.registerService(interfaces, instance, null);
+    }
+
+    private String[] convertToStringArray(Set<Class<?>> types) {
+        List<String> strings = new ArrayList<String>(types.size());
+        for (Class<?> type : types) {
+            strings.add(type.getName());
+        }
+        return strings.toArray(new String[strings.size()]);
+    }
+
+    private Set<Class<?>> findServiceTypes(Class<?> clazz) {
+        Set<Class<?>> types = new ArraySet<Class<?>>();
+
+        Publish publish = clazz.getAnnotation(Publish.class);
+        if (publish.contracts().length == 0) {
+            // No types specified, we have to discover them
+            discoverInterfaces(clazz, types);
+        } else {
+            // Types specified by annotation
+            for (Class<?> specification : publish.contracts()) {
+                types.add(specification);
+            }
+        }
+
+        return types;
+    }
+
+    private void discoverInterfaces(Class<?> clazz, Set<Class<?>> types) {
+        Class<?> traversed = clazz;
+        while (!Object.class.equals(traversed)) {
+            // Traverse each super type
+            for (Class<?> type : traversed.getInterfaces()) {
+                types.add(type);
+            }
+
+            traversed = traversed.getSuperclass();
+        }
+    }
+
+    private boolean isAnnotatedWith(Bean<?> bean, Class<? extends Annotation> annotation) {
+        Set<Annotation> qualifiers = bean.getQualifiers();
+        for (Annotation qualifier : qualifiers ) {
+            if (annotation.equals(qualifier)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
