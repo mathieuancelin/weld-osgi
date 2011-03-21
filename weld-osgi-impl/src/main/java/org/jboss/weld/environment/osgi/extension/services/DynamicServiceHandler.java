@@ -2,6 +2,7 @@ package org.jboss.weld.environment.osgi.extension.services;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import org.jboss.weld.environment.osgi.integration.BundleSingletonProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -21,14 +22,14 @@ public class DynamicServiceHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println("dynamic call !!!");
+        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         ServiceReference reference = bundle.getBundleContext().getServiceReference(name);
         Object instanceToUse = bundle.getBundleContext().getService(reference);
         try {
             return method.invoke(instanceToUse, args);
         } finally {
             bundle.getBundleContext().ungetService(reference);
+            BundleSingletonProvider.currentBundle.remove();
         }
     }
-
 }
