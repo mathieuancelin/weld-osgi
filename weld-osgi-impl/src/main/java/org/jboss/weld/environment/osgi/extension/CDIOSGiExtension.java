@@ -53,8 +53,8 @@ public class CDIOSGiExtension implements Extension {
         event.addQualifier(OSGiService.class);
 
     }
+    
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
-
     public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();
                                                 iterator.hasNext();) {
