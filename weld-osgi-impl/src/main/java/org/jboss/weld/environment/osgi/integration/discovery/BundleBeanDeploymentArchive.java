@@ -16,16 +16,18 @@
  */
 package org.jboss.weld.environment.osgi.integration.discovery;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.jboss.weld.bootstrap.api.Service;
 
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
-import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeansXml;
-import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 
 /**
@@ -41,7 +43,7 @@ public class BundleBeanDeploymentArchive implements BeanDeploymentArchive {
 
     public BundleBeanDeploymentArchive(String id) {
         this.id = id;
-        this.serviceRegistry = new SimpleServiceRegistry();
+        this.serviceRegistry = new OSGiServiceRegistry();
     }
 
     @Override
@@ -80,5 +82,99 @@ public class BundleBeanDeploymentArchive implements BeanDeploymentArchive {
 
     public void setBeansXml(BeansXml beansXml) {
         this.beansXml = beansXml;
+    }
+
+    public static class OSGiServiceRegistry implements ServiceRegistry {
+
+        private final Map<Class<? extends Service>, Service> services;
+
+        public OSGiServiceRegistry() {
+            this.services = new HashMap<Class<? extends Service>, Service>();
+        }
+
+        @Override
+        public <S extends Service> void add(java.lang.Class<S> type, S service) {
+            services.put(type, service);
+        }
+
+        @Override
+        public void addAll(Collection<Entry<Class<? extends Service>, Service>> services) {
+            for (Entry<Class<? extends Service>, Service> entry : services) {
+                this.services.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        @Override
+        public Set<Entry<Class<? extends Service>, Service>> entrySet() {
+            return services.entrySet();
+        }
+
+        protected Map<Class<? extends Service>, Service> get() {
+            return services;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <S extends Service> S get(Class<S> type) {
+            return (S) services.get(type);
+        }
+
+        @Override
+        public <S extends Service> boolean contains(Class<S> type) {
+            return services.containsKey(type);
+        }
+
+        @Override
+        public void cleanup() {
+            for (Service service : services.values()) {
+                service.cleanup();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return services.toString();
+        }
+
+        @Override
+        public int hashCode() {
+            return services.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Map<?, ?>) {
+                return services.equals(obj);
+            } else {
+                return false;
+            }
+        }
+
+        public Iterator<Service> iterator() {
+            return new ValueIterator<Class<? extends Service>, Service>() {
+
+                @Override
+                protected Iterator<Entry<Class<? extends Service>, Service>> delegate() {
+                    return services.entrySet().iterator();
+                }
+            };
+        }
+
+        private static abstract class ValueIterator<K, V> implements Iterator<V> {
+
+            protected abstract Iterator<Entry<K, V>> delegate();
+
+            public boolean hasNext() {
+                return delegate().hasNext();
+            }
+
+            public V next() {
+                return delegate().next().getValue();
+            }
+
+            public void remove() {
+                delegate().remove();
+            }
+        }
     }
 }
