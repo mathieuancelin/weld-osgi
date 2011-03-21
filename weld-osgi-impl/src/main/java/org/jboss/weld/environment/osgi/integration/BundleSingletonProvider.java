@@ -19,6 +19,8 @@ public class BundleSingletonProvider extends SingletonProvider {
 
     private static class BundleSingleton<T> implements Singleton<T> {
 
+        private static Map<String, Bundle> classes = new HashMap<String, Bundle>();
+
         private final Map<Long, T> store = new HashMap<Long, T>();
 
         private final Class<? extends T> clazz;
@@ -36,29 +38,39 @@ public class BundleSingletonProvider extends SingletonProvider {
             if (!store.containsKey(getId())) {
                 T maybeObject = null;
                 Throwable t = new Throwable();
-                System.out.println("\u001b[1;31mAnalyzing stacktrace : \u001b[m");
                 for (StackTraceElement element : t.getStackTrace()) {
-                    System.out.println("\u001b[0;31m" + element.getClassName() + "." + element.getMethodName() + "\u001b[m");
-                    if (!element.getClassName().startsWith("org.jboss.weld")) {
-                        Class<?> maybe = null;
-                        try {
-                            maybe = this.getClass().getClassLoader().loadClass(element.getClassName());
-                        } catch (ClassNotFoundException ex) {
-                            //System.out.println("CNFE " + element.getClassName());
-                            // Ignore
-                        }
-                        if (maybe != null) {
-                            Bundle maybeBundle = FrameworkUtil.getBundle(maybe);
-                            if (maybeBundle != null) {
-                                if (!maybeBundle.getSymbolicName().equals("org.jboss.weld.osgi.weld-osgi")) {
-                                    currentBundle.set(maybeBundle.getBundleId());
-                                    maybeObject = get();
-                                    currentBundle.remove();
-                                    if (maybeObject != null) {
-                                        return maybeObject;
-                                    }
-                                    break;
+                    String className = element.getClassName();
+                    if (!className.startsWith("org.jboss.weld") 
+                            && !className.startsWith("java")
+                            && !className.startsWith("org.apache.felix.framework")) {
+                        
+                        if(!classes.containsKey(className)) {
+                            System.out.println("\u001b[1;31mAnalyzing stacktrace : \u001b[m");
+                            System.out.println("\u001b[0;31m" + className + "." + element.getMethodName() + "\u001b[m");
+                            Class<?> maybe = null;
+                            try {
+                                maybe = this.getClass().getClassLoader().loadClass(className);
+                            } catch (ClassNotFoundException ex) {
+                                //System.out.println("CNFE " + element.getClassName());
+                                // Ignore
+                            }
+                            if (maybe != null) {
+                                Bundle bundle = FrameworkUtil.getBundle(maybe);
+                                if (bundle != null) {
+                                    classes.put(className, bundle);
                                 }
+                            }
+                        }
+                        Bundle maybeBundle = classes.get(className);
+                        if (maybeBundle != null) {
+                            if (!maybeBundle.getSymbolicName().equals("org.jboss.weld.osgi.weld-osgi")) {
+                                currentBundle.set(maybeBundle.getBundleId());
+                                maybeObject = get();
+                                currentBundle.remove();
+                                if (maybeObject != null) {
+                                    return maybeObject;
+                                }
+                                break;
                             }
                         }
                     }
