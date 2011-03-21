@@ -25,7 +25,6 @@ import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.jboss.weld.manager.api.WeldManager;
-import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
 public class Weld {
@@ -39,6 +38,7 @@ public class Weld {
     private BundleBeanDeploymentArchiveFactory factory;
     private WeldManager manager;
     private BridgeClassLoader bridgeloader;
+    private BundleClassLoader budnleLoader;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
@@ -61,6 +61,8 @@ public class Weld {
                 return started;
             }
             System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
+            budnleLoader = new BundleClassLoader(bundle);
+            bridgeloader = new BridgeClassLoader(budnleLoader, getClass().getClassLoader());
             bootstrap = new WeldBootstrap();
             deployment = createDeployment(bootstrap);
             // Set up the container
@@ -92,20 +94,14 @@ public class Weld {
 
             Class<?> clazz = null;
             try {
-                clazz = bundle.loadClass(className);
+                clazz = bridgeloader.loadClass(className);//bundle.loadClass(className);
                 //clazz = resourceLoader.classForName(className);
             } catch (Exception e) {
                 //e.printStackTrace(); // silently ignore :-)
             }
             if (clazz != null) {
-                if (bridgeloader == null) {
-                    bridgeloader =
-                        new BridgeClassLoader(
-                            clazz.getClassLoader(), getClass().getClassLoader());
-                }
                 boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                //boolean startable = clazz.isAnnotationPresent(Startable.class);
-                boolean instatiation = publishable;// | startable;
+                boolean instatiation = publishable;
                 Annotation[] annotations = null;
                 Object service = null;
                 if (instatiation) {

@@ -16,6 +16,12 @@ public class BundleClassLoader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
+        System.out.println("delegating loading : " + name);
         return delegate.loadClass(name);
+    }
+
+    @Override
+    public String toString() {
+        return "BundleClassLoader { delegate = " + delegate.toString() + " }";
     }
 }

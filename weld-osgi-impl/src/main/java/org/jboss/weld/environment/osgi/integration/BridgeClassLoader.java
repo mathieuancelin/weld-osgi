@@ -18,8 +18,26 @@ public class BridgeClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
-        return secondary.loadClass(name);
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        System.out.println("loading : " + name);
+        Class<?> clazz = null;
+        try {
+            clazz = getParent().loadClass(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (clazz == null) {
+            System.out.println("delegate to weld CL ...");
+            return secondary.loadClass(name);
+        }
+        return clazz;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "BridgeClassLoader { primary = " + super.toString() + ", secondary = " + secondary.toString() + " }";
     }
 
     public class BridgeClassLoaderCache {
