@@ -20,9 +20,7 @@ public class BundleSingletonProvider extends SingletonProvider {
     private static class BundleSingleton<T> implements Singleton<T> {
 
         private static Map<String, Bundle> classes = new HashMap<String, Bundle>();
-
         private final Map<Long, T> store = new HashMap<Long, T>();
-
         private final Class<? extends T> clazz;
 
         public BundleSingleton(Class<? extends T> clazz) {
@@ -34,17 +32,17 @@ public class BundleSingletonProvider extends SingletonProvider {
         }
 
         @Override
-        public T get() {        
+        public T get() {
             if (!store.containsKey(getId())) {
                 T maybeObject = null;
                 Throwable t = new Throwable();
                 for (StackTraceElement element : t.getStackTrace()) {
                     String className = element.getClassName();
-                    if (!className.startsWith("org.jboss.weld") 
+                    if (!className.startsWith("org.jboss.weld")
                             && !className.startsWith("java")
                             && !className.startsWith("org.apache.felix.framework")) {
-                        
-                        if(!classes.containsKey(className)) {
+
+                        if (!classes.containsKey(className)) {
                             System.out.println("\u001b[1;31mAnalyzing stacktrace : \u001b[m");
                             System.out.println("\u001b[0;31m" + className + "." + element.getMethodName() + "\u001b[m");
                             Class<?> maybe = null;
