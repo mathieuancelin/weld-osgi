@@ -18,7 +18,7 @@ import javax.inject.Qualifier;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
-import org.jboss.weld.bootstrap.api.Environments;
+import org.jboss.weld.environment.osgi.OSGiEnvironment;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
@@ -63,7 +63,7 @@ public class Weld {
             bootstrap = new WeldBootstrap();
             deployment = createDeployment(bootstrap);
             // Set up the container
-            bootstrap.startContainer(Environments.SE, deployment);
+            bootstrap.startContainer(new OSGiEnvironment(), deployment);
             // Start the container
             bootstrap.startInitialization();
             bootstrap.deployBeans();
