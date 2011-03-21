@@ -37,7 +37,6 @@ public class Weld {
     private boolean hasShutdownBeenCalled = false;
     private BundleBeanDeploymentArchiveFactory factory;
     private WeldManager manager;
-    private ClassLoader internal;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
