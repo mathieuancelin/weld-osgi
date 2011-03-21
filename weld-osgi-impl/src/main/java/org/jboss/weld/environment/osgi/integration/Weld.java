@@ -1,6 +1,9 @@
 package org.jboss.weld.environment.osgi.integration;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -19,7 +22,6 @@ import org.jboss.weld.bootstrap.api.Environments;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
-import org.jboss.weld.environment.osgi.api.extension.Startable;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.jboss.weld.manager.api.WeldManager;
@@ -35,6 +37,7 @@ public class Weld {
     private boolean hasShutdownBeenCalled = false;
     private BundleBeanDeploymentArchiveFactory factory;
     private WeldManager manager;
+    private ClassLoader internal;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
@@ -95,8 +98,9 @@ public class Weld {
             }
             if (clazz != null) {
                 boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                boolean startable = clazz.isAnnotationPresent(Startable.class);
-                boolean instatiation = publishable | startable;
+                //boolean startable = clazz.isAnnotationPresent(Startable.class);
+                boolean instatiation = publishable;// | startable;
+                Annotation[] annotations = null;
                 Object service = null;
                 if (instatiation) {
                     try {
@@ -106,7 +110,8 @@ public class Weld {
                                 qualifiers.add(a);
                             }
                         }
-                        Annotation[] annotations = new Annotation[qualifiers.size()];
+                        
+                        annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
                         service = manager.instance().select(clazz, annotations).get();
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -119,20 +124,23 @@ public class Weld {
                             if (contracts.length != 0) {
                                 for (Class contract : contracts) {
                                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
-                                    bundle.getBundleContext().registerService(contract.getName(), service, null);
+                                    bundle.getBundleContext().registerService(
+                                            contract.getName(), getProxy(contract, annotations, bundle), null);
                                 }
                             } else {
                                 // registering interfaces
                                 if (service.getClass().getInterfaces().length > 0) {
                                     for (Class interf : service.getClass().getInterfaces()) {
-                                        // TODO : Beurk !!!!!!!!!!!!!, there must me some kind of helper somewhere
+                                        // TODO : Beurk !!!!!!!!!!!!!, there must be some kind of helper somewhere
                                         if (!interf.getName().equals("java.io.Serializable") &&
                                             !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
                                             !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
                                             !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
-                                        System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
-                                        bundle.getBundleContext().registerService(interf.getName(), service, null);
-                                    }   }
+                                                System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
+                                                bundle.getBundleContext().registerService(
+                                                        interf.getName(), getProxy(interf, annotations, bundle), null);
+                                        }
+                                    }
                                 } else {
                                     System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
                                     bundle.getBundleContext().registerService(clazz.getName(), service, null);
@@ -140,15 +148,46 @@ public class Weld {
                             }
                         }
                     }
-                    if (service != null && startable) {
-                        System.out.println("Starting " + className);
-                        service.toString(); // TODO : Okay, it's really ugly, but I have no choice with these lazy proxies
-                    }
                 }
             }
         }
     }
 
+    private <T> T getProxy(Class<T> clazz, Annotation[] qualifiers, Bundle bundle) {
+        return clazz.cast(
+            Proxy.newProxyInstance(
+                clazz.getClassLoader(),
+                new Class[] {clazz},
+                new LazyService(clazz, qualifiers, bundle)
+            )
+        );
+    }
+    
+    private class LazyService implements InvocationHandler {
+
+        private final Class<?> contract;
+        private final Annotation[] qualifiers;
+        private final Bundle bundle;
+
+        public LazyService(Class<?> contract, Annotation[] qualifiers, Bundle bundle) {
+            this.contract = contract;
+            this.qualifiers = qualifiers;
+            this.bundle = bundle;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            try {
+                BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+                return method.invoke(
+                    manager.instance().select(contract, qualifiers).get(),
+                    args
+                );
+            } finally {
+                BundleSingletonProvider.currentBundle.remove();
+            }
+        }
+    }
     private BundleDeployment createDeployment(Bootstrap bootstrap) {
         return new BundleDeployment(bundle, bootstrap, factory);
     }
