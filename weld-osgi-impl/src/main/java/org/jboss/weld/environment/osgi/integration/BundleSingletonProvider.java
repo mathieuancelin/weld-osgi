@@ -36,7 +36,9 @@ public class BundleSingletonProvider extends SingletonProvider {
             if (!store.containsKey(getId())) {
                 T maybeObject = null;
                 Throwable t = new Throwable();
+                System.out.println("\u001b[1;31mAnalyzing stacktrace : \u001b[m");
                 for (StackTraceElement element : t.getStackTrace()) {
+                    System.out.println("\u001b[0;31m" + element.getClassName() + "." + element.getMethodName() + "\u001b[m");
                     if (!element.getClassName().startsWith("org.jboss.weld")) {
                         Class<?> maybe = null;
                         try {
