@@ -25,6 +25,7 @@ import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.jboss.weld.manager.api.WeldManager;
+import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
 
 public class Weld {
@@ -37,6 +38,7 @@ public class Weld {
     private boolean hasShutdownBeenCalled = false;
     private BundleBeanDeploymentArchiveFactory factory;
     private WeldManager manager;
+    private BridgeClassLoader bridgeloader;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
@@ -72,7 +74,7 @@ public class Weld {
             // Get this Bundle BeanManager
             manager = bootstrap.getManager(deployment.getBeanDeploymentArchive());
             manager.fireEvent(new BundleContainerInitialized(bundle.getBundleContext()));
-
+            
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
             registerAndLaunchComponents();
@@ -96,6 +98,11 @@ public class Weld {
                 //e.printStackTrace(); // silently ignore :-)
             }
             if (clazz != null) {
+                if (bridgeloader == null) {
+                    bridgeloader =
+                        new BridgeClassLoader(
+                            clazz.getClassLoader(), getClass().getClassLoader());
+                }
                 boolean publishable = clazz.isAnnotationPresent(Publish.class);
                 //boolean startable = clazz.isAnnotationPresent(Startable.class);
                 boolean instatiation = publishable;// | startable;
