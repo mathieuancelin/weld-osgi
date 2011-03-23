@@ -79,7 +79,10 @@ public class Weld {
             
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(bridgeloader);
             registerAndLaunchComponents();
+            Thread.currentThread().setContextClassLoader(loader);
             started = true;
         } catch (Throwable t) {
             t.printStackTrace();
@@ -94,7 +97,7 @@ public class Weld {
 
             Class<?> clazz = null;
             try {
-                clazz = bridgeloader.loadClass(className);//bundle.loadClass(className);
+                clazz = bundle.loadClass(className);//bundle.loadClass(className);
                 //clazz = resourceLoader.classForName(className);
             } catch (Exception e) {
                 //e.printStackTrace(); // silently ignore :-)

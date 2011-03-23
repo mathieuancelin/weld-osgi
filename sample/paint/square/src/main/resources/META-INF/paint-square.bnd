@@ -1,1 +1,2 @@
 Export-Package com.sample.osgi.paint.square
+DynamicImport-Package *
