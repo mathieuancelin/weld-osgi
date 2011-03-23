@@ -16,9 +16,18 @@ to enable Weld in an OSGi bundle, you need to create a beans.xml file in the MET
 public void onStartup(@Observes BundleContainerInitialized event)
 </code></pre>
 * to publish a bean as an OSGi service, add the @Publish annotation on it.
+<pre><code>
+@Publish
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+	...
+}
+</code></pre>
 * to inject an OSGi service, use the @OSGiService qualifier. You can also use the OSGi service provider :
 <pre><code>
 @Inject Service<MyService> myService;
+...
+myService.get().doSomething();
 </code></pre>	
 * to inject multiple OSGi services, use the OSGi services provider :
 <pre><code>
