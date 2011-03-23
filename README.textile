@@ -7,6 +7,41 @@ h3. How does it works
 
 !https://github.com/mathieuancelin/weld-osgi/raw/master/diagrams.png!
 
+h3. How to use it
+
+to enable Weld in an OSGi bundle, you need to create a beans.xml file in the META-INF folder.
+
+* to make an auto startable bean, just catch the containerInitialized event : 
+<pre><code>
+public void onStartup(@Observes BundleContainerInitialized event)
+</code></pre>
+* to publish a bean as an OSGi service, add the @Publish annotation on it.
+* to inject an OSGi service, use the @OSGiService qualifier. You can also use the OSGi service provider :
+<pre><code>
+@Inject Service<MyService> myService;
+</code></pre>	
+* to inject multiple OSGi services, use the OSGi services provider :
+<pre><code>
+@Inject Services<MyService> myServices;
+...	
+for (MyService myService : myServices) {
+	...
+}
+</code></pre>
+* to deal with services dynamics, you can catch services events with :
+<pre><code>
+public void bindService(@Observes ServiceArrival event) {}
+public void unbindService(@Observes ServiceDeparture event) {}
+public void changeService(@Observes ServiceChange event) {}
+</code></pre>
+
+you can also filter event :
+
+<pre><code>	
+public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {}
+</code></pre>
+
+
 h3. Play with samples
 
 This project provide a small sample project that shows how to use Weld integration with OSGi.
