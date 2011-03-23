@@ -6,3 +6,51 @@ This project will take full advantage of OSGi like frameworks such as iPojo, Blu
 h3. How does it works
 
 !https://github.com/mathieuancelin/weld-osgi/raw/master/diagrams.png!
+
+h3. Play with samples
+
+This project provide a small sample project that shows how to use Weld integration with OSGi.
+The sample is actually a small shapes drawing software in wich you can add new shapes.
+
+To use the sample, first build the entire Weld OSGi project with :
+
+<pre><code>mvn clean install</code></pre>
+
+then launch the sample with :
+
+<pre><code>./build-weld-osgi.sh</code></pre>
+
+this script will launch an Apache Felix container with the right bundles within. A swing window should be displayed :
+
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample1.png!
+
+You can play with it by clicking on the red shape and drawing circles in the white area.
+
+Now if you want more shape, you need to find out the id of the shape bundle. In your Felix terminal type the "ps" command.
+You should get something like that :
+
+<pre><code>
+> ps
+
+...
+[   4] [Installed  ] [    1] Weld OSGi :: Samples :: Paint :: Triangle (1.0.0.SNAPSHOT)
+[   5] [Installed  ] [    1] Weld OSGi :: Samples :: Paint :: Square (1.0.0.SNAPSHOT)
+...
+</code></pre>
+Now you can start the "triangle bundle" by typing : 
+
+<pre><code>start 4</code></pre>
+
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample2.png!
+
+and the "square bundle" :
+
+<pre><code>start 5</code></pre>
+
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample3.png!
+
+you can also stop bundles :
+
+<pre><code>stop 4</code></pre>
+
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample4.png!
