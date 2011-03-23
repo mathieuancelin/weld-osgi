@@ -14,7 +14,6 @@ to enable Weld in an OSGi bundle, you need to create a beans.xml file in the MET
 * to make an auto startable bean, just catch the containerInitialized event : 
 <pre><code>
 public void onStartup(@Observes BundleContainerInitialized event) {}
-
 // on shutdown
 public void onStartup(@Observes BundleContainerShutdown event) {}
 </code></pre>
