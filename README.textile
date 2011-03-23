@@ -10,7 +10,7 @@ h3. How does it works
 h3. Play with samples
 
 This project provide a small sample project that shows how to use Weld integration with OSGi.
-The sample is actually a small shapes drawing software in wich you can add new shapes.
+The sample is actually a small shapes drawing software in which you can add new shapes.
 
 To use the sample, first build the entire Weld OSGi project with :
 
