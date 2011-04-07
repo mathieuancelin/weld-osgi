@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.jboss.weld.environment.osgi;
 
 import java.util.HashSet;
@@ -11,7 +6,6 @@ import org.jboss.weld.bootstrap.api.Environment;
 import org.jboss.weld.bootstrap.api.Service;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.resources.spi.ScheduledExecutorServiceFactory;
-import org.jboss.weld.serialization.spi.ProxyServices;
 
 /**
  *
@@ -30,7 +24,6 @@ public class OSGiEnvironment implements Environment {
     public Set<Class<? extends Service>> getRequiredBeanDeploymentArchiveServices() {
         HashSet set = new HashSet();
         set.add(ResourceLoader.class);
-        set.add(ProxyServices.class);
         return set;
     }
 }
