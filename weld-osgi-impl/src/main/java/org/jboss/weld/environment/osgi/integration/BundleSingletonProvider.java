@@ -2,6 +2,7 @@ package org.jboss.weld.environment.osgi.integration;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.jboss.weld.bean.proxy.ProxyMethodHandler;
 import org.jboss.weld.bootstrap.api.Singleton;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.osgi.framework.Bundle;
@@ -28,7 +29,12 @@ public class BundleSingletonProvider extends SingletonProvider {
         }
 
         private Long getId() {
-            return currentBundle.get();
+            Long value = currentBundle.get();
+            // fix with a patched version of weld ProxyMethodHandler
+//            if (value == null) {
+//                return FrameworkUtil.getBundle(ProxyMethodHandler.currentCaller.get()).getBundleId();
+//            }
+            return value;
         }
 
         @Override
@@ -43,7 +49,7 @@ public class BundleSingletonProvider extends SingletonProvider {
                             && !className.startsWith("org.apache.felix.framework")) {
 
                         if (!classes.containsKey(className)) {
-                            System.out.println("\u001b[1;31mAnalyzing stacktrace : \u001b[m");
+                            System.out.println("\u001b[1;31mAnalyzing stacktrace for class " + clazz.getName() + ": \u001b[m");
                             System.out.println("\u001b[0;31m" + className + "." + element.getMethodName() + "\u001b[m");
                             Class<?> maybe = null;
                             try {
