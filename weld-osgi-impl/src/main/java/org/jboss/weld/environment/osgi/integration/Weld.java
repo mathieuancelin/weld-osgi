@@ -37,8 +37,6 @@ public class Weld {
     private boolean hasShutdownBeenCalled = false;
     private BundleBeanDeploymentArchiveFactory factory;
     private WeldManager manager;
-    private BridgeClassLoader bridgeloader;
-    private BundleClassLoader budnleLoader;
 
     public Weld(Bundle bundle) {
         this.bundle = bundle;
@@ -56,13 +54,16 @@ public class Weld {
     public boolean initialize() {
         started = false;
         try {
+            // ugly hack to make jboss interceptors works.
+            // thank you Thread.currentThread().getContextClassLoader().loadClass()
+            ClassLoader old = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            // -------------
             Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
             if (beansXml == null) {
                 return started;
             }
             System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
-            budnleLoader = new BundleClassLoader(bundle);
-            bridgeloader = new BridgeClassLoader(budnleLoader, getClass().getClassLoader());
             bootstrap = new WeldBootstrap();
             deployment = createDeployment(bootstrap);
             // Set up the container
@@ -79,10 +80,8 @@ public class Weld {
             
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(bridgeloader);
             registerAndLaunchComponents();
-            Thread.currentThread().setContextClassLoader(loader);
+            Thread.currentThread().setContextClassLoader(old);
             started = true;
         } catch (Throwable t) {
             t.printStackTrace();
