@@ -21,10 +21,8 @@ import java.util.List;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.environment.osgi.integration.OSGiProxyServices;
 import org.jboss.weld.environment.osgi.integration.discovery.AbstractWeldOSGiDeployment;
 import org.jboss.weld.resources.spi.ResourceLoader;
-import org.jboss.weld.serialization.spi.ProxyServices;
 import org.osgi.framework.Bundle;
 
 /**
@@ -41,7 +39,6 @@ public class BundleDeployment extends AbstractWeldOSGiDeployment {
         this.beanDeploymentArchive = factory.scan(bundle, bootstrap);
         ResourceLoader loader = new BundleResourceLoader(bundle);
         this.beanDeploymentArchive.getServices().add(ResourceLoader.class, loader);
-        this.beanDeploymentArchive.getServices().add(ProxyServices.class, new OSGiProxyServices(bundle));
     }
 
     @Override
