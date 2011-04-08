@@ -5,7 +5,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Producers for Specific injected types;
@@ -15,27 +14,19 @@ import org.osgi.framework.FrameworkUtil;
 public class ServicesProducer {
 
     @Produces
-    public Bundle getBundle(InjectionPoint p) {
-        Bundle bundle = FrameworkUtil.getBundle(p.getMember().getDeclaringClass());
-        if (bundle != null)
-            return bundle;
-        else
-            throw new IllegalStateException("Can't find bundle.");
+    public Bundle getBundle(BundleHolder holder, InjectionPoint p) {
+        return holder.getBundle();
     }
 
     @Produces
-    public BundleContext getBundleContext(InjectionPoint p) {
-        Bundle bundle = FrameworkUtil.getBundle(p.getMember().getDeclaringClass());
-        if (bundle != null)
-            return bundle.getBundleContext();
-        else
-            throw new IllegalStateException("Can't find bundle.");
+    public BundleContext getBundleContext(BundleHolder holder, InjectionPoint p) {
+        return holder.getContext();
     }
 
     @Produces
-    public <T> ServicesImpl<T> getOSGiServices(InjectionPoint p) {
+    public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                p.getMember().getDeclaringClass());
+                p.getMember().getDeclaringClass(), holder.getContext());
     }
 
     @Produces
