@@ -2,7 +2,6 @@ package org.jboss.weld.environment.osgi.integration;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.jboss.weld.bean.proxy.ProxyMethodHandler;
 import org.jboss.weld.bootstrap.api.Singleton;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.osgi.framework.Bundle;
