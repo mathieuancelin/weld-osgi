@@ -24,7 +24,6 @@ public void onShutdown(@Observes BundleContainerShutdown event) {}
 @Publish
 @ApplicationScoped
 public class MyServiceImpl implements MyService {
-	
 	@Overrides
 	public void doSomething() { ... }
 }
