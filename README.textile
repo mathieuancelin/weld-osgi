@@ -11,11 +11,13 @@ h3. How to use it
 
 to enable Weld in an OSGi bundle, you need to create a beans.xml file in the META-INF folder.
 
-* to make an auto startable bean, just catch the containerInitialized event : 
+* to make an auto startable bean, just catch the BundleContainerInitialized event : 
 <pre><code>
 public void onStartup(@Observes BundleContainerInitialized event) {}
-// on shutdown
-public void onStartup(@Observes BundleContainerShutdown event) {}
+</code></pre>
+* to do stuff on bundle shutdown, just catch the BundleContainerShutdown event :
+<pre><code>
+public void onShutdown(@Observes BundleContainerShutdown event) {}
 </code></pre>
 * to publish a bean as an OSGi service, add the @Publish annotation on it.
 <pre><code>
@@ -27,10 +29,12 @@ public class MyServiceImpl implements MyService {
 </code></pre>
 * to inject an OSGi service, use the @OSGiService qualifier. You can also use the OSGi service provider :
 <pre><code>
+// direct injection	
 @Inject @OSGiService MyService service;
 ...
 service.doSomething();
 ...	
+// provider injection
 @Inject Service<MyService> myService;
 ...
 myService.get().doSomething();
@@ -39,23 +43,60 @@ myService.get().doSomething();
 <pre><code>
 @Inject Services<MyService> myServices;
 ...	
+// print number of available services
+logger.log(myServices.size());
+...
 for (MyService myService : myServices) {
-	...
+	myService.doSomething();
 }
 </code></pre>
-* to deal with services dynamics, you can catch services events with :
+* to deal with the dynamism of OSGi services, you can catch services events with :
 <pre><code>
 public void bindService(@Observes ServiceArrival event) {}
 public void unbindService(@Observes ServiceDeparture event) {}
 public void changeService(@Observes ServiceChange event) {}
 </code></pre>
-
-you can also filter event :
-
+you can also filter event for specific services types :
 <pre><code>	
 public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {}
 </code></pre>
-
+* to manipulate the OSGi service registry and register/unregister dynamically services inside your application you can use the ServiceRegistry bean :
+<pre><code class="java">	
+@Inject Instance<Object> instance;
+@Inject ServiceRegistry registry;
+...
+// get a bean instance
+MyService mySuperServiceInstance = instance.select(MySuperServiceImpl.class).get();
+...
+// register dynamically a new service
+Registration<MyService> registeredService = registry.registerService(MyService.class, mySuperServiceInstance);
+...
+// get an existing service
+Service<MyService> service = registry.getServiceReference(MyService.class);
+service.get().doSomething();
+...
+// get all existing services
+Services<MyService> services = registry.getServiceReferences(MyService.class);
+...
+logger.log(services.size());
+...
+for (MyService service : services) {
+	service.doSomething();
+}
+...
+// unregister dynamically previously registered service
+registeredService.unregister();
+</code></pre>
+* to deal with existing services registrations (managed by the Weld container, not directly by OSGi), you can use :
+<pre><code>	
+@Inject Registrations<MyService> registeredServices;
+...
+logger.log(registeredServices.size());
+...		
+for (Registration registredService : registeredServices) {
+	registredService.unregister();
+}
+</code></pre>
 
 h3. Play with samples
 
@@ -87,7 +128,7 @@ You should get something like that :
 [   5] [Installed  ] [    1] Weld OSGi :: Samples :: Paint :: Square (1.0.0.SNAPSHOT)
 ...
 </code></pre>
-Now you can start the "triangle bundle" by typing : 
+Now you can start the "triangle bundle" by typing in the Felix terminal : 
 
 <pre><code>start 4</code></pre>
 
@@ -99,7 +140,7 @@ and the "square bundle" :
 
 !https://github.com/mathieuancelin/weld-osgi/raw/master/sample3.png!
 
-you can also stop bundles :
+you can also stop bundles. When a bundle is stopped, existing shapes of this bundle are deleted :
 
 <pre><code>stop 4</code></pre>
 
