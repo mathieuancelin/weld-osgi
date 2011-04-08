@@ -78,7 +78,7 @@ public class BundleSingletonProvider extends SingletonProvider {
                         }
                     }
                 }
-                throw new IllegalStateException("Singleton is not set");
+                throw new IllegalStateException("Singleton is not set for bundle " + getId());
             }
             return store.get(getId());
         }

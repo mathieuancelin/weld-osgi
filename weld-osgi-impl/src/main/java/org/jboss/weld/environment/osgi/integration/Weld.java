@@ -61,6 +61,8 @@ public class Weld {
         ClassLoader old = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         // -------------
+        boolean set = BundleSingletonProvider.currentBundle.get() != null;
+        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         try {
             Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
             if (beansXml == null) {
@@ -89,6 +91,9 @@ public class Weld {
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
+            if (!set) {
+                BundleSingletonProvider.currentBundle.remove();
+            }
             Thread.currentThread().setContextClassLoader(old);
         }
         return started;
@@ -158,6 +163,7 @@ public class Weld {
                             }
                         }
                         if (registration != null) {
+                            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
                             manager.instance().select(RegistrationsHolder.class).get().addRegistration(registration);
                         }
                     }
