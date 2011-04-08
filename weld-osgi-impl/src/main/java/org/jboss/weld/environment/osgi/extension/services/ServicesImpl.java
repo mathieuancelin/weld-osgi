@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jboss.weld.environment.osgi.api.extension.Services;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -19,18 +21,15 @@ public class ServicesImpl<T> implements Services<T> {
 
     private final Class serviceClass;
     private final Class declaringClass;
-    private final Bundle bundle;
     private final String serviceName;
-
+    private final BundleContext registry;
     private List<T> services = new ArrayList<T>();
 
-    public ServicesImpl(Type t, Class declaring) {
+    public ServicesImpl(Type t, Class declaring, BundleContext registry) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         declaringClass = declaring;
-        bundle = FrameworkUtil.getBundle(declaringClass);
-        if (bundle == null)
-            throw new IllegalStateException("Can't have a null bundle.");
+        this.registry = registry;
     }
 
     @Override
@@ -46,20 +45,35 @@ public class ServicesImpl<T> implements Services<T> {
 
     private void populateServiceRef() throws Exception {
         services.clear();
-        ServiceReference[] refs = bundle.getBundleContext().getServiceReferences(serviceName, null);
+
+        ServiceReference[] refs = registry.getServiceReferences(serviceName, null);
         if (refs != null) {
             for (ServiceReference ref : refs) {
                 if (!serviceClass.isInterface()) {
-                    services.add((T) bundle.getBundleContext().getService(ref));
+                    services.add((T) registry.getService(ref));
                 } else {
                     services.add((T) Proxy.newProxyInstance(
-                                getClass().getClassLoader(),
-                                new Class[]{(Class) serviceClass},
-                                new DynamicServiceHandler(bundle, serviceName)));
+                            getClass().getClassLoader(),
+                            new Class[]{(Class) serviceClass},
+                            new ServiceReferenceHandler(ref, registry)));
                 }
             }
         } else {
             services = Collections.emptyList();
+        }
+    }
+
+    @Override
+    public int size() {
+        try {
+            ServiceReference[] refs = registry.getServiceReferences(serviceName, null);
+            if (refs == null) {
+                return 0;
+            } else {
+                return refs.length;
+            }
+        } catch (InvalidSyntaxException ex) {
+            return -1;
         }
     }
 }
