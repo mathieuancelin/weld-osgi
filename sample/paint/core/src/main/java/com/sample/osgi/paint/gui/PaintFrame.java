@@ -27,6 +27,7 @@ import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.osgi.framework.Bundle;
 
 @Singleton
 public class PaintFrame extends JFrame implements MouseListener {
@@ -49,8 +50,9 @@ public class PaintFrame extends JFrame implements MouseListener {
     private Map<String, Collection<ShapeComponent>> goneComponents
             = new HashMap<String, Collection<ShapeComponent>>();
 
-    public PaintFrame() {
-        super("PaintFrame");
+    @Inject
+    public PaintFrame(Bundle bundle) {
+        super("PaintFrame for bundle " + bundle.getBundleId());
         toolbar = new JToolBar("Toolbar");
         panel = new JPanel();
         panel.setBackground(Color.WHITE);
