@@ -53,12 +53,12 @@ public class Weld {
      */
     public boolean initialize() {
         started = false;
+        // ugly hack to make jboss interceptors works.
+        // thank you Thread.currentThread().getContextClassLoader().loadClass()
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        // -------------
         try {
-            // ugly hack to make jboss interceptors works.
-            // thank you Thread.currentThread().getContextClassLoader().loadClass()
-            ClassLoader old = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            // -------------
             Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
             if (beansXml == null) {
                 return started;
@@ -81,10 +81,11 @@ public class Weld {
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
             registerAndLaunchComponents();
-            Thread.currentThread().setContextClassLoader(old);
             started = true;
         } catch (Throwable t) {
             t.printStackTrace();
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);
         }
         return started;
     }
