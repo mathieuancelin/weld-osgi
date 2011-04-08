@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Hmmm, do we need this class, as bootstrap.sutdown is already called from our container.stop() ???
+ *
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 @ApplicationScoped
 public class ShutdownManager {

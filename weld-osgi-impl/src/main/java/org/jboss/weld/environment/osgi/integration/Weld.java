@@ -30,6 +30,10 @@ import org.jboss.weld.manager.api.WeldManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 
+/**
+ *
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ */
 public class Weld {
 
     private final static Logger LOGGER = Logger.getLogger(Weld.class.getName());

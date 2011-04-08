@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;

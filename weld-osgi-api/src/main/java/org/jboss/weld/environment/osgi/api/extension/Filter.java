@@ -9,7 +9,7 @@ import javax.inject.Qualifier;
 
 /**
  *
- * @author mathieu
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 @Qualifier
 @Target({ PARAMETER })

@@ -6,7 +6,7 @@ import org.osgi.framework.BundleContext;
 
 /**
  *
- * @author mathieuancelin
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 @ApplicationScoped
 public class BundleHolder {

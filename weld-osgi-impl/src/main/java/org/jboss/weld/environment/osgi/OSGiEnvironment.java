@@ -9,7 +9,7 @@ import org.jboss.weld.resources.spi.ScheduledExecutorServiceFactory;
 
 /**
  *
- * @author mathieu
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class OSGiEnvironment implements Environment {
 

@@ -7,6 +7,10 @@ import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+/**
+ *
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ */
 public class BundleSingletonProvider extends SingletonProvider {
 
     public static ThreadLocal<Long> currentBundle =

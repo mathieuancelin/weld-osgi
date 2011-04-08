@@ -5,7 +5,7 @@ import org.osgi.framework.ServiceReference;
 
 /**
  *
- * @author mathieu
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class ServiceArrival extends AbstractServiceEvent {
 
