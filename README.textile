@@ -24,7 +24,9 @@ public void onShutdown(@Observes BundleContainerShutdown event) {}
 @Publish
 @ApplicationScoped
 public class MyServiceImpl implements MyService {
-	...
+	
+	@Overrides
+	public void doSomething() { ... }
 }
 </code></pre>
 * to inject an OSGi service, use the @OSGiService qualifier. You can also use the OSGi service provider :
