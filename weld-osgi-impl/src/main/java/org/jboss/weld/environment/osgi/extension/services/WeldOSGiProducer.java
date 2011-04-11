@@ -73,26 +73,12 @@ public class WeldOSGiProducer {
 
     @Produces
     public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
-        Set<Annotation> qualifiers = p.getQualifiers();
-        for (Annotation qualifier : qualifiers) {
-            if (qualifier.annotationType().equals(Filter.class)) {
-                return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                    p.getMember().getDeclaringClass(), holder.getContext(), (Filter) qualifier);
-            }
-        }
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
                 p.getMember().getDeclaringClass(), holder.getContext());
     }
 
     @Produces
     public <T> ServiceImpl<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
-        Set<Annotation> qualifiers = p.getQualifiers();
-        for (Annotation qualifier : qualifiers) {
-            if (qualifier.annotationType().equals(Filter.class)) {
-                return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                    holder.getBundle(), (Filter) qualifier);
-            }
-        }
         return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
                 holder.getBundle());
     }
