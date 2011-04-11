@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
+import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 
@@ -128,10 +129,18 @@ public class CDIOSGiExtension implements Extension {
         
         private final Type type;
         private final InjectionPoint injectionPoint;
+        private Filter filter;
 
         private OSGiServiceBean(InjectionPoint injectionPoint) {
             this.injectionPoint = injectionPoint;
             this.type = this.injectionPoint.getType();
+            Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+            for (Annotation qualifier : qualifiers) {
+                if (qualifier.annotationType().equals(Filter.class)) {
+                    filter = (Filter) qualifier;
+                    break;
+                }
+            }
         }
 
         @Override
@@ -145,7 +154,7 @@ public class CDIOSGiExtension implements Extension {
                 return Proxy.newProxyInstance(
                             getClass().getClassLoader(),
                             new Class[]{(Class) serviceClass},
-                            new DynamicServiceHandler(bundle, serviceName));
+                            new DynamicServiceHandler(bundle, serviceName, filter));
             } catch (Exception e) {
                 throw new CreationException(e);
             }
@@ -178,6 +187,9 @@ public class CDIOSGiExtension implements Extension {
             s.add(new AnnotationLiteral<Default>() {});
             s.add(new AnnotationLiteral<Any>() {});
             s.add(new OSGiServiceQualifierType());
+            if (filter != null) {
+                s.add(new OSGiFilterQualifierType(filter.value()));
+            }
             return s;
         }
 
@@ -213,5 +225,21 @@ public class CDIOSGiExtension implements Extension {
     private final class OSGiServiceQualifierType
         extends AnnotationLiteral<OSGiService>
             implements OSGiService {
+    }
+
+    private final class OSGiFilterQualifierType
+        extends AnnotationLiteral<Filter>
+            implements Filter {
+
+        private final String value;
+
+        public OSGiFilterQualifierType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
     }
 }

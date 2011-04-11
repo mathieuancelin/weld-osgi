@@ -1,10 +1,12 @@
 package org.jboss.weld.environment.osgi.extension;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.util.AnnotationLiteral;
+import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
@@ -122,7 +124,8 @@ public class ExtensionActivator implements BundleActivator,
         for (Class<?> clazz : classes) {
             try {
                 broadcaster.select(eventClass,
-                    new SpecificationAnnotation(clazz)).fire(event);
+                    new SpecificationAnnotation(clazz),
+                    new FilterAnnotation(event.getRef())).fire(event);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -147,6 +150,49 @@ public class ExtensionActivator implements BundleActivator,
         @Override
         public Class<? extends Annotation> annotationType() {
             return Specification.class;
+        }
+    }
+
+    private static class FilterAnnotation
+            extends AnnotationLiteral<Filter>
+            implements Filter {
+
+        private List<String> excludes =
+                new ArrayList<String>() {{add("objectClass"); add("service.id");}};
+        private final String value;
+
+        private int index = 0;
+
+        public FilterAnnotation(ServiceReference ref) {
+            String filterValue = "";
+            for (String key : ref.getPropertyKeys()) {
+                if (!excludes.contains(key)) {
+                    Object val = ref.getProperty(key);
+                    if (!val.getClass().isArray()) {
+                        filterValue = addAndPart("(" + key + "=" + val + ")", filterValue);
+                    }
+                }
+            }
+            this.value = filterValue;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return Filter.class;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        private String addAndPart(String newValue, String filter) {
+            index ++;
+            if (filter.equals("")) {
+                return newValue;
+            } else {
+                return "(&" + newValue + filter + ")";
+            }
         }
     }
 }
