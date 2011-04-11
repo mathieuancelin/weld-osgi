@@ -224,6 +224,17 @@ public class Weld {
                     hasShutdownBeenCalled = true;
                     try {
                         manager.fireEvent(new BundleContainerShutdown(bundle.getBundleContext()));
+                        // unregistration for managed services. It should be done by the OSGi framework
+                        RegistrationsHolder holder = manager.instance().select(RegistrationsHolder.class).get();
+                        for (ServiceRegistration r : holder.getRegistrations()) {
+                            try {
+                                r.unregister();
+                            } catch (Exception e) {
+                                // the service is already unregistered if shutdown is called when bundle is stopped
+                                // but with a manual boostrap, you can't be sure
+                                //System.out.println("Service already unregistered.");
+                            }
+                        }
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
