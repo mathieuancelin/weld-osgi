@@ -31,7 +31,7 @@ import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServiceRegistryImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
-import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
+import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
 import org.jboss.weld.environment.osgi.integration.ShutdownManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -49,7 +49,7 @@ public class CDIOSGiExtension implements Extension {
                             = new HashMap<Type, Set<InjectionPoint>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-        event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
+        event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
