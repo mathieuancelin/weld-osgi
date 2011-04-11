@@ -6,13 +6,27 @@ import java.util.List;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.util.AnnotationLiteral;
+import org.jboss.weld.environment.osgi.api.extension.BundleName;
+import org.jboss.weld.environment.osgi.api.extension.BundleVersion;
 import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.Specification;
+import org.jboss.weld.environment.osgi.api.extension.events.AbstractBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleInstalled;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleLazyActivation;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleResolved;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStarted;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStarting;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStopped;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStopping;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUninstalled;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUnresolved;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUpdated;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
 import org.jboss.weld.environment.osgi.integration.BundleSingletonProvider;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -60,6 +74,43 @@ public class ExtensionActivator implements BundleActivator,
                     e.select(BundleEvent.class).fire(event);
                 } catch (Throwable t) {
                     t.printStackTrace();
+                }
+                Bundle bundle = event.getBundle();
+                AbstractBundleEvent bundleEvent = null;
+                switch (event.getType()) {
+                    case BundleEvent.INSTALLED:
+                        bundleEvent = new BundleInstalled(bundle);
+                    break;
+                    case BundleEvent.LAZY_ACTIVATION:
+                        bundleEvent = new BundleLazyActivation(bundle);
+                    break;
+                    case BundleEvent.RESOLVED:
+                        bundleEvent = new BundleResolved(bundle);
+                    break;
+                    case BundleEvent.STARTED:
+                        bundleEvent = new BundleStarted(bundle);
+                    break;
+                    case BundleEvent.STARTING:
+                        bundleEvent = new BundleStarting(bundle);
+                    break;
+                    case BundleEvent.STOPPED:
+                        bundleEvent = new BundleStopped(bundle);
+                    break;
+                    case BundleEvent.STOPPING:
+                        bundleEvent = new BundleStopping(bundle);
+                    break;
+                    case BundleEvent.UNINSTALLED:
+                        bundleEvent = new BundleUninstalled(bundle);
+                    break;
+                    case BundleEvent.UNRESOLVED:
+                        bundleEvent = new BundleUnresolved(bundle);
+                    break;
+                    case BundleEvent.UPDATED:
+                        bundleEvent = new BundleUpdated(bundle);
+                    break;
+                }
+                if (bundleEvent != null) {
+                    fireAllEvent(bundleEvent, e);
                 }
                 if (!set) {
                     BundleSingletonProvider.currentBundle.remove();
@@ -129,6 +180,59 @@ public class ExtensionActivator implements BundleActivator,
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+        }
+    }
+
+    private static void fireAllEvent(AbstractBundleEvent event, Event broadcaster) {
+        try {
+            broadcaster.select(event.getClass(),
+                new BundleNameAnnotation(event.getSymbolicName()),
+                new BundleVersionAnnotation(event.getVersion().toString()))
+                .fire(event);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    private static class BundleNameAnnotation
+            extends AnnotationLiteral<BundleName>
+            implements BundleName {
+
+        private final String value;
+
+        public BundleNameAnnotation(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return BundleName.class;
+        }
+    }
+
+    private static class BundleVersionAnnotation
+            extends AnnotationLiteral<BundleVersion>
+            implements BundleVersion {
+
+        private final String value;
+
+        public BundleVersionAnnotation(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return BundleVersion.class;
         }
     }
 
