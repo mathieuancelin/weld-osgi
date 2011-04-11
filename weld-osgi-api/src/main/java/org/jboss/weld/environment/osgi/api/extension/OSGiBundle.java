@@ -14,7 +14,7 @@ import javax.inject.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiBundle {
     @Nonbinding
-    String symbolicName() default "";
+    String symbolicName();
 
     @Nonbinding
     String version() default "";
