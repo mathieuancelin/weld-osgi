@@ -29,7 +29,7 @@ public class WeldOSGiProducer {
         return holder.getBundle();
     }
 
-    @Produces @OSGiBundle(symbolicName="")
+    @Produces @OSGiBundle("")
     public Bundle getSpecificBundle(BundleHolder holder, InjectionPoint p) {
         Set<Annotation> qualifiers = p.getQualifiers();
         OSGiBundle bundle = null;
@@ -39,12 +39,12 @@ public class WeldOSGiProducer {
                 break;
             }
         }
-        if (bundle.symbolicName().equals("")) {
+        if (bundle.value().equals("")) {
             return getBundle(holder, p);
         }
         return (Bundle) Proxy.newProxyInstance(getClass().getClassLoader(),
                 new Class[] {Bundle.class},
-                new BundleHandler(bundle.symbolicName(), bundle.version(), holder.getContext()));
+                new BundleHandler(bundle.value(), bundle.version(), holder.getContext()));
     }
 
     @Produces

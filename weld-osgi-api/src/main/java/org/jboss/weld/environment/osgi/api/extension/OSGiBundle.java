@@ -13,8 +13,11 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiBundle {
+    /**
+     * @return the symbolic name of the bundle
+     */
     @Nonbinding
-    String symbolicName();
+    String value();
 
     @Nonbinding
     String version() default "";
