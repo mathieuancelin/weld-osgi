@@ -14,4 +14,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Publish {
     public Class[] contracts() default {};
+    public String[] properties() default {};
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -140,11 +141,22 @@ public class Weld {
                         if (service != null) {
                             Publish publish = clazz.getAnnotation(Publish.class);
                             Class[] contracts = publish.contracts();
+                            Properties properties = null;
+                            if (publish.properties().length > 0) {
+                                properties = new Properties();
+                                for (String property : publish.properties()) {
+                                    if (property.split("=").length == 2) {
+                                        String key = property.split("=")[0];
+                                        String value = property.split("=")[1];
+                                        properties.setProperty(key, value);
+                                    }
+                                }
+                            }
                             if (contracts.length != 0) {
                                 for (Class contract : contracts) {
                                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                                     registration = bundle.getBundleContext().registerService(
-                                            contract.getName(), getProxy(contract, annotations, bundle), null);
+                                            contract.getName(), getProxy(contract, annotations, bundle), properties);
                                 }
                             } else {
                                 // registering interfaces
@@ -157,12 +169,12 @@ public class Weld {
                                             !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
                                                 System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
                                                 registration = bundle.getBundleContext().registerService(
-                                                        interf.getName(), getProxy(interf, annotations, bundle), null);
+                                                        interf.getName(), getProxy(interf, annotations, bundle), properties);
                                         }
                                     }
                                 } else {
                                     System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
-                                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                                 }
                             }
                         }
