@@ -15,4 +15,5 @@ import java.lang.annotation.Target;
 public @interface Publish {
     public Class[] contracts() default {};
     public String[] properties() default {};
+    public boolean useQualifiersAsProperties() default false;
 }

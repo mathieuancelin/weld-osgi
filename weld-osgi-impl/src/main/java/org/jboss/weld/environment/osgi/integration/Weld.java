@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 
@@ -108,7 +109,6 @@ public class Weld {
         // TODO all of this should be part of the extension ....
         Collection<String> classes = deployment.getBeanDeploymentArchive().getBeanClasses();
         for (String className : classes) {
-
             Class<?> clazz = null;
             try {
                 clazz = bundle.loadClass(className);//bundle.loadClass(className);
@@ -122,70 +122,106 @@ public class Weld {
                 Annotation[] annotations = null;
                 Object service = null;
                 if (instatiation) {
+                    List<Annotation> qualifiers = getQualifiers(clazz);
                     try {
-                        List<Annotation> qualifiers = new ArrayList<Annotation>();
-                        for (Annotation a : clazz.getAnnotations()) {
-                            if (a.annotationType().isAnnotationPresent(Qualifier.class)) {
-                                qualifiers.add(a);
-                            }
-                        }
-                        
                         annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
                         service = manager.instance().select(clazz, annotations).get();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
                     if (publishable) {
-                        // register service
-                        ServiceRegistration registration = null;
-                        if (service != null) {
-                            Publish publish = clazz.getAnnotation(Publish.class);
-                            Class[] contracts = publish.contracts();
-                            Properties properties = null;
-                            if (publish.properties().length > 0) {
-                                properties = new Properties();
-                                for (String property : publish.properties()) {
-                                    if (property.split("=").length == 2) {
-                                        String key = property.split("=")[0];
-                                        String value = property.split("=")[1];
-                                        properties.setProperty(key, value);
-                                    }
-                                }
-                            }
-                            if (contracts.length != 0) {
-                                for (Class contract : contracts) {
-                                    System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
-                                    registration = bundle.getBundleContext().registerService(
-                                            contract.getName(), getProxy(contract, annotations, bundle), properties);
-                                }
-                            } else {
-                                // registering interfaces
-                                if (service.getClass().getInterfaces().length > 0) {
-                                    for (Class interf : service.getClass().getInterfaces()) {
-                                        // TODO : Beurk !!!!!!!!!!!!!, there must be some kind of helper somewhere
-                                        if (!interf.getName().equals("java.io.Serializable") &&
-                                            !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
-                                            !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
-                                            !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
-                                                System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
-                                                registration = bundle.getBundleContext().registerService(
-                                                        interf.getName(), getProxy(interf, annotations, bundle), properties);
-                                        }
-                                    }
-                                } else {
-                                    System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
-                                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
-                                }
-                            }
-                        }
-                        if (registration != null) {
-                            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
-                            manager.instance().select(RegistrationsHolder.class).get().addRegistration(registration);
-                        }
+                        publish(clazz, service, qualifiers);
                     }
                 }
             }
         }
+    }
+
+    private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
+        // register service
+        Annotation[] annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
+        ServiceRegistration registration = null;
+        if (service != null) {
+            Publish publish = clazz.getAnnotation(Publish.class);
+            Class[] contracts = publish.contracts();
+            Properties properties = getServiceProperties(publish, qualifiers);
+            if (contracts.length != 0) {
+                for (Class contract : contracts) {
+                    System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
+                    registration = bundle.getBundleContext().registerService(
+                            contract.getName(), getProxy(contract, annotations, bundle), properties);
+                }
+            } else {
+                // registering interfaces
+                if (service.getClass().getInterfaces().length > 0) {
+                    for (Class interf : service.getClass().getInterfaces()) {
+                        // TODO : Beurk !!!!!!!!!!!!!, there must be some kind of helper somewhere
+                        if (!interf.getName().equals("java.io.Serializable") &&
+                            !interf.getName().equals("org.jboss.interceptor.proxy.LifecycleMixin") &&
+                            !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
+                            !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
+                                System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
+                                registration = bundle.getBundleContext().registerService(
+                                        interf.getName(), getProxy(interf, annotations, bundle), properties);
+                        }
+                    }
+                } else {
+                    System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
+                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
+                }
+            }
+        }
+        if (registration != null) {
+            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+            manager.instance().select(RegistrationsHolder.class).get().addRegistration(registration);
+        }
+    }
+
+    private static Properties getServiceProperties(Publish publish, List<Annotation> qualifiers) {
+        Properties properties = null;
+        if (publish.useQualifiersAsProperties()) {
+            if (!qualifiers.isEmpty()) {
+                properties = new Properties();
+                for (Annotation qualif : qualifiers) {
+                    for (Method m : qualif.annotationType().getDeclaredMethods()) {
+                        if (!m.isAnnotationPresent(Nonbinding.class)) {
+                            try {
+                                String key = qualif.annotationType().getName() + "." + m.getName();
+                                Object value = m.invoke(qualif);
+                                if (value == null) {
+                                    value = m.getDefaultValue();
+                                }
+                                properties.setProperty(key, value.toString());
+                            } catch (Throwable t) {
+                                // ignore
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (publish.properties().length > 0) {
+                properties = new Properties();
+                for (String property : publish.properties()) {
+                    if (property.split("=").length == 2) {
+                        String key = property.split("=")[0];
+                        String value = property.split("=")[1];
+                        properties.setProperty(key, value);
+                    }
+                }
+            }
+        }
+        return properties;
+    }
+
+    private static List<Annotation> getQualifiers(Class<?> clazz) {
+        List<Annotation> qualifiers = new ArrayList<Annotation>();
+        for (Annotation a : clazz.getAnnotations()) {
+            if (a.annotationType().isAnnotationPresent(Qualifier.class)) {
+                qualifiers.add(a);
+            }
+        }
+        return qualifiers;
     }
 
     private <T> T getProxy(Class<T> clazz, Annotation[] qualifiers, Bundle bundle) {
