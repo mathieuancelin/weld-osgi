@@ -145,6 +145,23 @@ You can also inject only one specific metadata with :
 <pre><code>	
 @Inject @BundleDataFile("test.txt") File file;
 </code></pre>
+* if you want to boostrap a weld container manually inside an OSGi bundle, you need to do something like :
+<pre><code>
+public class MyApp implements BundleActivator {
+    private WeldEmbedded weld;
+    @Override
+    public void start(BundleContext bc) throws Exception {
+        weld = WeldEmbedded.startFor(bc);
+        ...
+        MyService service = weld.instance().select(MyService.class).get();
+    }
+    @Override
+    public void stop(BundleContext bc) throws Exception {
+        weld.shutdown();
+    }
+}
+</code></pre>
+Just be careful here, to make this exemple work, the Weld/OSGi bundle must not be started.
 
 h3. Play with samples
 
