@@ -10,7 +10,8 @@ h3. How does it works
 h3. How to use it
 
 First of all, you will need to install and start the Weld/OSGi bundle in your OSGi environment.
-Then you can write a standard OSGi bundle with a valid manifest (You don't need to write an activator or anything else). To enable Weld for this bundle, you need to create a beans.xml file in the META-INF folder.
+Then you can write a standard OSGi bundle with a valid manifest (You don't need to write an activator or anything else). To enable Weld for this
+ bundle, you need to create a beans.xml file in the META-INF folder.
 
 * to make an auto startable bean, just catch the BundleContainerInitialized event : 
 <pre><code>
@@ -41,6 +42,13 @@ service.doSomething();
 ...
 myService.get().doSomething();
 </code></pre>	
+you can also filter service with :
+<pre><code>
+@Inject @OSGiService @Filter("(&(lang=EN)(country=US))") MyService service;
+...
+@Inject @Filter("(&(lang=EN)(country=US))") Service<MyService> service;
+...	
+</code></pre>
 * to inject multiple OSGi services (whiteboard pattern), use the OSGi services provider :
 <pre><code>
 @Inject Services<MyService> myServices;
@@ -52,6 +60,23 @@ for (MyService myService : myServices) {
 	myService.doSomething();
 }
 </code></pre>
+you can also filter services with :
+<pre><code>
+@Inject @Filter("(&(lang=EN)(country=US))") Services<MyService> myServices;
+...	
+</code></pre>
+* to deal with the dynamism of OSGi bundle, you can catch bundle events with :
+<pre><code>
+public void bindBundle(@Observes BundleInstalled event) {}
+public void unbindBundle(@Observes BundleUninstalled event) {}
+...
+</code></pre>
+you can also filter event for specific bundles :
+<pre><code>	
+public void bindService(@Observes @BundleName("com.sample.gui") BundleInstalled event) {}
+public void bindService(@Observes @BundleVersion("4.2.1") BundleInstalled event) {}
+public void bindService(@Observes @BundleName("com.sample.gui") @BundleVersion("4.2.1") BundleInstalled event) {}
+</code></pre>
 * to deal with the dynamism of OSGi services, you can catch services events with :
 <pre><code>
 public void bindService(@Observes ServiceArrival event) {}
@@ -61,6 +86,10 @@ public void changeService(@Observes ServiceChange event) {}
 you can also filter event for specific services types :
 <pre><code>	
 public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {}
+</code></pre>
+or filter with native OSGi filters;
+<pre><code>	
+public void bindService(@Observes @Specification(MyService.class) @Filter("(&(lang=EN)(country=US))") ServiceArrival event) {}
 </code></pre>
 * to manipulate the OSGi service registry and register/unregister dynamically services inside your application you can use the ServiceRegistry bean :
 <pre><code class="java">	
@@ -99,7 +128,25 @@ for (Registration registredService : registeredServices) {
 	registredService.unregister();
 }
 </code></pre>
+* to deal with current bundle, you can use :
+<pre><code>	
+@Inject Bundle bundle;
+@Inject BundleContext context;
+</code></pre>
+* to get the Bundle metadata just write :
+<pre><code>	
+@Inject Dictionary metadata;
+</code></pre>
+You can also inject only one specific metadata with :
+<pre><code>	
+@Inject @BundleHeaders("Bundle-SymbolicName") String symbolicName;
+</code></pre>
+* to deal with bundles dataFiles you can use :
+<pre><code>	
+@Inject @BundleDataFile("test.txt") File file;
+</code></pre>
 
+	
 h3. Play with samples
 
 This project provide a small sample project that shows how to use Weld integration with OSGi.
