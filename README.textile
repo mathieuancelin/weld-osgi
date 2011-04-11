@@ -9,7 +9,8 @@ h3. How does it works
 
 h3. How to use it
 
-to enable Weld in an OSGi bundle, you need to create a beans.xml file in the META-INF folder.
+First of all, you will need to install and start the Weld/OSGi bundle in your OSGi environment.
+Then you can write a standard OSGi bundle with a valid manifest (You don't need to write an activator or anything else). To enable Weld for this bundle, you need to create a beans.xml file in the META-INF folder.
 
 * to make an auto startable bean, just catch the BundleContainerInitialized event : 
 <pre><code>
