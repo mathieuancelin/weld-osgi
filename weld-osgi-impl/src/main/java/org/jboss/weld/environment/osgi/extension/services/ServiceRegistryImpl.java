@@ -36,7 +36,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
                 instances.select(implementation).get(), null);
         holder.addRegistration(reg);
         return new RegistrationImpl<T>(
-                contract, reg, registry, holder);
+                contract, reg, registry, bundle, holder);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
                 implementation, null);
         holder.addRegistration(reg);
         return new RegistrationImpl<T>(
-                contract, reg, registry, holder);
+                contract, reg, registry, bundle, holder);
     }
 
     @Override

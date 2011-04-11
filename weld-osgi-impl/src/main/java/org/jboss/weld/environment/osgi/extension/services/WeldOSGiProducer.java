@@ -8,11 +8,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.Dictionary;
 import java.util.Set;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.weld.environment.osgi.api.extension.BundleDataFile;
 import org.jboss.weld.environment.osgi.api.extension.BundleHeaders;
+import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.OSGiBundle;
+import org.jboss.weld.environment.osgi.api.extension.Registrations;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -70,14 +73,41 @@ public class WeldOSGiProducer {
 
     @Produces
     public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
+        Set<Annotation> qualifiers = p.getQualifiers();
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(Filter.class)) {
+                return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
+                    p.getMember().getDeclaringClass(), holder.getContext(), (Filter) qualifier);
+            }
+        }
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
                 p.getMember().getDeclaringClass(), holder.getContext());
     }
 
     @Produces
-    public <T> ServiceImpl<T> getOSGiService(InjectionPoint p) {
+    public <T> ServiceImpl<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
+        Set<Annotation> qualifiers = p.getQualifiers();
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(Filter.class)) {
+                return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
+                    holder.getBundle(), (Filter) qualifier);
+            }
+        }
         return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                p.getMember().getDeclaringClass());
+                holder.getBundle());
+    }
+
+    @Produces
+    public <T> Registrations<T> getRegistrations(
+            @New RegistrationsImpl registration,
+            BundleHolder bundleHolder,
+            RegistrationsHolder holder,
+            InjectionPoint p) {
+        registration.setType(((Class<T>) ((ParameterizedType)p.getType()).getActualTypeArguments()[0]));
+        registration.setHolder(holder);
+        registration.setRegistry(bundleHolder.getContext());
+        registration.setBundle(bundleHolder.getBundle());
+        return registration;
     }
 
     @Produces

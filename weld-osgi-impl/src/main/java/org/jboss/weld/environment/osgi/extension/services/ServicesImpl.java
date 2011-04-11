@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -22,12 +23,21 @@ public class ServicesImpl<T> implements Services<T> {
     private final String serviceName;
     private final BundleContext registry;
     private List<T> services = new ArrayList<T>();
+    private Filter filter;
 
     public ServicesImpl(Type t, Class declaring, BundleContext registry) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         declaringClass = declaring;
         this.registry = registry;
+    }
+
+    public ServicesImpl(Type t, Class declaring, BundleContext registry, Filter filter) {
+        serviceClass = (Class) t;
+        serviceName = serviceClass.getName();
+        declaringClass = declaring;
+        this.registry = registry;
+        this.filter = filter;
     }
 
     @Override
@@ -43,8 +53,11 @@ public class ServicesImpl<T> implements Services<T> {
 
     private void populateServiceRef() throws Exception {
         services.clear();
-
-        ServiceReference[] refs = registry.getServiceReferences(serviceName, null);
+        String filterString = null;
+        if (filter != null && !filter.value().equals("")) {
+            filterString = filter.value();
+        }
+        ServiceReference[] refs = registry.getServiceReferences(serviceName, filterString);
         if (refs != null) {
             for (ServiceReference ref : refs) {
                 if (!serviceClass.isInterface()) {

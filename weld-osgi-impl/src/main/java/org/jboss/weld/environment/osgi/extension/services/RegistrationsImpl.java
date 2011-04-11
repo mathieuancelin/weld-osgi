@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Registrations;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -21,6 +22,8 @@ public class RegistrationsImpl<T> implements Registrations<T> {
     private BundleContext registry;
 
     private RegistrationsHolder holder;
+
+    private Bundle bundle;
 
     @Override
     public Iterator<Registration<T>> iterator() {
@@ -39,11 +42,15 @@ public class RegistrationsImpl<T> implements Registrations<T> {
         try {
             List<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
-                registrations.add(new RegistrationImpl<T>(type, reg, registry, holder));
+                registrations.add(new RegistrationImpl<T>(type, reg, registry, bundle, holder));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     public void setType(Class<T> type) {

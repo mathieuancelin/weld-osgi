@@ -2,6 +2,7 @@ package org.jboss.weld.environment.osgi.extension.services;
 
 import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -15,15 +16,17 @@ public class RegistrationImpl<T> implements Registration<T> {
     private final Class<T> contract;
     private final BundleContext registry;
     private final RegistrationsHolder holder;
+    private final Bundle bundle;
 
     public RegistrationImpl(Class<T> contract, 
             ServiceRegistration reg, 
-            BundleContext registry,
+            BundleContext registry, Bundle bundle,
             RegistrationsHolder holder) {
         this.reg = reg;
         this.contract = contract;
         this.registry = registry;
         this.holder = holder;
+        this.bundle = bundle;
     }
 
     @Override
@@ -34,6 +37,6 @@ public class RegistrationImpl<T> implements Registration<T> {
 
     @Override
     public <T> Service<T> getServiceReference() {
-        return new ServiceImpl<T>(contract, contract);
+        return new ServiceImpl<T>(contract, bundle);
     }
 }
