@@ -146,7 +146,6 @@ You can also inject only one specific metadata with :
 @Inject @BundleDataFile("test.txt") File file;
 </code></pre>
 
-	
 h3. Play with samples
 
 This project provide a small sample project that shows how to use Weld integration with OSGi.
