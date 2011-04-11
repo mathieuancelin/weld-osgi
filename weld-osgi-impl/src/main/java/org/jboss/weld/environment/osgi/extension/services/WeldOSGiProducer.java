@@ -1,5 +1,6 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -9,6 +10,7 @@ import java.util.Dictionary;
 import java.util.Set;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import org.jboss.weld.environment.osgi.api.extension.BundleDataFile;
 import org.jboss.weld.environment.osgi.api.extension.BundleHeaders;
 import org.jboss.weld.environment.osgi.api.extension.OSGiBundle;
 import org.osgi.framework.Bundle;
@@ -27,7 +29,7 @@ public class WeldOSGiProducer {
         return holder.getBundle();
     }
 
-    @Produces @OSGiBundle
+    @Produces @OSGiBundle(symbolicName="")
     public Bundle getSpecificBundle(BundleHolder holder, InjectionPoint p) {
         Set<Annotation> qualifiers = p.getQualifiers();
         OSGiBundle bundle = null;
@@ -50,6 +52,22 @@ public class WeldOSGiProducer {
         return holder.getContext();
     }
 
+    @Produces @BundleDataFile("")
+    public File getDataFile(BundleHolder holder, InjectionPoint p) {
+        Set<Annotation> qualifiers = p.getQualifiers();
+        BundleDataFile file = null;
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(BundleDataFile.class)) {
+                file = (BundleDataFile) qualifier;
+                break;
+            }
+        }
+        if (file.value().equals("")) {
+            return null;
+        }
+        return holder.getContext().getDataFile(file.value());
+    }
+
     @Produces
     public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
@@ -67,7 +85,7 @@ public class WeldOSGiProducer {
         return holder.getBundle().getHeaders();
     }
 
-    @Produces @BundleHeaders
+    @Produces @BundleHeaders("")
     public String getSpecificBundleHeaders(BundleHolder holder, InjectionPoint p) {
         Set<Annotation> qualifiers = p.getQualifiers();
         BundleHeaders headers = null;
