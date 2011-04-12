@@ -1,8 +1,18 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
@@ -26,9 +36,14 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Inject
     private Instance<Object> instances;
-
+    
     @Inject
     private RegistrationsHolder holder;
+
+    @Inject
+    private BeanManager manager;
+    
+    private Map<Class<?>, Beantype<?>> types = new HashMap<Class<?>, Beantype<?>>();
 
     @Override
     public <T> Registration<T> registerService(Class<T> contract, Class<? extends T> implementation) {
@@ -58,4 +73,59 @@ public class ServiceRegistryImpl implements ServiceRegistry {
         return new ServiceImpl<T>(contract, bundle);
     }
 
+    @PreDestroy
+    public void stop() {
+        for (Beantype<?> type : types.values()) {
+            type.destroy();
+        }
+    }
+
+    public <T> void registerNewType(Class<T> type) {
+        if (!types.containsKey(type)) {
+            types.put(type, new Beantype<T>(type, manager));
+        }
+    }
+
+    @Override
+    public <T> Provider<T> newTypeInstance(Class<T> unmanagedType) {
+        if (!types.containsKey(unmanagedType)) {
+            types.put(unmanagedType, new Beantype<T>(unmanagedType, manager));
+        }
+        return (Provider<T>) types.get(unmanagedType);
+    }
+
+    private class Beantype<T> implements Provider<T> {
+
+        private final Class<T> clazz;
+        private final BeanManager manager;
+        private final AnnotatedType annoted;
+        private final InjectionTarget it;
+        private final CreationalContext<?> cc;
+        private Collection<T> instances = new ArrayList<T>();
+
+        public Beantype(Class<T> clazz, BeanManager manager) {
+            this.clazz = clazz;
+            this.manager = manager;
+            annoted = manager.createAnnotatedType(clazz);
+            it = manager.createInjectionTarget(annoted);
+            cc = manager.createCreationalContext(null);
+        }
+
+        public void destroy() {
+            for (T instance : instances) {
+                it.preDestroy(instance);
+                it.dispose(instance);
+            }
+            cc.release();
+        }
+
+        @Override
+        public T get() {
+            T instance = (T) it.produce(cc);
+            it.inject(instance, cc);
+            it.postConstruct(instance);
+            instances.add(instance);
+            return instance;
+        }
+    }
 }
