@@ -65,7 +65,7 @@ you can also filter services with :
 @Inject @Filter("(&(lang=EN)(country=US))") Services<MyService> myServices;
 ...	
 </code></pre>
-* to deal with the dynamism of OSGi bundle, you can catch bundle events with :
+* to deal with the dynamism of OSGi bundles, you can catch bundle events (extender pattern) :
 <pre><code>
 public void bindBundle(@Observes BundleInstalled event) {}
 public void unbindBundle(@Observes BundleUninstalled event) {}
@@ -77,7 +77,7 @@ public void bindService(@Observes @BundleName("com.sample.gui") BundleInstalled 
 public void bindService(@Observes @BundleVersion("4.2.1") BundleInstalled event) {}
 public void bindService(@Observes @BundleName("com.sample.gui") @BundleVersion("4.2.1") BundleInstalled event) {}
 </code></pre>
-* to deal with the dynamism of OSGi services, you can catch services events with :
+* to deal with the dynamism of OSGi services, you can catch services events (whiteboard pattern) :
 <pre><code>
 public void bindService(@Observes ServiceArrival event) {}
 public void unbindService(@Observes ServiceDeparture event) {}
