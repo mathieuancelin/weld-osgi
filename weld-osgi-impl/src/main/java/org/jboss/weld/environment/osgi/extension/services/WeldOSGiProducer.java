@@ -7,13 +7,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.weld.environment.osgi.api.extension.BundleDataFile;
+import org.jboss.weld.environment.osgi.api.extension.BundleHeader;
 import org.jboss.weld.environment.osgi.api.extension.BundleHeaders;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.OSGiBundle;
 import org.jboss.weld.environment.osgi.api.extension.Registrations;
 import org.osgi.framework.Bundle;
@@ -96,18 +99,25 @@ public class WeldOSGiProducer {
         return registration;
     }
 
-    @Produces
-    public Dictionary getBundleHeaders(BundleHolder holder) {
-        return holder.getBundle().getHeaders();
+    @Produces @BundleHeaders
+    public Map<String, String> getBundleHeaders(BundleHolder holder) {
+        Dictionary dict = holder.getBundle().getHeaders();
+        Map<String, String> headers = new HashMap<String, String>();
+        Enumeration<String> keys = dict.keys();
+        while(keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            headers.put(key, (String) dict.get(key));
+        }
+        return headers;
     }
 
-    @Produces @BundleHeaders("")
+    @Produces @BundleHeader("")
     public String getSpecificBundleHeaders(BundleHolder holder, InjectionPoint p) {
         Set<Annotation> qualifiers = p.getQualifiers();
-        BundleHeaders headers = null;
+        BundleHeader headers = null;
         for (Annotation qualifier : qualifiers) {
-            if (qualifier.annotationType().equals(BundleHeaders.class)) {
-                headers = (BundleHeaders) qualifier;
+            if (qualifier.annotationType().equals(BundleHeader.class)) {
+                headers = (BundleHeader) qualifier;
                 break;
             }
         }
@@ -115,7 +125,7 @@ public class WeldOSGiProducer {
             throw new IllegalStateException("You must specify a key for your BundleHeaders qualifier");
         }
         if (headers.value().equals("")) {
-            return null; // not cool at all ...
+            return null; // not cool at all but should never happened ...
         }
         return (String) holder.getBundle().getHeaders().get(headers.value());
     }
