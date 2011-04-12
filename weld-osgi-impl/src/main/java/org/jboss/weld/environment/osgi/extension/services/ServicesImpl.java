@@ -19,23 +19,20 @@ import org.osgi.framework.ServiceReference;
 public class ServicesImpl<T> implements Services<T> {
 
     private final Class serviceClass;
-    private final Class declaringClass;
     private final String serviceName;
     private final BundleContext registry;
     private List<T> services = new ArrayList<T>();
     private Filter filter;
 
-    public ServicesImpl(Type t, Class declaring, BundleContext registry) {
+    public ServicesImpl(Type t, BundleContext registry) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
-        declaringClass = declaring;
         this.registry = registry;
     }
 
-    public ServicesImpl(Type t, Class declaring, BundleContext registry, Filter filter) {
+    public ServicesImpl(Type t, BundleContext registry, Filter filter) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
-        declaringClass = declaring;
         this.registry = registry;
         this.filter = filter;
     }

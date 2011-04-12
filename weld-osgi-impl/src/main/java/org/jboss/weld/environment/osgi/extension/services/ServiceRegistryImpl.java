@@ -50,7 +50,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Override
     public <T> Services<T> getServiceReferences(Class<T> contract) {
-        return new ServicesImpl<T>(contract, contract, registry);
+        return new ServicesImpl<T>(contract, registry);
     }
 
     @Override

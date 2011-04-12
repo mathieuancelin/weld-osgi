@@ -77,7 +77,7 @@ public class WeldOSGiProducer {
     @Produces
     public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                p.getMember().getDeclaringClass(), holder.getContext());
+               holder.getContext());
     }
 
     @Produces
