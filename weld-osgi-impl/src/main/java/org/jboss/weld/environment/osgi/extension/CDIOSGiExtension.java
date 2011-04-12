@@ -3,11 +3,14 @@ package org.jboss.weld.environment.osgi.extension;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -22,6 +25,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
@@ -44,10 +48,13 @@ import org.osgi.framework.FrameworkUtil;
  * 
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
+@ApplicationScoped
 public class CDIOSGiExtension implements Extension {
 
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
+
+    private List<Annotation> observers = new ArrayList<Annotation>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
@@ -58,7 +65,6 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
         event.addQualifier(OSGiService.class);
-
     }
     
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
@@ -78,6 +84,15 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
+    public void registerObservers(@Observes ProcessObserverMethod event) {
+        Set<Annotation> qualifiers = event.getObserverMethod().getObservedQualifiers();
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(Filter.class)) {
+                observers.add(qualifier);
+            }
+        }
+    }
+
     public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
         Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
         discoverServiceInjectionPoints(injectionPoints);
@@ -89,7 +104,6 @@ public class CDIOSGiExtension implements Extension {
     }
 
     private void discoverServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
-        
         for (Iterator<InjectionPoint> iterator 
                 = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
@@ -123,6 +137,10 @@ public class CDIOSGiExtension implements Extension {
             final InjectionPoint injectionPoint = iterator.next();
             event.addBean(new OSGiServiceBean(injectionPoint));
         }
+    }
+
+    public List<Annotation> getObservers() {
+        return observers;
     }
 
     private final class OSGiServiceBean implements Bean {

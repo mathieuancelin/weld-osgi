@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.BundleName;
 import org.jboss.weld.environment.osgi.api.extension.BundleVersion;
@@ -131,13 +132,14 @@ public class ExtensionActivator implements BundleActivator,
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        ServiceReference[] references = findReferences(context, Event.class);
+        ServiceReference[] references = findReferences(context, Instance.class);
 
         if (references != null) {
             for (ServiceReference reference : references) {
                 boolean set = BundleSingletonProvider.currentBundle.get() != null;
                 BundleSingletonProvider.currentBundle.set(reference.getBundle().getBundleId());
-                Event<Object> e = (Event<Object>) context.getService(reference);
+                Instance<Object> instance = (Instance<Object>) context.getService(reference);
+                Event<Object> e = instance.select(Event.class).get();
                 try {
                     e.select(ServiceEvent.class).fire(event);
                 } catch (Throwable t) {
@@ -160,7 +162,7 @@ public class ExtensionActivator implements BundleActivator,
                         break;
                 }
                 if (serviceEvent != null) {
-                    fireAllEvent(serviceEvent, e);
+                    fireAllEvent(serviceEvent, e, instance);
                 }
                 if (!set) {
                     BundleSingletonProvider.currentBundle.remove();
@@ -169,21 +171,43 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    private static void fireAllEvent(AbstractServiceEvent event, Event broadcaster) {
+    private void fireAllEvent(AbstractServiceEvent event, 
+            Event broadcaster, Instance<Object> instance) {
         List<Class<?>> classes = event.getServiceClasses();
         Class eventClass = event.getClass();
         for (Class<?> clazz : classes) {
             try {
                 broadcaster.select(eventClass,
-                    new SpecificationAnnotation(clazz),
-                    new FilterAnnotation(event.getRef())).fire(event);
+                    filteredServicesQualifiers(event,
+                        new SpecificationAnnotation(clazz), instance))
+                    .fire(event);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
     }
 
-    private static void fireAllEvent(AbstractBundleEvent event, Event broadcaster) {
+    private Annotation[] filteredServicesQualifiers(AbstractServiceEvent event,
+            SpecificationAnnotation specific, Instance<Object> instance) {
+        List<Annotation> eventQualifiers = new ArrayList<Annotation>();
+        eventQualifiers.add(specific);
+        CDIOSGiExtension ext = instance.select(CDIOSGiExtension.class).get();
+        for (Annotation anno : ext.getObservers()) {
+            String value = ((Filter) anno).value();
+            try {
+                org.osgi.framework.Filter filter 
+                        = context.createFilter(value);
+                if (filter.match(event.getRef())) {
+                    eventQualifiers.add(new FilterAnnotation(value));
+                }
+            } catch (InvalidSyntaxException ex) {
+                //ex.printStackTrace();
+            }
+        }
+        return eventQualifiers.toArray(new Annotation[eventQualifiers.size()]);
+    }
+
+    private void fireAllEvent(AbstractBundleEvent event, Event broadcaster) {
         try {
             broadcaster.select(event.getClass(),
                 new BundleNameAnnotation(event.getSymbolicName()),
@@ -261,23 +285,10 @@ public class ExtensionActivator implements BundleActivator,
             extends AnnotationLiteral<Filter>
             implements Filter {
 
-        private List<String> excludes =
-                new ArrayList<String>() {{add("objectClass"); add("service.id");}};
         private final String value;
 
-        private int index = 0;
-
-        public FilterAnnotation(ServiceReference ref) {
-            String filterValue = "";
-            for (String key : ref.getPropertyKeys()) {
-                if (!excludes.contains(key)) {
-                    Object val = ref.getProperty(key);
-                    if (!val.getClass().isArray()) {
-                        filterValue = addAndPart("(" + key + "=" + val + ")", filterValue);
-                    }
-                }
-            }
-            this.value = filterValue;
+        public FilterAnnotation(String value) {
+            this.value = value;
         }
 
         @Override
@@ -288,15 +299,6 @@ public class ExtensionActivator implements BundleActivator,
         @Override
         public String value() {
             return value;
-        }
-
-        private String addAndPart(String newValue, String filter) {
-            index ++;
-            if (filter.equals("")) {
-                return newValue;
-            } else {
-                return "(&" + newValue + filter + ")";
-            }
         }
     }
 }
