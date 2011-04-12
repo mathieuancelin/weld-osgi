@@ -1,6 +1,7 @@
 package org.jboss.weld.environment.osgi.extension;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.Filter;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
@@ -54,7 +57,17 @@ public class CDIOSGiExtension implements Extension {
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
 
+    private HashMap<Type, Set<InjectionPoint>> filteredServicesToBeInjected
+                            = new HashMap<Type, Set<InjectionPoint>>();
+
+    private HashMap<Type, Set<InjectionPoint>> filteredServiceToBeInjected
+                            = new HashMap<Type, Set<InjectionPoint>>();
+
     private List<Annotation> observers = new ArrayList<Annotation>();
+
+    public CDIOSGiExtension() {
+        System.out.println("instance created");
+    }
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
@@ -82,6 +95,34 @@ public class CDIOSGiExtension implements Extension {
             }
             addBean(event, type, this.servicesToBeInjected.get(type));
         }
+
+        for (Iterator<Type> iterator = this.filteredServicesToBeInjected.keySet().iterator();
+                                                iterator.hasNext();) {
+            Type type =  iterator.next();
+//            if (!(type instanceof Class)) {
+//                //XXX: need to handle Instance<Class>. This fails currently
+//                System.out.println("Unknown type:" + type);
+//                event.addDefinitionError(
+//                    new UnsupportedOperationException(
+//                        "Injection target type " + type + "not supported"));
+//                break;
+//            }
+            addFilteredServices(event, type, this.filteredServicesToBeInjected.get(type));
+        }
+
+        for (Iterator<Type> iterator = this.filteredServiceToBeInjected.keySet().iterator();
+                                                iterator.hasNext();) {
+            Type type =  iterator.next();
+//            if (!(type instanceof Class)) {
+//                XXX: need to handle Instance<Class>. This fails currently
+//                System.out.println("Unknown type:" + type);
+//                event.addDefinitionError(
+//                    new UnsupportedOperationException(
+//                        "Injection target type " + type + "not supported"));
+//                break;
+//            }
+            addFilteredService(event, type, this.filteredServiceToBeInjected.get(type));
+        }
     }
 
     public void registerObservers(@Observes ProcessObserverMethod event) {
@@ -107,6 +148,18 @@ public class CDIOSGiExtension implements Extension {
         for (Iterator<InjectionPoint> iterator 
                 = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
+            boolean services = false;
+            boolean service = false;
+            try {
+                if (((ParameterizedType)injectionPoint.getType())
+                        .getRawType().equals(Services.class)) {
+                    services = true;
+                } else if (((ParameterizedType)injectionPoint.getType())
+                        .getRawType().equals(Service.class)) {
+                    service = true;
+                }
+            } catch (Exception e) {}
+            
             Set<Annotation> qualifs = injectionPoint.getQualifiers();
             for (Iterator<Annotation> qualifIter = qualifs.iterator();
                                                     qualifIter.hasNext();) {
@@ -114,8 +167,32 @@ public class CDIOSGiExtension implements Extension {
                 if (annotation.annotationType().equals(OSGiService.class)){
                     addServiceInjectionInfo(injectionPoint);
                 }
+                if (annotation.annotationType().equals(Filter.class)){
+                    if (services) {
+                        addFilteredServicesInjectionInfo(injectionPoint);
+                    }
+                    if (service) {
+                        addFilteredServiceInjectionInfo(injectionPoint);
+                    }
+                }
             }
         }
+    }
+
+    private void addFilteredServiceInjectionInfo(InjectionPoint injectionPoint) {
+        Type key = injectionPoint.getType();
+        if (!filteredServiceToBeInjected.containsKey(key)){
+            filteredServiceToBeInjected.put(key, new HashSet<InjectionPoint>());
+        }
+        filteredServiceToBeInjected.get(key).add(injectionPoint);
+    }
+
+    private void addFilteredServicesInjectionInfo(InjectionPoint injectionPoint) {
+        Type key = injectionPoint.getType();
+        if (!filteredServicesToBeInjected.containsKey(key)){
+            filteredServicesToBeInjected.put(key, new HashSet<InjectionPoint>());
+        }
+        filteredServicesToBeInjected.get(key).add(injectionPoint);
     }
 
     private void addServiceInjectionInfo(InjectionPoint injectionPoint) {
@@ -139,8 +216,198 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
+    private void addFilteredServices(
+            AfterBeanDiscovery event,
+            final Type type,
+            final Set<InjectionPoint> injectionPoints) {
+
+        for (Iterator<InjectionPoint> iterator
+                = injectionPoints.iterator(); iterator.hasNext();) {
+
+            final InjectionPoint injectionPoint = iterator.next();
+            event.addBean(new FilteredServicesBean(injectionPoint));
+        }
+    }
+
+    private void addFilteredService(
+            AfterBeanDiscovery event,
+            final Type type,
+            final Set<InjectionPoint> injectionPoints) {
+
+        for (Iterator<InjectionPoint> iterator
+                = injectionPoints.iterator(); iterator.hasNext();) {
+
+            final InjectionPoint injectionPoint = iterator.next();
+            event.addBean(new FilteredServiceBean(injectionPoint));
+        }
+    }
+
     public List<Annotation> getObservers() {
         return observers;
+    }
+
+    private final class FilteredServiceBean<Service> implements Bean<Service> {
+
+        private final Type type;
+        private final InjectionPoint injectionPoint;
+        private Filter filter;
+
+        public FilteredServiceBean(InjectionPoint injectionPoint) {
+            this.injectionPoint = injectionPoint;
+            this.type = this.injectionPoint.getType();
+            Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+            for (Annotation qualifier : qualifiers) {
+                if (qualifier.annotationType().equals(Filter.class)) {
+                    filter = (Filter) qualifier;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public Set<Type> getTypes() {
+            Set<Type> s = new HashSet<Type>();
+            s.add(type);
+            s.add(Object.class);
+            return s;
+        }
+
+        @Override
+        public Set<Annotation> getQualifiers() {
+            Set<Annotation> s = new HashSet<Annotation>();
+            s.add(new AnnotationLiteral<Default>() {});
+            s.add(new AnnotationLiteral<Any>() {});
+            s.add(new OSGiFilterQualifierType(filter.value()));
+            return s;
+        }
+
+        @Override
+        public Class<? extends Annotation> getScope() {
+            return Dependent.class;
+        }
+
+        @Override
+        public String getName() {
+            return type.toString();
+        }
+
+        @Override
+        public Set<Class<? extends Annotation>> getStereotypes() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Class getBeanClass() {
+            return ((Class)((ParameterizedType) type).getRawType());
+        }
+
+        @Override
+        public boolean isAlternative() {
+            return false;
+        }
+
+        @Override
+        public boolean isNullable() {
+            return false;
+        }
+
+        @Override
+        public Set<InjectionPoint> getInjectionPoints() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Service create(CreationalContext creationalContext) {
+            return (Service) new ServiceImpl(type, FrameworkUtil.getBundle(
+                    injectionPoint.getMember().getDeclaringClass()), filter);
+        }
+
+        @Override
+        public void destroy(Service instance, CreationalContext<Service> creationalContext) {
+            // Nothing to do, services are unget after each call.
+        }
+    }
+
+    private final class FilteredServicesBean<Services> implements Bean<Services> {
+
+        private final Type type;
+        private final InjectionPoint injectionPoint;
+        private Filter filter;
+
+        public FilteredServicesBean(InjectionPoint injectionPoint) {
+            this.injectionPoint = injectionPoint;
+            this.type = this.injectionPoint.getType();
+            Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+            for (Annotation qualifier : qualifiers) {
+                if (qualifier.annotationType().equals(Filter.class)) {
+                    filter = (Filter) qualifier;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public Set<Type> getTypes() {
+            Set<Type> s = new HashSet<Type>();
+            s.add(type);
+            s.add(Object.class);
+            return s;
+        }
+
+        @Override
+        public Set<Annotation> getQualifiers() {
+            Set<Annotation> s = new HashSet<Annotation>();
+            s.add(new AnnotationLiteral<Default>() {});
+            s.add(new AnnotationLiteral<Any>() {});
+            s.add(new OSGiFilterQualifierType(filter.value()));
+            return s;
+        }
+
+        @Override
+        public Class<? extends Annotation> getScope() {
+            return Dependent.class;
+        }
+
+        @Override
+        public String getName() {
+            return type.toString();
+        }
+
+        @Override
+        public Set<Class<? extends Annotation>> getStereotypes() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Class<?> getBeanClass() {
+            return ((Class)((ParameterizedType) type).getRawType());
+        }
+
+        @Override
+        public boolean isAlternative() {
+            return false;
+        }
+
+        @Override
+        public boolean isNullable() {
+            return false;
+        }
+
+        @Override
+        public Set<InjectionPoint> getInjectionPoints() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Services create(CreationalContext creationalContext) {
+            return (Services) new ServicesImpl(type, FrameworkUtil.getBundle(
+                    injectionPoint.getMember().getDeclaringClass()).getBundleContext(), filter);
+        }
+
+        @Override
+        public void destroy(Services instance, CreationalContext<Services> creationalContext) {
+            // Nothing to do, services are unget after each call.
+        }
     }
 
     private final class OSGiServiceBean implements Bean {
