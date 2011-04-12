@@ -135,11 +135,11 @@ for (Registration registredService : registeredServices) {
 </code></pre>
 * to get the Bundle metadata just write :
 <pre><code>	
-@Inject Dictionary metadata;
+@Inject  @BundleHeaders Map<String, String> metadata;
 </code></pre>
 You can also inject only one specific metadata with :
 <pre><code>	
-@Inject @BundleHeaders("Bundle-SymbolicName") String symbolicName;
+@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;
 </code></pre>
 * to deal with bundles dataFiles you can use :
 <pre><code>	
