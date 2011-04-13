@@ -3,8 +3,11 @@ package org.jboss.weld.environment.osgi.integration;
 import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -50,6 +53,19 @@ public class WeldEmbedded {
         } catch (Throwable t) {
             // Ignore
         }
+        embedded.weld.initialize(new BundleContainer() {
+
+                @Override
+                public void fire(Object event) {
+                    // nothing to do
+                }
+            }, new BundleContainers() {
+
+            @Override
+            public Collection<BundleContainer> getContainers() {
+                return Collections.emptyList();
+            }
+        });
         embedded.activator.start(context);
         if (!set) {
             BundleSingletonProvider.currentBundle.remove();
