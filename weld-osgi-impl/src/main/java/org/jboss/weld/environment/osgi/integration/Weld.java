@@ -21,10 +21,13 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.environment.osgi.OSGiEnvironment;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
+import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
@@ -60,7 +63,7 @@ public class Weld {
      * Boots Weld and creates and returns a CDIContainerImpl instance, through which
      * beans and events can be accessed.
      */
-    public boolean initialize() {
+    public boolean initialize(BundleContainer container, BundleContainers containers) {
         started = false;
         // ugly hack to make jboss interceptors works.
         // thank you Thread.currentThread().getContextClassLoader().loadClass()
@@ -87,8 +90,11 @@ public class Weld {
 
             // Get this Bundle BeanManager
             manager = bootstrap.getManager(deployment.getBeanDeploymentArchive());
+
             manager.instance().select(BundleHolder.class).get().setBundle(bundle);
             manager.instance().select(BundleHolder.class).get().setContext(bundle.getBundleContext());
+            manager.instance().select(ContainerObserver.class).get().setContainers(containers);
+            manager.instance().select(ContainerObserver.class).get().setCurrentContainer(container);
             manager.fireEvent(new BundleContainerInitialized(bundle.getBundleContext()));
             // TODO Move this in extension ...
             System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));

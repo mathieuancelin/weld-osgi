@@ -1,12 +1,14 @@
 package org.jboss.weld.environment.osgi.integration;
 
 import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
 import org.osgi.framework.*;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
+import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,9 +17,9 @@ import java.util.*;
  * Time: 22:27
  * To change this template use File | Settings | File Templates.
  */
-public class IntegrationActivator implements BundleActivator, BundleListener {
+public class IntegrationActivator implements BundleActivator, BundleListener, BundleContainers {
 
-    private Map<Long, Holder> managed;
+    private Map<Long, BundleContainer> managed;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -25,7 +27,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         // Init the SingletonProvider
         SingletonProvider.initialize(new BundleSingletonProvider());
 
-        managed = new HashMap<Long, Holder>();
+        managed = new HashMap<Long, BundleContainer>();
 
         for (Bundle bundle : context.getBundles()) {
             if (Bundle.ACTIVE == bundle.getState()) {
@@ -39,7 +41,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     @Override
     public void stop(BundleContext context) throws Exception {
         for (Bundle bundle : context.getBundles()) {
-            Holder holder = managed.get(bundle.getBundleId());
+            Holder holder = (Holder) managed.get(bundle.getBundleId());
             if (holder != null) {
                 stopManagement(holder.bundle);
             }
@@ -63,7 +65,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
     private void stopManagement(Bundle bundle) {
         boolean set = BundleSingletonProvider.currentBundle.get() != null;
         BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
-        Holder holder = managed.get(bundle.getBundleId());
+        Holder holder = (Holder) managed.get(bundle.getBundleId());
         if (holder != null) {
             Collection<ServiceRegistration> regs = holder.registrations;
             for (ServiceRegistration reg : regs) {
@@ -85,8 +87,9 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         boolean set = BundleSingletonProvider.currentBundle.get() != null;
         BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
         //System.out.println("Starting management for bundle " + bundle);
+        Holder holder = new Holder();
         Weld weld = new Weld(bundle);
-        weld.initialize();
+        weld.initialize(holder, this);
 
         if (weld.isStarted()) {
             
@@ -111,7 +114,6 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
             } catch (Throwable t) {
                 // Ignore
             }
-            Holder holder = new Holder();
             holder.container = weld;
             holder.registrations = regs;
             holder.bundle = bundle;
@@ -122,9 +124,26 @@ public class IntegrationActivator implements BundleActivator, BundleListener {
         }
     }
 
-    private static class Holder {
+    @Override
+    public Collection<BundleContainer> getContainers() {
+        return managed.values();
+    }
+
+    private static class Holder implements BundleContainer {
         Bundle bundle;
         Weld container;
         Collection<ServiceRegistration> registrations;
+
+        @Override
+        public void fire(Object event) {
+            Long set = BundleSingletonProvider.currentBundle.get();
+            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+            container.getEvent().fire(event);
+            if (set != null) {
+                BundleSingletonProvider.currentBundle.set(set);
+            } else {
+                BundleSingletonProvider.currentBundle.remove();
+            }
+        }
     }
 }

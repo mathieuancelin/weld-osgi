@@ -1,5 +1,6 @@
 package org.jboss.weld.environment.osgi.extension;
 
+import java.awt.event.ContainerListener;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -24,6 +25,7 @@ import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
+import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 
 import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
@@ -61,10 +63,10 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
+        event.addAnnotatedType(manager.createAnnotatedType(ContainerObserver.class));
         event.addQualifier(OSGiService.class);
     }
     
-    // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
     public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();
                                                 iterator.hasNext();) {
