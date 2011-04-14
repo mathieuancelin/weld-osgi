@@ -128,6 +128,12 @@ for (Registration registredService : registeredServices) {
 	registredService.unregister();
 }
 </code></pre>
+* you can also propagate events between bundle with the @InterBundleEvent`
+<pre><code>	
+@Inject Event<InterBundleEvent> event;
+...
+event.fire(new InterBundleEvent("Hello bundles));
+</code></pre>
 * to deal with current bundle, you can use :
 <pre><code>	
 @Inject Bundle bundle;
