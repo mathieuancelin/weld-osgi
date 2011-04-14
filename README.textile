@@ -179,7 +179,7 @@ public class MyApp implements BundleActivator {
     }
 }
 </code></pre>
-Just be careful here, to make this exemple work, the Weld/OSGi bundle must not be started.
+Just be careful here, to make this exemple work, the Weld/OSGi bundle must not be started. You also won't be able to use certain features such as inter bundle events.
 
 h3. Play with samples
 
