@@ -1,8 +1,5 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
