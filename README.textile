@@ -128,11 +128,23 @@ for (Registration registredService : registeredServices) {
 	registredService.unregister();
 }
 </code></pre>
-* you can also propagate events between bundle with the @InterBundleEvent`
+* you can also propagate events between bundle with the @InterBundleEvent : 
 <pre><code>	
 @Inject Event<InterBundleEvent> event;
 ...
 event.fire(new InterBundleEvent("Hello bundles));
+</code></pre>
+In another bundle :
+<pre><code>	
+// listen to all InterBundleEvent even from your own bundle
+public void listenAllEvents(@Observes InterBundleEvent event) {}
+...
+// listen to all InterBundleEvent from other bundles
+public void listenAllEventsFromOtherBundles(@Observes @Sent InterBundleEvent event) {}
+...
+// listen to all InterBundleEvent containing String object from other bundles
+public void listenStringEventsFromOtherBundles(
+				@Observes @Sent @Specification(String.class) InterBundleEvent event) {}
 </code></pre>
 * to deal with current bundle, you can use :
 <pre><code>	
