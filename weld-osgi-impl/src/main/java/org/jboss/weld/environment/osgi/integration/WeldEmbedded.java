@@ -8,6 +8,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -56,7 +57,7 @@ public class WeldEmbedded {
         embedded.weld.initialize(new BundleContainer() {
 
                 @Override
-                public void fire(Object event) {
+                public void fire(InterBundleEvent event) {
                     // nothing to do
                 }
             }, new BundleContainers() {

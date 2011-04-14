@@ -9,6 +9,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,10 +136,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
         Collection<ServiceRegistration> registrations;
 
         @Override
-        public void fire(Object event) {
+        public void fire(InterBundleEvent event) {
             Long set = BundleSingletonProvider.currentBundle.get();
             BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
-            container.getEvent().fire(event);
+            container.getEvent().select(InterBundleEvent.class).fire(event);
             if (set != null) {
                 BundleSingletonProvider.currentBundle.set(set);
             } else {
