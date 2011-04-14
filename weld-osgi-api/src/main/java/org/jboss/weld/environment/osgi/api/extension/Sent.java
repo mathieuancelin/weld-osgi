@@ -14,6 +14,4 @@ import javax.inject.Qualifier;
 @Qualifier
 @Target({ PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Specification {
-    Class value();
-}
+public @interface Sent {}
