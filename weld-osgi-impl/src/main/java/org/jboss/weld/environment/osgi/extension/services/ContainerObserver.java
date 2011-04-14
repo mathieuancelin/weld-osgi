@@ -31,7 +31,7 @@ public class ContainerObserver {
         if (!event.isSent()) {
             for (BundleContainer container : containers.getContainers()) {
                 if (!container.equals(currentContainer)) {
-                    event.setSent(true);
+                    event.sent();
                     container.fire(event);
                 }
             }

@@ -1,8 +1,10 @@
 package org.jboss.weld.environment.osgi.api.extension.events;
 
+import javax.inject.Provider;
+
 /**
  *
- * @author mathieuancelin
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class InterBundleEvent {
 
@@ -14,7 +16,28 @@ public class InterBundleEvent {
         this.event = event;
     }
 
-    public Object getEvent() {
+    public Class<?> type() {
+        return event.getClass();
+    }
+
+    public boolean isTyped(Class<?> type) {
+        return event.getClass().equals(type);
+    }
+
+    public <T> Provider<T> typed(Class<T> type) {
+        if (isTyped(type)) {
+            return new Provider<T>() {
+                @Override
+                public T get() {
+                    return (T) event;
+                }
+            };
+        } else {
+            throw new RuntimeException("The event is not of type " + type.getName());
+        }
+    }
+
+    public Object get() {
         return event;
     }
 
@@ -22,7 +45,7 @@ public class InterBundleEvent {
         return sent;
     }
 
-    public void setSent(boolean sent) {
-        this.sent = sent;
+    public void sent() {
+        this.sent = true;
     }
 }
