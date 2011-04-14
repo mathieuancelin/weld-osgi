@@ -10,6 +10,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.BundleName;
 import org.jboss.weld.environment.osgi.api.extension.BundleVersion;
 import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.Sent;
 import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
@@ -260,7 +261,7 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    private static class SpecificationAnnotation
+    public static class SpecificationAnnotation
             extends AnnotationLiteral<Specification>
             implements Specification {
 
@@ -281,7 +282,17 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    private static class FilterAnnotation
+    public static class SentAnnotation
+            extends AnnotationLiteral<Sent>
+            implements Sent {
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return Sent.class;
+        }
+    }
+
+    public static class FilterAnnotation
             extends AnnotationLiteral<Filter>
             implements Filter {
 
