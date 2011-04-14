@@ -10,6 +10,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SentAnnotation;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SpecificationAnnotation;
 
 /**
  * Created by IntelliJ IDEA.
@@ -139,7 +141,9 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
         public void fire(InterBundleEvent event) {
             Long set = BundleSingletonProvider.currentBundle.get();
             BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
-            container.getEvent().select(InterBundleEvent.class).fire(event);
+            container.getEvent().select(InterBundleEvent.class, 
+                    new SpecificationAnnotation(event.type()),
+                    new SentAnnotation()).fire(event);
             if (set != null) {
                 BundleSingletonProvider.currentBundle.set(set);
             } else {
