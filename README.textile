@@ -128,7 +128,7 @@ for (Registration registredService : registeredServices) {
 	registredService.unregister();
 }
 </code></pre>
-* you can also propagate events between bundle with the @InterBundleEvent : 
+* you can also propagate events between bundle with the InterBundleEvent : 
 <pre><code>	
 @Inject Event<InterBundleEvent> event;
 ...
