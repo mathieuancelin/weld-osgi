@@ -5,16 +5,14 @@ import com.sample.osgi.cdi.services.SpellCheckerService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 
 /**
  *

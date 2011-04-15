@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import org.jboss.weld.environment.osgi.api.extension.Specification;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
