@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,8 +24,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import org.jboss.weld.environment.osgi.api.extension.Specification;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
 import org.osgi.framework.Bundle;
@@ -37,11 +39,11 @@ public class PaintFrame extends JFrame implements MouseListener {
     private String selected;
     private JPanel panel;
 
-    @Inject
-    private Services<ShapeProvider> registeredProviders;
+    @Inject private Services<ShapeProvider> registeredProviders;
 
-    @Inject
-    private ShapeProvider defaultProvider;
+    @Inject private ShapeProvider defaultProvider;
+
+    @Inject private Event<InterBundleEvent> message;
 
     private ActionListener actionListener = new ShapeActionListener();
 
@@ -149,6 +151,7 @@ public class PaintFrame extends JFrame implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent evt) {
+        message.fire(new InterBundleEvent("New shape added ..."));
         if (selected == null) {
             return;
         }
