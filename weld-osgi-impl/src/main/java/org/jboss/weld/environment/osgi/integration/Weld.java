@@ -20,7 +20,6 @@ import javax.inject.Qualifier;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
-import org.jboss.weld.environment.osgi.OSGiEnvironment;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
