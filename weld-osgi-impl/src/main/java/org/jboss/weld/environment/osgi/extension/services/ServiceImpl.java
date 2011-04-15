@@ -20,15 +20,6 @@ public class ServiceImpl<T> implements Service<T> {
     private T service;
     private Filter filter;
 
-//    public ServiceImpl(Type t, Class declaring) {
-//        serviceClass = (Class) t;
-//        serviceName = serviceClass.getName();
-//        declaringClass = declaring;
-//        bundle = FrameworkUtil.getBundle(declaringClass);
-//        if (bundle == null)
-//            throw new IllegalStateException("Can't have a null bundle.");
-//    }
-
     public ServiceImpl(Type t, Bundle bundle) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
