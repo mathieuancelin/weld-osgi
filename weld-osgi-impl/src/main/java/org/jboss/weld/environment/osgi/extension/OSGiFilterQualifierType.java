@@ -1,7 +1,7 @@
 package org.jboss.weld.environment.osgi.extension;
 
 import javax.enterprise.util.AnnotationLiteral;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 
 /**
  *

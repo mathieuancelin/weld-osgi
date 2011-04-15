@@ -2,7 +2,7 @@ package org.jboss.weld.environment.osgi.extension.services;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.integration.BundleSingletonProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;

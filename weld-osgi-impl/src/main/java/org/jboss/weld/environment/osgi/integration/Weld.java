@@ -25,7 +25,7 @@ import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
-import org.jboss.weld.environment.osgi.api.extension.Publish;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
