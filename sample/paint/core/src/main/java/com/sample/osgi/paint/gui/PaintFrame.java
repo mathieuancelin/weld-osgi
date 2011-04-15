@@ -2,6 +2,7 @@ package com.sample.osgi.paint.gui;
 
 import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
+import com.sample.osgi.paint.circle.CircleShape;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -26,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
@@ -39,9 +41,9 @@ public class PaintFrame extends JFrame implements MouseListener {
     private String selected;
     private JPanel panel;
 
-    @Inject private Services<ShapeProvider> registeredProviders;
+    @Inject @Required private Services<ShapeProvider> registeredProviders;
 
-    @Inject private ShapeProvider defaultProvider;
+    @Inject @CircleShape private ShapeProvider defaultProvider;
 
     @Inject private Event<InterBundleEvent> message;
 

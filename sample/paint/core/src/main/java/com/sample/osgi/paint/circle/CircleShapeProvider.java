@@ -4,6 +4,7 @@ import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
 import javax.enterprise.context.ApplicationScoped;
 
+@CircleShape
 @ApplicationScoped
 public class CircleShapeProvider implements ShapeProvider {
 
