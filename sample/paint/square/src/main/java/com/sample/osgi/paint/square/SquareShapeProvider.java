@@ -3,7 +3,11 @@ package com.sample.osgi.paint.square;
 import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
 import javax.enterprise.context.ApplicationScoped;
-import org.jboss.weld.environment.osgi.api.extension.Publish;
+import javax.enterprise.event.Observes;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Sent;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 
 @Publish
 @ApplicationScoped
@@ -19,4 +23,7 @@ public class SquareShapeProvider implements ShapeProvider {
         return Square.class.getName();
     }
 
+    public void listen(@Observes @Sent @Specification(String.class) InterBundleEvent message) {
+        System.out.println("received : " + message.typed(String.class).get());
+    }
 }
