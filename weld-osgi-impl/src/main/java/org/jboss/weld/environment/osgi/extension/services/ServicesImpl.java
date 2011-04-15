@@ -66,8 +66,6 @@ public class ServicesImpl<T> implements Services<T> {
                             new ServiceReferenceHandler(ref, registry)));
                 }
             }
-        } else {
-            services = Collections.emptyList();
         }
     }
 
