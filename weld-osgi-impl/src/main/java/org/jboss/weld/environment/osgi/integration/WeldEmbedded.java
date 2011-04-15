@@ -9,6 +9,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -31,8 +32,8 @@ public class WeldEmbedded {
     }
 
     public static WeldEmbedded startFor(BundleContext context) throws Exception {
-        boolean set = BundleSingletonProvider.currentBundle.get() != null;
-        BundleSingletonProvider.currentBundle.set(context.getBundle().getBundleId());
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(context.getBundle().getBundleId());
         WeldEmbedded embedded =
                 new WeldEmbedded(new Weld(context.getBundle()),
                 new ExtensionActivator(), context);
@@ -69,14 +70,14 @@ public class WeldEmbedded {
         });
         embedded.activator.start(context);
         if (!set) {
-            BundleSingletonProvider.currentBundle.remove();
+            CDIOSGiExtension.currentBundle.remove();
         }
         return embedded;
     }
 
     public void shutdown() throws Exception {
-        boolean set = BundleSingletonProvider.currentBundle.get() != null;
-        BundleSingletonProvider.currentBundle.set(context.getBundle().getBundleId());
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(context.getBundle().getBundleId());
         activator.stop(context);
         for (ServiceRegistration reg : regs) {
             try {
@@ -87,7 +88,7 @@ public class WeldEmbedded {
         }
         weld.shutdown();
         if (!set) {
-            BundleSingletonProvider.currentBundle.remove();
+            CDIOSGiExtension.currentBundle.remove();
         }
     }
 

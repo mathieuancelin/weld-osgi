@@ -10,6 +10,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.util.*;
 import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SentAnnotation;
 import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SpecificationAnnotation;
 
@@ -66,8 +67,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
     }
 
     private void stopManagement(Bundle bundle) {
-        boolean set = BundleSingletonProvider.currentBundle.get() != null;
-        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         Holder holder = (Holder) managed.get(bundle.getBundleId());
         if (holder != null) {
             Collection<ServiceRegistration> regs = holder.registrations;
@@ -82,13 +83,13 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
             managed.remove(bundle.getBundleId());
         }
         if (!set) {
-            BundleSingletonProvider.currentBundle.remove();
+            CDIOSGiExtension.currentBundle.remove();
         }
     }
 
     private void startManagement(Bundle bundle) {
-        boolean set = BundleSingletonProvider.currentBundle.get() != null;
-        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         //System.out.println("Starting management for bundle " + bundle);
         Holder holder = new Holder();
         Weld weld = new Weld(bundle);
@@ -123,7 +124,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
             managed.put(bundle.getBundleId(), holder);
         }
         if (!set) {
-            BundleSingletonProvider.currentBundle.remove();
+            CDIOSGiExtension.currentBundle.remove();
         }
     }
 
@@ -139,15 +140,15 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
 
         @Override
         public void fire(InterBundleEvent event) {
-            Long set = BundleSingletonProvider.currentBundle.get();
-            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+            Long set = CDIOSGiExtension.currentBundle.get();
+            CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
             container.getEvent().select(InterBundleEvent.class, 
                     new SpecificationAnnotation(event.type()),
                     new SentAnnotation()).fire(event);
             if (set != null) {
-                BundleSingletonProvider.currentBundle.set(set);
+                CDIOSGiExtension.currentBundle.set(set);
             } else {
-                BundleSingletonProvider.currentBundle.remove();
+                CDIOSGiExtension.currentBundle.remove();
             }
         }
     }

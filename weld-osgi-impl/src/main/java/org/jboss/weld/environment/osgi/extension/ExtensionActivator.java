@@ -27,7 +27,6 @@ import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleU
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
-import org.jboss.weld.environment.osgi.integration.BundleSingletonProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -69,8 +68,8 @@ public class ExtensionActivator implements BundleActivator,
 
         if (references != null) {
             for (ServiceReference reference : references) {
-                boolean set = BundleSingletonProvider.currentBundle.get() != null;
-                BundleSingletonProvider.currentBundle.set(reference.getBundle().getBundleId());
+                boolean set = CDIOSGiExtension.currentBundle.get() != null;
+                CDIOSGiExtension.currentBundle.set(reference.getBundle().getBundleId());
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 try {
                     e.select(BundleEvent.class).fire(event);
@@ -115,7 +114,7 @@ public class ExtensionActivator implements BundleActivator,
                     fireAllEvent(bundleEvent, e);
                 }
                 if (!set) {
-                    BundleSingletonProvider.currentBundle.remove();
+                    CDIOSGiExtension.currentBundle.remove();
                 }
             }
         }
@@ -137,8 +136,8 @@ public class ExtensionActivator implements BundleActivator,
 
         if (references != null) {
             for (ServiceReference reference : references) {
-                boolean set = BundleSingletonProvider.currentBundle.get() != null;
-                BundleSingletonProvider.currentBundle.set(reference.getBundle().getBundleId());
+                boolean set = CDIOSGiExtension.currentBundle.get() != null;
+                CDIOSGiExtension.currentBundle.set(reference.getBundle().getBundleId());
                 Instance<Object> instance = (Instance<Object>) context.getService(reference);
                 Event<Object> e = instance.select(Event.class).get();
                 try {
@@ -166,7 +165,7 @@ public class ExtensionActivator implements BundleActivator,
                     fireAllEvent(serviceEvent, e, instance);
                 }
                 if (!set) {
-                    BundleSingletonProvider.currentBundle.remove();
+                    CDIOSGiExtension.currentBundle.remove();
                 }
             }
         }

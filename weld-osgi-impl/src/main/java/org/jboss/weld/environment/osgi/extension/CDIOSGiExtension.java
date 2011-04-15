@@ -43,6 +43,10 @@ import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
 @ApplicationScoped
 public class CDIOSGiExtension implements Extension {
 
+    // hack for weld integration
+    public static ThreadLocal<Long> currentBundle =
+            new ThreadLocal<Long>();
+
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
 

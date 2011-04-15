@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jboss.weld.bootstrap.api.Singleton;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -12,9 +13,6 @@ import org.osgi.framework.FrameworkUtil;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class BundleSingletonProvider extends SingletonProvider {
-
-    public static ThreadLocal<Long> currentBundle =
-            new ThreadLocal<Long>();
 
     @Override
     public <T> Singleton<T> create(Class<? extends T> expectedType) {
@@ -32,7 +30,7 @@ public class BundleSingletonProvider extends SingletonProvider {
         }
 
         private Long getId() {
-            Long value = currentBundle.get();
+            Long value = CDIOSGiExtension.currentBundle.get();
             // fix with a patched version of weld ProxyMethodHandler
 //            if (value == null) {
 //                return FrameworkUtil.getBundle(ProxyMethodHandler.currentCaller.get()).getBundleId();
@@ -52,8 +50,8 @@ public class BundleSingletonProvider extends SingletonProvider {
                             && !className.startsWith("org.apache.felix.framework")) {
 
                         if (!classes.containsKey(className)) {
-                            System.out.println("\u001b[1;31mAnalyzing stacktrace for class " + clazz.getName() + ": \u001b[m");
-                            System.out.println("\u001b[0;31m" + className + "." + element.getMethodName() + "\u001b[m");
+                            //System.out.println("\u001b[1;31mAnalyzing stacktrace for class " + clazz.getName() + ": \u001b[m");
+                            //System.out.println("\u001b[0;31m" + className + "." + element.getMethodName() + "\u001b[m");
                             Class<?> maybe = null;
                             try {
                                 maybe = this.getClass().getClassLoader().loadClass(className);
@@ -71,9 +69,9 @@ public class BundleSingletonProvider extends SingletonProvider {
                         Bundle maybeBundle = classes.get(className);
                         if (maybeBundle != null) {
                             if (!maybeBundle.getSymbolicName().equals("org.jboss.weld.osgi.weld-osgi")) {
-                                currentBundle.set(maybeBundle.getBundleId());
+                                CDIOSGiExtension.currentBundle.set(maybeBundle.getBundleId());
                                 maybeObject = get();
-                                currentBundle.remove();
+                                CDIOSGiExtension.currentBundle.remove();
                                 if (maybeObject != null) {
                                     return maybeObject;
                                 }

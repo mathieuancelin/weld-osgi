@@ -25,6 +25,7 @@ import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
@@ -69,8 +70,8 @@ public class Weld {
         ClassLoader old = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         // -------------
-        boolean set = BundleSingletonProvider.currentBundle.get() != null;
-        BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         try {
             Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
             if (beansXml == null) {
@@ -103,7 +104,7 @@ public class Weld {
             t.printStackTrace();
         } finally {
             if (!set) {
-                BundleSingletonProvider.currentBundle.remove();
+                CDIOSGiExtension.currentBundle.remove();
             }
             Thread.currentThread().setContextClassLoader(old);
         }
@@ -177,7 +178,7 @@ public class Weld {
             }
         }
         if (registration != null) {
-            BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+            CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
             manager.instance().select(RegistrationsHolder.class).get().addRegistration(registration);
         }
     }
@@ -254,13 +255,13 @@ public class Weld {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             try {
-                BundleSingletonProvider.currentBundle.set(bundle.getBundleId());
+                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
                 return method.invoke(
                     manager.instance().select(contract, qualifiers).get(),
                     args
                 );
             } finally {
-                BundleSingletonProvider.currentBundle.remove();
+                CDIOSGiExtension.currentBundle.remove();
             }
         }
     }
