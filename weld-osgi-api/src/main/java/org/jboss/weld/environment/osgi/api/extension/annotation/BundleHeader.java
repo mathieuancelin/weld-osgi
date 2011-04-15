@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.api.extension;
+package org.jboss.weld.environment.osgi.api.extension.annotation;
 
 
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import javax.inject.Qualifier;
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BundleDataFile {
+public @interface BundleHeader {
     @Nonbinding
     String value();
 }

@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi.api.extension;
+package org.jboss.weld.environment.osgi.api.extension.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 

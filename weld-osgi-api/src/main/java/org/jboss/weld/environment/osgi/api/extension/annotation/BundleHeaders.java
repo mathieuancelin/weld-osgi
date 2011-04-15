@@ -1,10 +1,8 @@
-package org.jboss.weld.environment.osgi.api.extension;
+package org.jboss.weld.environment.osgi.api.extension.annotation;
 
-import static java.lang.annotation.ElementType.PARAMETER;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
@@ -12,6 +10,6 @@ import javax.inject.Qualifier;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 @Qualifier
-@Target({ PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Sent {}
+public @interface BundleHeaders {
+}
