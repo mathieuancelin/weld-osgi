@@ -32,7 +32,6 @@ import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServiceRegistryImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
-import org.jboss.weld.environment.osgi.integration.ShutdownManager;
 
 /**
  * Weld OSGi extension.
@@ -61,7 +60,6 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
-        event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
