@@ -65,6 +65,22 @@ you can also filter services with :
 @Inject @Filter("(&(lang=EN)(country=US))") Services<MyService> myServices;
 ...	
 </code></pre>
+* if you absolutely need certain OSGi services to run your application, you can mark them as Required. Then when the required services will be registered in OSGi service registry, the Valid event will be raised so you can catch it and launch your app. When the required services will be unregistered from OSGi service registry, the Invalid event will be raised.
+<pre><code>
+@Inject @OSGiService @Required MyService service;
+...
+@Inject @Required Service<MyService> myService;
+...
+@Inject @Required Services<MyService> myServices;
+...	
+public void validate(@Observes Valid event) {
+	// start application here
+}
+...
+public void invalidate(@Observes Invalid event) {
+	// stop application here
+}
+</code></pre>
 * to deal with the dynamism of OSGi bundles, you can catch bundle events (extender pattern) :
 <pre><code>
 public void bindBundle(@Observes BundleInstalled event) {}
