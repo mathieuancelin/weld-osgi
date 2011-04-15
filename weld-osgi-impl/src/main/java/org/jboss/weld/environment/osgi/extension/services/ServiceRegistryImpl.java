@@ -3,10 +3,14 @@ package org.jboss.weld.environment.osgi.extension.services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
@@ -17,8 +21,18 @@ import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.jboss.weld.environment.osgi.api.extension.events.Valid;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -42,6 +56,17 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Inject
     private BeanManager manager;
+
+    @Inject
+    private Event<Valid> validEvent;
+
+    @Inject
+    private Event<Invalid> invalidEvent;
+
+    @Inject
+    private CDIOSGiExtension extension;
+
+    private  Set<Class<?>> osgiServiceDependencies;
     
     private Map<Class<?>, Beantype<?>> types = new HashMap<Class<?>, Beantype<?>>();
 
@@ -92,6 +117,54 @@ public class ServiceRegistryImpl implements ServiceRegistry {
             types.put(unmanagedType, new Beantype<T>(unmanagedType, manager));
         }
         return (Provider<T>) types.get(unmanagedType);
+    }
+
+    public void listenStartup(@Observes BundleContainerInitialized event) {
+        osgiServiceDependencies = extension.getOsgiServiceDependencies();
+        checkForValidDependencies(null);
+    }
+
+    public void bind(@Observes ServiceArrival arrival) {
+        checkForValidDependencies(arrival);
+    }
+
+    public void changed(@Observes ServiceChanged changed) {
+        checkForValidDependencies(changed);
+    }
+
+    public void unbind(@Observes ServiceDeparture departure) {
+        checkForValidDependencies(departure);
+    }
+
+    private void checkForValidDependencies(AbstractServiceEvent event) {
+        if (event == null || applicable(event.getServiceClasses())) {
+            for (Class<?> clazz : osgiServiceDependencies) {
+                try {
+                    ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), null);
+                    if (refs != null) {
+                        int available = refs.length;
+                        if (available > 0) {
+                            validEvent.fire(new Valid());
+                        } else {
+                            invalidEvent.fire(new Invalid());
+                        }
+                    } else {
+                        invalidEvent.fire(new Invalid());
+                    }
+                } catch (InvalidSyntaxException ex) {
+                    // nothing here
+                }
+            }
+        }
+    }
+
+    private boolean applicable(List<Class<?>> classes) {
+        for (Class<?> clazz : classes) {
+            if (osgiServiceDependencies.contains(clazz)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class Beantype<T> implements Provider<T> {
