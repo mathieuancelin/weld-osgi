@@ -17,6 +17,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import org.jboss.weld.environment.osgi.api.extension.BundleState;
 import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
@@ -65,6 +66,9 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Inject
     private CDIOSGiExtension extension;
+
+    @Inject
+    private BundleHolder bundleHolder;
 
     private  Set<Class<?>> osgiServiceDependencies;
     
@@ -138,22 +142,33 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     private void checkForValidDependencies(AbstractServiceEvent event) {
         if (event == null || applicable(event.getServiceClasses())) {
-            for (Class<?> clazz : osgiServiceDependencies) {
-                try {
-                    ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), null);
-                    if (refs != null) {
-                        int available = refs.length;
-                        if (available > 0) {
-                            validEvent.fire(new Valid());
+            boolean valid = true;
+            if (osgiServiceDependencies.isEmpty()) {
+                valid = false;
+            } else {
+                for (Class<?> clazz : osgiServiceDependencies) {
+                    try {
+                        ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), null);
+                        if (refs != null) {
+                            int available = refs.length;
+                            if (available <= 0) {
+                                valid = false;
+                            }
                         } else {
-                            invalidEvent.fire(new Invalid());
+                            valid = false;
                         }
-                    } else {
-                        invalidEvent.fire(new Invalid());
+                    } catch (InvalidSyntaxException ex) {
+                        // nothing here
                     }
-                } catch (InvalidSyntaxException ex) {
-                    // nothing here
                 }
+            }
+            // TODO : synchronize here to change the state of the bundle
+            if (valid && bundleHolder.getState().equals(BundleState.INVALID)) {
+                bundleHolder.setState(BundleState.VALID);
+                validEvent.fire(new Valid());
+            } else if (!valid && bundleHolder.getState().equals(BundleState.VALID)) {
+                bundleHolder.setState(BundleState.INVALID);
+                invalidEvent.fire(new Invalid());
             }
         }
     }
