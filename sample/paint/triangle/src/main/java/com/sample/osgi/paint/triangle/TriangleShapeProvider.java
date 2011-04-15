@@ -3,7 +3,7 @@ package com.sample.osgi.paint.triangle;
 import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
 import javax.enterprise.context.ApplicationScoped;
-import org.jboss.weld.environment.osgi.api.extension.Publish;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
 
 @Publish
 @ApplicationScoped
