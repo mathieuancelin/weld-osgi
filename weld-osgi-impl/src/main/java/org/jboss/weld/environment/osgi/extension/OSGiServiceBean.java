@@ -16,6 +16,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -29,6 +30,7 @@ public class OSGiServiceBean implements Bean {
     private final Type type;
     private final InjectionPoint injectionPoint;
     private Filter filter;
+    private boolean required = false;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
@@ -37,7 +39,9 @@ public class OSGiServiceBean implements Bean {
         for (Annotation qualifier : qualifiers) {
             if (qualifier.annotationType().equals(Filter.class)) {
                 filter = (Filter) qualifier;
-                break;
+            }
+            if (qualifier.annotationType().equals(Required.class)) {
+                required = true;
             }
         }
     }
@@ -87,9 +91,15 @@ public class OSGiServiceBean implements Bean {
         });
         s.add(new AnnotationLiteral<Any>() {
         });
-        s.add(new OSGiServiceQualifierType());
+        s.add(new AnnotationLiteral<OSGiService>() {
+        });
+        //s.add(new OSGiServiceQualifierType());
         if (filter != null) {
             s.add(new OSGiFilterQualifierType(filter.value()));
+        }
+        if (required) {
+            s.add(new AnnotationLiteral<Required>() {
+            });
         }
         return s;
     }

@@ -23,6 +23,7 @@ import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 
@@ -54,7 +55,7 @@ public class CDIOSGiExtension implements Extension {
 
     private List<Annotation> observers = new ArrayList<Annotation>();
 
-    private Set<Class<?>> osgiServiceDependencies = new HashSet<Class<?>>();
+    private Set<Class<?>> requiredOsgiServiceDependencies = new HashSet<Class<?>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
@@ -81,7 +82,6 @@ public class CDIOSGiExtension implements Extension {
                 break; 
             }
             addBean(event, type, this.servicesToBeInjected.get(type));
-            osgiServiceDependencies.add((Class) type);
         }
 
         for (Iterator<Type> iterator = this.filteredServicesToBeInjected.keySet().iterator();
@@ -125,13 +125,9 @@ public class CDIOSGiExtension implements Extension {
             try {
                 if (((ParameterizedType)injectionPoint.getType())
                         .getRawType().equals(Services.class)) {
-                    osgiServiceDependencies.add((Class)
-                            ((ParameterizedType)injectionPoint.getType()).getActualTypeArguments()[0]);
                     services = true;
                 } else if (((ParameterizedType)injectionPoint.getType())
                         .getRawType().equals(Service.class)) {
-                    osgiServiceDependencies.add((Class)
-                            ((ParameterizedType)injectionPoint.getType()).getActualTypeArguments()[0]);
                     service = true;
                 }
             } catch (Exception e) {}
@@ -141,7 +137,11 @@ public class CDIOSGiExtension implements Extension {
                                                     qualifIter.hasNext();) {
                 Annotation annotation = qualifIter.next();
                 if (annotation.annotationType().equals(OSGiService.class)){
+                    if (contains(injectionPoint.getQualifiers(), Required.class)) {
+                        requiredOsgiServiceDependencies.add((Class) injectionPoint.getType());
+                    }
                     addServiceInjectionInfo(injectionPoint);
+
                 }
                 if (annotation.annotationType().equals(Filter.class)){
                     if (services) {
@@ -218,11 +218,20 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
+    private boolean contains(Set<Annotation> qualifiers, Class<? extends Annotation> qualifier) {
+        for (Annotation annotation : qualifiers) {
+            if (annotation.annotationType().equals(qualifier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<Annotation> getObservers() {
         return observers;
     }
 
-    public Set<Class<?>> getOsgiServiceDependencies() {
-        return osgiServiceDependencies;
+    public Set<Class<?>> getRequiredOsgiServiceDependencies() {
+        return requiredOsgiServiceDependencies;
     }
 }

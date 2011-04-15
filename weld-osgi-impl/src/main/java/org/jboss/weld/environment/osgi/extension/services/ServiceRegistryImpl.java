@@ -120,7 +120,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     }
 
     public void listenStartup(@Observes BundleContainerInitialized event) {
-        osgiServiceDependencies = extension.getOsgiServiceDependencies();
+        osgiServiceDependencies = extension.getRequiredOsgiServiceDependencies();
         checkForValidDependencies(null);
     }
 
