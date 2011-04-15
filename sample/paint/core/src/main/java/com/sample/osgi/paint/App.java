@@ -16,6 +16,7 @@ public class App {
     public void onStartup(@Observes BundleContainerInitialized event) {
         System.out.println("CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " started");
+        frame.start();
     }
 
     public void validListen(@Observes Valid valid) {
