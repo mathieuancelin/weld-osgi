@@ -5,6 +5,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
+import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
 import org.jboss.weld.environment.osgi.api.extension.events.Valid;
 
@@ -17,6 +18,10 @@ public class App {
         System.out.println("CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " started");
         frame.start();
+    }
+
+    public void onShutdown(@Observes BundleContainerShutdown event) {
+        frame.stop();
     }
 
     public void validListen(@Observes Valid valid) {

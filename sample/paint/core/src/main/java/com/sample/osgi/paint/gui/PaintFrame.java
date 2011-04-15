@@ -153,10 +153,10 @@ public class PaintFrame extends JFrame implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent evt) {
-        message.fire(new InterBundleEvent("New shape added ..."));
         if (selected == null) {
             return;
         }
+        message.fire(new InterBundleEvent("New " + selected + " added ..."));
         if (panel.contains(evt.getX(), evt.getY())) {
             ShapeComponent sc = null;
             if (providers.containsKey(selected)) {
