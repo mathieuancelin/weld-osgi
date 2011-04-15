@@ -1,6 +1,5 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import java.awt.event.ContainerListener;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,8 +19,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
-import org.jboss.weld.environment.osgi.api.extension.Filter;
-import org.jboss.weld.environment.osgi.api.extension.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
+import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
@@ -55,6 +54,8 @@ public class CDIOSGiExtension implements Extension {
 
     private List<Annotation> observers = new ArrayList<Annotation>();
 
+    private Set<Class<?>> osgiServiceDependencies = new HashSet<Class<?>>();
+
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
@@ -80,6 +81,7 @@ public class CDIOSGiExtension implements Extension {
                 break; 
             }
             addBean(event, type, this.servicesToBeInjected.get(type));
+            osgiServiceDependencies.add((Class) type);
         }
 
         for (Iterator<Type> iterator = this.filteredServicesToBeInjected.keySet().iterator();
@@ -123,9 +125,13 @@ public class CDIOSGiExtension implements Extension {
             try {
                 if (((ParameterizedType)injectionPoint.getType())
                         .getRawType().equals(Services.class)) {
+                    osgiServiceDependencies.add((Class)
+                            ((ParameterizedType)injectionPoint.getType()).getActualTypeArguments()[0]);
                     services = true;
                 } else if (((ParameterizedType)injectionPoint.getType())
                         .getRawType().equals(Service.class)) {
+                    osgiServiceDependencies.add((Class)
+                            ((ParameterizedType)injectionPoint.getType()).getActualTypeArguments()[0]);
                     service = true;
                 }
             } catch (Exception e) {}
@@ -214,5 +220,9 @@ public class CDIOSGiExtension implements Extension {
 
     public List<Annotation> getObservers() {
         return observers;
+    }
+
+    public Set<Class<?>> getOsgiServiceDependencies() {
+        return osgiServiceDependencies;
     }
 }
