@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import org.jboss.weld.environment.osgi.api.extension.BundleState;
 import org.jboss.weld.environment.osgi.api.extension.annotation.BundleDataFile;
 import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeader;
 import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeaders;
@@ -31,6 +32,11 @@ import org.osgi.framework.Version;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class WeldOSGiProducer {
+
+    @Produces
+    public BundleState getBundleState(BundleHolder holder) {
+        return holder.getState();
+    }
 
     @Produces
     public Bundle getBundle(BundleHolder holder, InjectionPoint p) {
