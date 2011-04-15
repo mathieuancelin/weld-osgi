@@ -1,4 +1,4 @@
-package org.jboss.weld.environment.osgi;
+package org.jboss.weld.environment.osgi.integration;
 
 import java.util.HashSet;
 import java.util.Set;
