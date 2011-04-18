@@ -1,6 +1,191 @@
 <chapter>
     <title id="features">Features</title>
     <section>
+        <title>Weld-OSGi architecture</title>
+        <section>
+            <title>Extension versus integration</title>
+            <section>
+                <title>Provide a container independent solution</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Extension goals</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Integration goals</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Infrastructure bundle</title>
+            <section>
+                <title>Presentation</title>
+                <para>
+                    This bundle provides a full application support for CDI and
+                    container dependent extensions. Once it is started it
+                    manages
+                    all the bundles that declare a beans.xml file.
+                    The global behavior can be simplify with this pseudo-code :
+                    <code>
+                        Begin
+                        start
+                        For Bundle : Started_Bundles
+                        If beanx.xml_present
+                        manage Bundle
+                        start Bundle
+                        End_If
+                        End_For
+                        Wait_Event
+                        OnBundleStart
+                        If beanx.xml_present
+                        manage Bundle
+                        start Bundle
+                        End_If
+                        OnBundleStop
+                        If beanx.xml_present
+                        unmanage Bundle
+                        stop Bundle
+                        End_If
+                        End_Wait
+                        Stop
+                        For Bundle : Managed_Bundles
+                        unmanage Bundle
+                        stop Bundle
+                        End_For
+                        End
+                    </code>
+                </para>
+            </section>
+            <section>
+                <title>Features and responsibilities</title>
+            </section>
+        </section>
+        <section>
+            <title>Embedded mode</title>
+            <section>
+                <title>Presentation</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Full control with WeldEmbedded container</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Easy usage with WeldActivator BundleActivator</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+    </section>
+    <section>
         <title>OSGi service injection</title>
+        <section>
+            <title>Presentation</title>
+            <section>
+                <title>Use the OSGi service registry mechanisms</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Service consummation</title>
+            <section>
+                <title>Using @OSGiService</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Using the service provider</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>Obtain multiple services</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Service publication</title>
+            <section>
+                <title>The @Publish annotation</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>The service registry</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+    </section>
+    <section>
+        <title>OSGi specifics injection</title>
+        <section>
+            <title>Bundle injection</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>BundleContext injection</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>BundleHeader injection</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Event notification management</title>
+        <section>
+            <title>Container lifecycle events</title>
+            <section>
+                <title>BundleContainerInitialized</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+            <section>
+                <title>BundleContainerShutdown</title>
+                <para>
+                    TODO
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Bundle lifecycle events</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Inter bundle events</title>
+            <para>
+                TODO
+            </para>
+        </section>
     </section>
 </chapter>
