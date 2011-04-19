@@ -57,5 +57,55 @@
                 </code>
             </para>
         </section>
+        <section>
+            <title>The parametrized Service interface</title>
+            <para>
+                This interface acts like a service provider. Then you can
+                test availability of the service before use it.
+                You can use it like that:
+                <code>
+                    @Inject Service&lt;MyService&gt; service;
+                    if (service.isAvailable()) {
+                    service.get().doSomething();
+                    }
+                </code>
+            </para>
+        </section>
+        <section>
+            <title>The parametrized Services interface</title>
+            <para>
+                This interface permit to obtain all the matching instance of
+                a service. It is an iterable list of injected instance of
+                service like those got using the @OSGiService annotation.
+                You can use it like that:
+                <code>
+                    @Inject Services&lt;MyService&gt; services;
+                    if (service.size() &gt; 0) {
+                    for (MyService service : services) {
+                    service.doSomething();
+                    }
+                    }
+                </code>
+            </para>
+        </section>
+        <section>
+            <title>The parametrized ServiceProviders interface</title>
+            <para>
+                This interface permit to obtain all the matching service
+                provider of a service. It is an iterable list of service
+                providers like those you got using the Service interface.
+                You can use it like that :
+                <code>
+                    @Inject ServiceProviders&lt;MyService&gt; services;
+                    if (service.size() &gt; 0) {
+                    for (Service&lt;MyService&gt; service : services) {
+                    if (service.isAvailable()) {
+                    service.get().doSomething();
+                    }
+                    }
+                    }
+                </code>
+            </para>
+        </section>
     </section>
 </chapter>
