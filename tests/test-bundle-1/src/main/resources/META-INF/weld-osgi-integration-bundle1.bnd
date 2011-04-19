@@ -1,2 +1,1 @@
 Export-Package com.sample.osgi.service1
-DynamicImport-Package *
