@@ -14,6 +14,8 @@
                 as well as CDI ready bundles you should wondering what the
                 difference between a classic OSGi service and an injectable
                 service. And also if they are compatible.
+            </para>
+            <para>
                 Be at ease, there very few differences between the two and they
                 are fully compatible. Both of them uses the same OSGi service
                 registry system. Thus you can inject a classic OSGi service or
@@ -34,11 +36,11 @@
         <para>
             There several ways to use a published service using Weld-OSGi.
             Let's assume a service exposed through an interface :
-            <code>
+            <programlisting>
                 public interface MyService {
-                void doSomething();
+                    void doSomething();
                 }
-            </code>
+            </programlisting>
         </para>
         <section>
             <title>The @OSGiService annotation</title>
@@ -51,10 +53,10 @@
                 of registered services. Then it returns the first matching
                 instance.
                 You can use it like that :
-                <code>
+                <programlisting>
                     @Inject @OSGiService MyService service;
                     service.doSomething();
-                </code>
+                </programlisting>
             </para>
         </section>
         <section>
@@ -63,12 +65,12 @@
                 This interface acts like a service provider. Then you can
                 test availability of the service before use it.
                 You can use it like that:
-                <code>
+                <programlisting>
                     @Inject Service&lt;MyService&gt; service;
                     if (service.isAvailable()) {
-                    service.get().doSomething();
+                        service.get().doSomething();
                     }
-                </code>
+                </programlisting>
             </para>
         </section>
         <section>
@@ -78,14 +80,14 @@
                 a service. It is an iterable list of injected instance of
                 service like those got using the @OSGiService annotation.
                 You can use it like that:
-                <code>
+                <programlisting>
                     @Inject Services&lt;MyService&gt; services;
                     if (service.size() &gt; 0) {
-                    for (MyService service : services) {
-                    service.doSomething();
+                        for (MyService service : services) {
+                            service.doSomething();
+                        }
                     }
-                    }
-                </code>
+                </programlisting>
             </para>
         </section>
         <section>
@@ -95,16 +97,16 @@
                 provider of a service. It is an iterable list of service
                 providers like those you got using the Service interface.
                 You can use it like that :
-                <code>
+                <programlisting>
                     @Inject ServiceProviders&lt;MyService&gt; services;
                     if (service.size() &gt; 0) {
-                    for (Service&lt;MyService&gt; service : services) {
-                    if (service.isAvailable()) {
-                    service.get().doSomething();
+                        for (Service&lt;MyService&gt; service : services) {
+                            if (service.isAvailable()) {
+                                service.get().doSomething();
+                            }
+                        }
                     }
-                    }
-                    }
-                </code> 
+                </programlisting> 
             </para>
         </section>
     </section>
