@@ -48,10 +48,14 @@
                 This the most simple way to obtain a service. This annotation
                 is only a qualifier that designate a OSGi service injection
                 point.
+            </para>
+            <para>
                 When the CDI container performs an injection on this
                 injection point it looks for a matching instance in the list
                 of registered services. Then it returns the first matching
                 instance.
+            </para>
+            <para>
                 You can use it like that :
                 <programlisting>
                     @Inject @OSGiService MyService service;
@@ -109,14 +113,66 @@
                 </programlisting> 
             </para>
         </section>
+        <section>
+            <title>What should be an injectable service</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>The OSGiServiceUnavailableException exception</title>
+            <para>
+                If a service is unavailable at the time of a service call a
+                <code>OSGiServiceUnavailableException</code> is thrown.
+            </para>
+        </section>
     </section>
     <section>
         <title>Service publishing</title>
         <para>
-            TODO
+            There is an easy to publish service with Weld-OSGi: you just mark
+            the class you want to become a service. Everything else is handled
+            by Weld-OSGi.
+        </para>
+        <para>
+            The registration occurs right after the CDI container startup and
+            register all the discovered services in the OSGi service
+            registering system.
         </para>
         <section>
             <title>The @Publish annotation</title>
+            <para>
+                In order to mark a class as a publishable service it may be
+                annotated by @Publish.
+                You can use it like that:
+                <programlisting>
+                    @Publish
+                    @ApplicationScoped
+                    public class MyServiceImpl implements MyService {
+                        @Override
+                        public void doSomething() {
+                        }
+                    }
+                </programlisting>
+            </para>
+        </section>
+        <section>
+            <title>What could be published</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Properties and service filtering</title>
+        <section>
+            <title>Add properties to a publishable service</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Filtering services at injection</title>
             <para>
                 TODO
             </para>
