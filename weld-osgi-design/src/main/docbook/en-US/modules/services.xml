@@ -104,7 +104,19 @@
                     }
                     }
                     }
-                </code>
+                </code> 
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Service publishing</title>
+        <para>
+            TODO
+        </para>
+        <section>
+            <title>The @Publish annotation</title>
+            <para>
+                TODO
             </para>
         </section>
     </section>
