@@ -8,6 +8,8 @@
                 A bean archive is a java archive, such as a jar or a Java EE
                 module, that contains a special marker file:
                 <code>META-INF/bean.xml</code>.
+            </para>
+            <para>
                 A bean archive may be deploy in a CDI environment. It enables
                 all CDI functionality in that bean archive.
             </para>
@@ -18,6 +20,8 @@
                 A bundle is a Java archive, such as a jar or a folder,
                 that contains a special marker file: <code>META-INF/Manifest
                 .MF</code>.
+            </para>
+            <para>
                 A bundle may be deploy in an OSGi environment. It enables
                 all OSGi functionality for that bundle.
             </para>
@@ -28,10 +32,20 @@
                 A bean bundle is a java archive that contains both special
                 marker file: <code>META-INF/bean.xml</code> and
                 <code>META-INF/Manifest.MF</code>.
+            </para>
+            <para>
                 A bean bundle may be deploy in an OSGi environment using
                 Weld-OSGi infrastructure bundle. It enables both OSGi and CDI
                 functionality for that bundle. It also enables Weld-OSGi
                 special functionality.
+            </para>
+        </section>
+        <section>
+            <title>Infrastructure bundle</title>
+            <para>
+                The infrastructure bundle is a bean bundle that manage all
+                the other bean bundle of the current OSGi application. It
+                manage all CDI relevant functionality and communication.
             </para>
         </section>
         <section>
@@ -50,9 +64,13 @@
             Weld-OSGi aims at simplifying the access to the OSGi environment
             by providing a more modern, more user-friendly and faster way to
             interact with the OSGi Framework.
+        </para>
+        <para>
             It addresses the OSGi complexity about services management using CDI
             specification (JSR-299). Thus it provides an CDI OSGi extension
             with injection utilities for the OSGi environment.
+        </para>
+        <para>
             Moreover an integration with any CDI implementation, such as Weld,
             is possible through a standard bootstrapping API. An complete
             integration with Weld is provided.
@@ -64,6 +82,8 @@
             Weld-OSGi stays compliant with CDI specification and uses only
             standard OSGi mechanisms. Every things it does (or nothing from
             it) CDI and OGSi can do.
+        </para>
+        <para>
             Thereby is compatible with most of the current frameworks dealing
             with OSGi service management.
         </para>
