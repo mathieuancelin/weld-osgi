@@ -51,7 +51,7 @@
             by providing a more modern, more user-friendly and faster way to
             interact with the OSGi Framework.
             It addresses the OSGi complexity about services management using CDI
-            specification (JSR-299). Thus it provides an CDI-OSGi extension
+            specification (JSR-299). Thus it provides an CDI OSGi extension
             with injection utilities for the OSGi environment.
             Moreover an integration with any CDI implementation, such as Weld,
             is possible through a standard bootstrapping API. An complete

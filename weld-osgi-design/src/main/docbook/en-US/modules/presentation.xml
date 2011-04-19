@@ -1,5 +1,33 @@
 <chapter>
-    <title id="presentation">Physiognomy of Weld-OSGi</title>
+    <title id="presentation">Organization of Weld-OSGi</title>
+    <section>
+        <title>Extension API, integration API and weld integration</title>
+        <para>
+            Weld-OSGi is not just a Weld integration in OGSi environment. It
+            provides three distinct things.
+        </para>
+        <section>
+            <title>Extension API</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Integration API</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Weld integration</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <para>
+            We give more details on these three parts below.
+        </para>
+    </section>
     <section>
         <title>An OSGi extension for CDI support</title>
         <section>
