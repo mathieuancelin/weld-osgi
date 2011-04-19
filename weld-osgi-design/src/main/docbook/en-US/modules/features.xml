@@ -28,11 +28,13 @@
             <section>
                 <title>Presentation</title>
                 <para>
-                    This bundle provides a full application support for CDI and
+                    This bundle provides a full application support for CDI
+                    and
                     container dependent extensions. Once it is started it
                     manages
                     all the bundles that declare a beans.xml file.
-                    The global behavior can be simplify with this pseudo-code :
+                    The global behavior can be simplify wit
+                    h this pseudo-code :
                     <code>
                         Begin
                         start

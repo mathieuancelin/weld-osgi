@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book>
-     <bookinfo>
+    <bookinfo>
         <title>Weld - OSGi integration</title>
-         <subtitle>Design Specification</subtitle>
-         <authorgroup>
-             <author>
-                 <firstname>Mathieu</firstname>
-                 <surname>Ancelin</surname>
-             </author>
-             <author>
-                 <firstname>Matthieu</firstname>
-                 <surname>Clochard</surname>
-             </author>
-             <author>
-                 <firstname>Kevin</firstname>
-                 <surname>Pollet</surname>
-             </author>
-         </authorgroup>
+        <subtitle>Design Specification</subtitle>
+        <authorgroup>
+            <author>
+                <firstname>Mathieu</firstname>
+                <surname>Ancelin</surname>
+            </author>
+            <author>
+                <firstname>Matthieu</firstname>
+                <surname>Clochard</surname>
+            </author>
+            <author>
+                <firstname>Kevin</firstname>
+                <surname>Pollet</surname>
+            </author>
+        </authorgroup>
     </bookinfo>
 
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/introduction.xml" />
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/features.xml" />
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/scenario.xml" />
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/samples.xml" />
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+                href="modules/introduction.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+                href="modules/presentation.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+                href="modules/features.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+                href="modules/scenario.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+                href="modules/samples.xml"/>
 </book>

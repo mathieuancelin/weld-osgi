@@ -1,82 +1,27 @@
 <chapter>
     <title id="preface">Preface</title>
-
-    <para>
-        Weld-OSGi aims at simplifying the access to the OSGi environment by
-        providing a more modern, more user-friendly and faster way to
-        interact with the OSGi Framework.
-        It adresses the OSGi complexity of services management using CDI
-        specification (JSR-299). Thus it provides an CDI-OSGi extension with
-        injection utilities for the OSGi environment.
-        Moreover an integration with any CDI implementation, such as Weld,
-        is possible through a standard bootstrapping API.
-    </para>
-
-    <para>
-        Weld-OSGi deals with many features like:
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Global management using extender pattern with a infra
-                    bundle providing features to the entire application
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Embedded modes to manage your own bundles, with various
-                    control policies, in classic OSGi application
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Full annotation configuration following CDI model
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Intra bundle CDI full support: injection, producers,
-                    interceptors, decorators ...
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Services injection, with full support of requirement,
-                    ldap filtering and OSGi dynamism
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Automatic services publication fully compatible with OSGi
-                    service registering system
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Support for OSGi specific injection (such as bundle or
-                    manifest headers
-                </para>
-            </listitem>
-        </itemizedlist>
-        <itemizedlist>
-            <listitem>
-                <para>
-                    Event notification and inter bundles communication
-                </para>
-            </listitem>
-        </itemizedlist>
-    </para>
+    <section>
+        <title>About this book/naming/authors/castor?</title>
+    </section>
+    <section>
+        <title>What is Weld-OSGi ?</title>
+        <para>
+            Weld-OSGi aims at simplifying the access to the OSGi environment
+            by providing a more modern, more user-friendly and faster way to
+            interact with the OSGi Framework.
+            It addresses the OSGi complexity of services management using CDI
+            specification (JSR-299). Thus it provides an CDI-OSGi extension
+            with injection utilities for the OSGi environment.
+            Moreover an integration with any CDI implementation, such as Weld,
+            is possible through a standard bootstrapping API.
+        </para>
+    </section>
+    <section>
+        <title>What about other frameworks</title>
+        <para>
+            TODO but it's okay compatibility is intended.
+        </para>
+    </section>
     <tip>
         <para>
             Yo

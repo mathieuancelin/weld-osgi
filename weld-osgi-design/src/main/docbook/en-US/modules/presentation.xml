@@ -1,0 +1,142 @@
+<chapter>
+    <title id="presentation">Physiognomy of Weld-OSGi</title>
+    <section>
+        <title>An OSGi extension for CDI support</title>
+        <section>
+            <title>The extender pattern</title>
+            <para>
+                Weld-OSGi provides an extension to OSGi as an extender
+                OSGi pattern. The Weld-OSGi bundle, the extender,
+                tracks for CDI ready bundles, the extensions,
+                to be started.
+                Then CDI utilities are enabled for these bundles over
+                OSGi environment.
+            </para>
+        </section>
+        <section>
+            <title>TODO</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>An container dependent integration using Weld</title>
+        <section>
+            <title>Weld ?</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>How to make a bundle CDI ready</title>
+        There are very few things to do in order to enable CDI
+        features in an OSGi bundle.
+        Mostly you should just take your CDI
+        bean archive and make it a OSGi bundle by adding a manifest file.
+        Or in the other way you take your OSGi bundle and make it a
+        CDI bean archive by adding a beans.xml file.
+        However there is a few other information that Weld-OSGi might
+        need in order to perform a correct extension. The following
+        introduce the different ways that enable CDI support in an OSGi
+        bundle.
+        <section>
+            <title>The beans.xml file</title>
+            <para>
+                As for every CDI bean archive, a CDI ready bundle may
+                declare a beans.xml file in order to be extended by
+                Weld-OSGi.
+                This beans.xml file follows no particular rules and
+                should be the same as in a native CDI environment. Thus
+                it can be completely empty or declare interceptors,
+                decorators or alternatives as a regular CDI beans.xml
+                file.
+            </para>
+        </section>
+        <section>
+            <title>The Embedded-CDIContainer manifest header</title>
+            <para>
+                This header prevents the Weld-OSGi bundle to
+                automatically manage the CDI ready bundle that set this
+                manifest header to true. So the bundle can be manage more
+                finely by the user.
+                If this header is set to false or is not present in
+                the manifest file then the bundle will be automatically
+                manage by the infrastructure bundle (if it is started).
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Features overview</title>
+        <para>
+            Weld-OSGi deals with many features like:
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Global management using extender pattern with a infra
+                        bundle providing features to the entire application
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Embedded modes to manage your own bundles, with various
+                        control policies, in classic OSGi application
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Full annotation configuration following CDI model
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Intra bundle CDI full support: injection, producers,
+                        interceptors, decorators ...
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Services injection, with full support of requirement,
+                        ldap filtering and OSGi dynamism
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Automatic services publication fully compatible with
+                        OSGi
+                        service registering system
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Support for OSGi specific injection (such as bundle or
+                        manifest headers
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Event notification and inter bundles communication
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            We will see in the next sections these features in deep.
+        </para>
+    </section>
+</chapter>
