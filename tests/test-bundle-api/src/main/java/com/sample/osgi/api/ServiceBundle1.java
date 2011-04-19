@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.sample.osgi.api;
 
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
 
 /**
  *
- * @author mathieuancelin
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public interface ServiceBundle1 {
     
@@ -39,10 +34,8 @@ public interface ServiceBundle1 {
 
     int timesProvider(int base, int time);
 
-//    int filteredtimesCollection(int base, int time);
-//
-//    int filteredtimesOSGi(int base, int time);
-//
-//    int filteredtimesProvider(int base, int time);
+    int getIbEvent();
+
+    int getIbEventAll();
 
 }

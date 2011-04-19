@@ -8,13 +8,14 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
 import org.jboss.weld.environment.osgi.api.extension.Services;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Sent;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
@@ -22,7 +23,7 @@ import org.jboss.weld.environment.osgi.api.extension.events.Valid;
 
 /**
  *
- * @author mathieuancelin
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 @Publish
 @ApplicationScoped
@@ -40,15 +41,14 @@ public class ServiceBean implements ServiceBundle1 {
 
     private int start = 0;
     private int stop = 0;
-
     private int arrival = 0;
     private int departure = 0;
-
     private int dummyArrival = 0;
     private int dummyDeparture = 0;
-
     private int valid = 0;
     private int invalid = 0;
+    private int ibEvent = 0;
+    private int ibEventAll = 0;
 
     public void start(@Observes BundleContainerInitialized event) {
         start++;
@@ -80,6 +80,15 @@ public class ServiceBean implements ServiceBundle1 {
 
     public void invalid(@Observes Invalid event) {
         invalid++;
+    }
+
+    public void listenInter(@Observes @Sent
+            @Specification(String.class) InterBundleEvent event) {
+        ibEvent++;
+    }
+
+    public void listenInterAll(@Observes @Sent InterBundleEvent event) {
+        ibEventAll++;
     }
 
     @Override
@@ -150,5 +159,15 @@ public class ServiceBean implements ServiceBundle1 {
     @Override
     public int getValid() {
         return valid;
+    }
+
+    @Override
+    public int getIbEvent() {
+        return ibEvent;
+    }
+
+    @Override
+    public int getIbEventAll() {
+        return ibEventAll;
     }
 }
