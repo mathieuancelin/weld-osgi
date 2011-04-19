@@ -27,13 +27,31 @@
         <section>
             <title>Integration API</title>
             <para>
-                TODO
+                The integration API defines how a CDI container,
+                such as Weld, should bootstrap with the CDI OSGi extension.
+                So any CDI environment implementation could use the CDI OSGi
+                extension transparently.
+            </para>
+            <para>
+                This aims at providing the minimum integration in order to
+                start a CDI compliant container with every managed bean
+                archive. Then the infrastructure bundle can get a CDI container
+                to provide to every one of its manages bean bundle.
+            </para>
+            <para>
+                Moreover the integration API allows to mix CDI compliant
+                container in the same application by providing a embedded
+                mode. In this mode a bean bundle is decoupled from the
+                infrastructure bundle and is managed on its own. Thus you can
+                use various implementations of CDI container or particularize
+                the behavior of a particular bean bundle.
             </para>
         </section>
         <section>
             <title>Weld integration</title>
             <para>
                 TODO
+                Extended integration using Weld as the CDI container ...
             </para>
         </section>
         <para>
@@ -53,16 +71,54 @@
             </para>
         </section>
         <section>
-            <title>TODO</title>
+            <title>Infrastructure bundle behavior</title>
             <para>
-                TODO
+                The extension API is carried by the infrastructure bundle.
+                This is a bean bundle that perform the extender pattern.
+            </para>
+            <para>
+                The global behavior can be simplify with this pseudo-code :
+                <programlisting>
+                    Begin
+                        start
+                        For Bundle : Started_Bundles
+                            If isBeanBundle
+                                manage Bundle
+                                start Bundle
+                            End_If
+                        End_For
+                        Wait_Event
+                            OnBundleStart
+                                If isBeanBundle
+                                    manage Bundle
+                                    start Bundle
+                                End_If
+                            OnBundleStop
+                                If isBeanBundle
+                                    unmanage Bundle
+                                    stop Bundle
+                                End_If
+                        End_Wait
+                        Stop
+                        For Bundle : Managed_Bundles
+                            unmanage Bundle
+                            stop Bundle
+                        End_For
+                    End
+                </programlisting>
             </para>
         </section>
     </section>
     <section>
         <title>A standard bootstrap API for CDI container integration</title>
         <section>
-            <title>TODO</title>
+            <title>Intergration API</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Embedded mode</title>
             <para>
                 TODO
             </para>
@@ -169,34 +225,39 @@
             </para>
             <para>
                 However there is a few other information that Weld-OSGi might
-                need in order to perform a correct extension. The following
-                introduce the different ways that enable CDI support in an
-                OSGi
-                bundle.
+                need in order to perform a correct extension. In particular
+                you might want a bean bundle to be not manage by the
+                infrastructure bundle but by his own embedded CDI container.
+                For that there is a new manifest header.
             </para>            
             <section>
-                <title>The beans.xml file</title>
+                <title>The <code>META-INF/bean.xml</code> file</title>
                 <para>
-                    As for every CDI bean archive, a CDI ready bundle may
-                    declare a beans.xml file in order to be extended by
-                    Weld-OSGi.
-                    This beans.xml file follows no particular rules and
+                    The beans.xml file follows no particular rules and
                     should be the same as in a native CDI environment. Thus
                     it can be completely empty or declare interceptors,
                     decorators or alternatives as a regular CDI beans.xml
                     file.
                 </para>
+                <para>
+                    There will be no different behavior with a classic bean
+                    archive except for CDI OSGi extension new utilities. But
+                    these don't need any modification on the
+                    <code>META-INF/bean.xml</code> file.
+                </para>
             </section>
             <section>
-                <title>The Embedded-CDIContainer manifest header</title>
+                <title>The Embedded-CDIContainer <code>META-INF/Manifest
+                    .MF</code> header</title>
                 <para>
-                    This header prevents the Weld-OSGi bundle to
-                    automatically manage the CDI ready bundle that set this
-                    manifest header to true. So the bundle can be manage more
-                    finely by the user.
+                    This header prevents the infrastructure bundle to
+                    automatically manage the bean bundle that set this
+                    manifest header to true. So the bean bundle can be manage
+                    more finely by the user or use a different CDI container.
                     If this header is set to false or is not present in
-                    the manifest file then the bundle will be automatically
-                    manage by the infrastructure bundle (if it is started).
+                    the <code>META-INF/Manifest.MF</code> file then the bean
+                    bundle will be automatically manage by the infrastructure
+                    bundle (if it is started).
                 </para>
             </section>
         </section>

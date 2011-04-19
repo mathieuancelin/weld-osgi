@@ -34,36 +34,35 @@
                     container dependent extensions. Once it is started it
                     manages
                     all the bundles that declare a beans.xml file.
-                    The global behavior can be simplify wit
-                    h this pseudo-code :
-                    <code>
+                    The global behavior can be simplify with this pseudo-code :
+                    <programlisting>
                         Begin
-                        start
-                        For Bundle : Started_Bundles
-                        If beanx.xml_present
-                        manage Bundle
-                        start Bundle
-                        End_If
-                        End_For
-                        Wait_Event
-                        OnBundleStart
-                        If beanx.xml_present
-                        manage Bundle
-                        start Bundle
-                        End_If
-                        OnBundleStop
-                        If beanx.xml_present
-                        unmanage Bundle
-                        stop Bundle
-                        End_If
-                        End_Wait
-                        Stop
-                        For Bundle : Managed_Bundles
-                        unmanage Bundle
-                        stop Bundle
-                        End_For
+                            start
+                            For Bundle : Started_Bundles
+                                If isBeanBundle
+                                    manage Bundle
+                                    start Bundle
+                                End_If
+                            End_For
+                            Wait_Event
+                                OnBundleStart
+                                    If isBeanBundle
+                                        manage Bundle
+                                        start Bundle
+                                    End_If
+                                OnBundleStop
+                                    If isBeanBundle
+                                        unmanage Bundle
+                                        stop Bundle
+                                    End_If
+                            End_Wait
+                            Stop
+                            For Bundle : Managed_Bundles
+                                unmanage Bundle
+                                stop Bundle
+                            End_For
                         End
-                    </code>
+                    </programlisting>
                 </para>
             </section>
             <section>
