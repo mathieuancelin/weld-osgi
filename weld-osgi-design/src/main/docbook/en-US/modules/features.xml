@@ -1,5 +1,6 @@
 <chapter>
     <title id="features">Features</title>
+
     <section>
         <title>Weld-OSGi architecture</title>
         <section>
@@ -91,54 +92,7 @@
             </section>
         </section>
     </section>
-    <section>
-        <title>OSGi service injection</title>
-        <section>
-            <title>Presentation</title>
-            <section>
-                <title>Use the OSGi service registry mechanisms</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-        </section>
-        <section>
-            <title>Service consummation</title>
-            <section>
-                <title>Using @OSGiService</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-            <section>
-                <title>Using the service provider</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-            <section>
-                <title>Obtain multiple services</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-        </section>
-        <section>
-            <title>Service publication</title>
-            <section>
-                <title>The @Publish annotation</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-            <section>
-                <title>The service registry</title>
-                <para>
-                    TODO
-                </para>
-            </section>
-        </section>
-    </section>
+
     <section>
         <title>OSGi specifics injection</title>
         <section>

@@ -1,0 +1,61 @@
+<chapter>
+    <title id="services">Dealing with OSGi services and CDI</title>
+    <section>
+        <title>Dealing with OSGi services and CDI</title>
+        <para>
+            The main characteristic of Weld-OSGi is to provide an easy way to
+            deal with OSGi service exposure and consumption. Here we present the
+            possibilities of Weld-OSGi on this point.
+        </para>
+        <section>
+            <title>Common OSGi services versus injectable services</title>
+            <para>
+                Because your future applications might use classic OSGi bundles
+                as well as CDI ready bundles you should wondering what the
+                difference between a classic OSGi service and an injectable
+                service. And also if they are compatible.
+                Be at ease, there very few differences between the two and they
+                are fully compatible. Both of them uses the same OSGi service
+                registry system. Thus you can inject a classic OSGi service or
+                use a service published using Weld-OSGi in an classic bundle.
+                But it is much more simple to publish and consume services using
+                Weld-OSGi way.
+            </para>
+        </section>
+        <section>
+            <title>What injectable services have more ?</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Service consuming</title>
+        <para>
+            There several ways to use a published service using Weld-OSGi.
+            Let's assume a service exposed through an interface :
+            <code>
+                public interface MyService {
+                void doSomething();
+                }
+            </code>
+        </para>
+        <section>
+            <title>The @OSGiService annotation</title>
+            <para>
+                This the most simple way to obtain a service. This annotation
+                is only a qualifier that designate a OSGi service injection
+                point.
+                When the CDI container performs an injection on this
+                injection point it looks for a matching instance in the list
+                of registered services. Then it returns the first matching
+                instance.
+                You can use it like that :
+                <code>
+                    @Inject @OSGiService MyService service;
+                    service.doSomething();
+                </code>
+            </para>
+        </section>
+    </section>
+</chapter>
