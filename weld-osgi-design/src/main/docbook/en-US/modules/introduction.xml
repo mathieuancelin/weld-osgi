@@ -5,87 +5,103 @@
         <section>
             <title>Bean archive</title>
             <para>
-                A bean archive is a java archive, such as a jar or a Java EE
-                module, that contains a special marker file:
-                <code>META-INF/bean.xml</code>.
+                A bean archive is a java archive, such as a jar or a Java EE module, that contains a special marker
+                file:<code>META-INF/bean.xml</code>.
             </para>
             <para>
-                A bean archive may be deploy in a CDI environment. It enables
-                all CDI functionality in that bean archive.
+                A bean archive may be deploy in a CDI environment. It enables all CDI functionality in that bean
+                archive.
             </para>
         </section>
         <section>
             <title>OSGi bundle</title>
             <para>
-                A bundle is a Java archive, such as a jar or a folder,
-                that contains a special marker file: <code>META-INF/Manifest
-                .MF</code>.
+                A bundle is a Java archive, such as a jar or a folder, that contains a special marker file:<code>
+                META-INF/Manifest.MF</code>.
             </para>
             <para>
-                A bundle may be deploy in an OSGi environment. It enables
-                all OSGi functionality for that bundle.
+                A bundle may be deploy in an OSGi environment. It enables all OSGi functionality for that bundle.
             </para>
         </section>
         <section>
             <title>Bean bundle</title>
             <para>
-                A bean bundle is a java archive that contains both special
-                marker file: <code>META-INF/bean.xml</code> and
-                <code>META-INF/Manifest.MF</code>.
+                A bean bundle is a java archive that contains both special marker file:
+                <code>META-INF/bean.xml</code>
+                and<code>META-INF/Manifest.MF</code>.
             </para>
             <para>
-                A bean bundle may be deploy in an OSGi environment using
-                Weld-OSGi infrastructure bundle. It enables both OSGi and CDI
-                functionality for that bundle. It also enables Weld-OSGi
-                special functionality.
+                A bean bundle may be deploy in an OSGi environment using OSGi-CDI infrastructure bundle. It enables
+                both OSGi and CDI functionality for that bundle. It also enables potential special functionality
+                provided by the container bundle in use.
             </para>
         </section>
         <section>
             <title>Infrastructure bundle</title>
             <para>
-                The infrastructure bundle is a bean bundle that manage all
-                the other bean bundle of the current OSGi application. It
-                manage all CDI relevant functionality and communication.
+                The infrastructure bundle is a bean bundle that manage all the other bean bundle of the current OSGi
+                application. It manage all CDI relevant functionality and communication exposed in extension API. For
+                that purpose it requires a container bundle obtained through integration API.
+            </para>
+        </section>
+        <section>
+            <title>Container bundle</title>
+            <para>
+                The container bundle is a bean bundle that is implementation of a CDI compliant container in a OSGi
+                environment. It provides to the infrastructure bundle the containers for managed bean bundles.
             </para>
         </section>
         <section>
             <title>References</title>
             <para>
-                This document uses both CDI and OSGi specification
-                documentations as technical references. You may refer to these
-                documents for a better understanding of CDI and OSGi
-                functionality, references and naming conventions.
+                This document uses both CDI and OSGi specification documentations as technical references. You may
+                refer
+                to these documents for a better understanding of CDI and OSGi functionality, references and naming
+                conventions.
             </para>
         </section>
     </section>
     <section>
-        <title>What is Weld-OSGi ?</title>
-        <para>
-            Weld-OSGi aims at simplifying the access to the OSGi environment
-            by providing a more modern, more user-friendly and faster way to
-            interact with the OSGi Framework.
-        </para>
-        <para>
-            It addresses the OSGi complexity about services management using CDI
-            specification (JSR-299). Thus it provides an CDI OSGi extension
-            with injection utilities for the OSGi environment.
-        </para>
-        <para>
-            Moreover an integration with any CDI implementation, such as Weld,
-            is possible through a standard bootstrapping API. An complete
-            integration with Weld is provided.
-        </para>
+        <title>What are OSGi-CDI and Weld-OSGi ?</title>
+        <section>
+            <title>OSGi-CDI</title>
+            <para>
+                OSGi-CDI aims at simplifying the access to the OSGi environment by providing a more modern, more
+                user-friendly and faster way to interact with the OSGi Framework.
+            </para>
+            <para>
+                It addresses the OSGi complexity about services management using CDI specification (JSR-299). Thus it
+                provides an CDI OSGi extension with injection utilities for the OSGi environment.
+            </para>
+            <para>
+                Moreover an integration with any CDI implementation, such as Weld, is possible through a standard
+                bootstrapping API.
+            </para>
+        </section>
+        <section>
+            <title>Weld-OSGi</title>
+            <para>
+                Weld-OSGi is an implementation of Weld in the OSGi environment using OSGi-CDI. It is the exhibit
+                implementation of features exposes by OSGi-CDI APIs.
+            </para>
+            <para>
+                But Weld-OSGi is more than a simple implementation of OSGi-CDI. It provides other utilities for OSGi
+                environment facilitation. It comes with a complete documentation and sample applications.
+            </para>
+        </section>
     </section>
     <section>
         <title>What about other frameworks</title>
         <para>
-            Weld-OSGi stays compliant with CDI specification and uses only
-            standard OSGi mechanisms. Every things it does (or nothing from
-            it) CDI and OGSi can do.
+            OSGi-CDI stays compliant with CDI specification and uses only standard OSGi mechanisms. Every things it
+            does (or nothing from it) CDI and OGSi can do.
         </para>
         <para>
-            Thereby is compatible with most of the current frameworks dealing
-            with OSGi service management.
+            Thereby is compatible with most of the current frameworks dealing with OSGi service management.
+        </para>
+        <para>
+            Weld-OSGi as the same compatibility since it is a implementation of OSGi-CDI. But as it provides some
+            additional features it may be impossible to use all its possibilities coupling with other frameworks.
         </para>
     </section>
 </chapter>

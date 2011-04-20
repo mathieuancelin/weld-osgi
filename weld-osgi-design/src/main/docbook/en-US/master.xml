@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book>
     <bookinfo>
-        <title>Weld - OSGi integration</title>
+        <title>CDI OSGi integration - Weld implementation</title>
         <subtitle>Design Specification</subtitle>
         <authorgroup>
             <author>
