@@ -43,12 +43,18 @@
                 application. It manage all CDI relevant functionality and communication exposed in extension API. For
                 that purpose it requires a container bundle obtained through integration API.
             </para>
+            <para>
+                It is the form that takes OSGi-CDI.
+            </para>
         </section>
         <section>
             <title>Container bundle</title>
             <para>
                 The container bundle is a bean bundle that is implementation of a CDI compliant container in a OSGi
                 environment. It provides to the infrastructure bundle the containers for managed bean bundles.
+            </para>
+            <para>
+                Weld-OSGi take the form of one container bundle.
             </para>
         </section>
         <section>
@@ -102,6 +108,25 @@
         <para>
             Weld-OSGi as the same compatibility since it is a implementation of OSGi-CDI. But as it provides some
             additional features it may be impossible to use all its possibilities coupling with other frameworks.
+        </para>
+    </section>
+    <section>
+        <title>Organization of this document</title>
+        <para>
+            Since this specification covers two different (but linked) pieces of software it is separated into two
+            majors parts :
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        The OSGi-CDI specification for core functionality usages and CDI container integration.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The Weld-OSGi specification for special functionality usages and sample application review.
+                    </para>
+                </listitem>
+            </itemizedlist>
         </para>
     </section>
 </chapter>

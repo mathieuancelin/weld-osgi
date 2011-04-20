@@ -1,0 +1,320 @@
+<chapter>
+    <title id="osgicdipresentation">Organization of OSGi-CDI</title>
+    <section>
+        <title>Extention API versus integration API</title>
+        <para>
+            OSGi-CDI provides two distinct APIs:
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        The extension API that describes all the new functionality provided by OSGi-CDI in the OSGi
+                        environment.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The integration API that allows CDI compliant container to be used with OSGi-CDI.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            These two APIs are more described below.
+        </para>
+        <section>
+            <title>Extension API</title>
+            <para>
+                The extension API defines all the utilities provided to OSGi environment using CDI specification. It
+                exposes all the new utilities and defines the comportment of the infrastructure bundle.
+            </para>
+            <para>
+                New CDI beans are described in order to provide service injection as well as the needed annotation
+                for
+                declaration and qualification.
+            </para>
+            <para>
+                The bean bundle registering system and injectable service registering system is implemented using
+                OSGi
+                framework.
+            </para>
+        </section>
+        <section>
+            <title>Integration API</title>
+            <para>
+                The integration API defines how a CDI container, such as Weld, should bootstrap with the CDI OSGi
+                extension. So any CDI environment implementation could use the CDI OSGi extension transparently.
+            </para>
+            <para>
+                This aims at providing the minimum integration in order to start a CDI compliant container with every
+                managed bean bundle. Then the infrastructure bundle can get a CDI container to provide to every one
+                of
+                its manages bean bundle.
+            </para>
+            <para>
+                Moreover the integration API allows to mix CDI compliant container in the same application by
+                providing
+                a embedded mode. In this mode a bean bundle is decoupled from the infrastructure bundle and is
+                managed
+                on its own. Thus you can use various implementations of CDI container or particularize the behavior
+                of a
+                particular bean bundle.
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>An OSGi extension for CDI support</title>
+        <section>
+            <title>The extender pattern</title>
+            <para>
+                Weld-OSGi provides an extension to OSGi as an extender
+                OSGi pattern. The infrastructure bundle, the extender,
+                tracks for CDI ready bundles, the extensions,
+                to be started. Then CDI utilities are enabled for these
+                bundles over OSGi environment.
+            </para>
+        </section>
+        <section>
+            <title>Infrastructure bundle behavior</title>
+            <para>
+                The extension API is carried by the infrastructure bundle.
+                This is a bean bundle that perform the extender pattern.
+            </para>
+            <para>
+                The global behavior can be simplify with this pseudo-code :
+                <programlisting>
+                    Begin
+                    start
+                    For Bundle : Started_Bundles
+                    If isBeanBundle
+                    manage Bundle
+                    start Bundle
+                    End_If
+                    End_For
+                    Wait_Event
+                    OnBundleStart
+                    If isBeanBundle
+                    manage Bundle
+                    start Bundle
+                    End_If
+                    OnBundleStop
+                    If isBeanBundle
+                    unmanage Bundle
+                    stop Bundle
+                    End_If
+                    End_Wait
+                    Stop
+                    For Bundle : Managed_Bundles
+                    unmanage Bundle
+                    stop Bundle
+                    End_For
+                    End
+                </programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>A standard bootstrap API for CDI container integration</title>
+        <section>
+            <title>Intergration API</title>
+            <para>
+                TODO
+            </para>
+        </section>
+        <section>
+            <title>Embedded mode</title>
+            <para>
+                TODO
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>OSGi-CDI overview</title>
+        <para>
+            To conclude, what did we learn about OSGi-CDI ? Summarize this with listing and diagram:
+        </para>
+        <section>
+            <title>OSGi-CDI provides these features : </title>
+            <para>
+                TO REDO
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            Global management using extender pattern with a
+                            infra
+                            bundle providing features to the entire application
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Embedded modes to manage your own bundles, with
+                            various
+                            control policies, in classic OSGi application
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Full annotation configuration following CDI model
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Intra bundle CDI full support: injection, producers,
+                            interceptors, decorators ...
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Services injection, with full support of
+                            requirement,
+                            ldap filtering and OSGi dynamism
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Automatic services publication fully compatible with
+                            OSGi
+                            service registering system
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Support for OSGi specific injection (such as bundle
+
+                            or
+                            manifest headers
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Event notification and inter bundles communication
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <para>
+                We will see in the next sections these features in deep.
+            </para>
+        </section>
+        <section>
+            <title>The infrastructure bundle works that way: </title>
+            <para>
+                <programlisting>
+                    BEGIN
+                        start
+                        WHILE ! container_bundle.isStarted
+                            wait
+                        END_WHILE
+                        obtain_container
+                        FOR bean_bundle : started_bundles
+                            manage_bean_bundle
+                            provide_container
+                        END_FOR
+                        WHILE container_bundle.isStarted
+                            wait_event
+                                OnBeanBundleStart
+                                    manage_bean_bundle
+                                    provide_container
+                                OnBeanBundleStop
+                                    unmanage_bean_bundle
+                        END_WHILE
+                        stop
+                        FOR bean_bundle : namaged_bundles
+                            unmanage_bean_bundle
+                            stop_bean_bundle
+                        END_FOR
+                    END
+                </programlisting>
+            </para>
+        </section>
+        <section>
+            <title>A container bundle may work that way: </title>
+            <para>
+                <programlisting>
+                    HOW DO I WORK ?
+                </programlisting>
+            </para>
+        </section>
+    </section>
+
+
+    <section>
+        <title>How to make a bundle or a bean archive a bean bundle</title>
+        <para>
+            There are very few things to do in order to obtain a bean bundle
+            from a bean archive or a bundle.
+            Mostly you should just add the missing marker file in the
+            archive:
+        </para>
+        <para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        take your bean archive and make it a bean bundle by
+                        adding a
+                        <code>META-INF/Manifest.MF</code>
+                        file.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        or, in the other way, take your bundle and make it a
+                        bean bundle by adding a
+                        <code>META-INF/bean
+                            .xml
+                        </code>
+                        file.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            However there is a few other information that Weld-OSGi might
+            need in order to perform a correct extension. In particular
+            you might want a bean bundle to be not manage by the
+            infrastructure bundle but by his own embedded CDI container.
+            For that there is a new manifest header.
+        </para>
+        <section>
+            <title>The
+                <code>META-INF/bean.xml</code>
+                file
+            </title>
+            <para>
+                The beans.xml file follows no particular rules and
+                should be the same as in a native CDI environment. Thus
+                it can be completely empty or declare interceptors,
+                decorators or alternatives as a regular CDI beans.xml
+                file.
+            </para>
+            <para>
+                There will be no different behavior with a classic bean
+                archive except for CDI OSGi extension new utilities. But
+                these don't need any modification on the
+                <code>META-INF/bean.xml</code>
+                file.
+            </para>
+        </section>
+        <section>
+            <title>The Embedded-CDIContainer
+                <code>META-INF/Manifest
+                    .MF
+                </code>
+                header
+            </title>
+            <para>
+                This header prevents the infrastructure bundle to
+                automatically manage the bean bundle that set this
+                manifest header to true. So the bean bundle can be manage
+                more finely by the user or use a different CDI container.
+                If this header is set to false or is not present in
+                the
+                <code>META-INF/Manifest.MF</code>
+                file then the bean
+                bundle will be automatically manage by the infrastructure
+                bundle (if it is started).
+            </para>
+        </section>
+    </section>
+
+
+</chapter>
