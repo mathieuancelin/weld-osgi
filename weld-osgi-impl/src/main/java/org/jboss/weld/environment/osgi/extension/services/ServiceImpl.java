@@ -62,5 +62,4 @@ public class ServiceImpl<T> implements Service<T> {
             throw new IllegalStateException("Can't load service from OSGi registry : " + serviceName);
         }
     }
-
 }
