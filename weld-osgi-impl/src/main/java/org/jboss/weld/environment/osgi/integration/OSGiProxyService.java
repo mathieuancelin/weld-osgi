@@ -12,7 +12,7 @@ import org.jboss.weld.serialization.spi.ProxyServices;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class OSGiProxyService implements ProxyServices {
-
+    
     private final ClassLoader loader;
 
     public OSGiProxyService() {
@@ -59,6 +59,7 @@ public class OSGiProxyService implements ProxyServices {
             try {
                 loadedClass = delegate.loadClass(name);
             } catch (ClassNotFoundException cnfe) {
+                // todo : filter on utils class only
                 loadedClass = infra.loadClass(name);
             }
             return loadedClass;
