@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.util.TypeLiteral;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.Service;
@@ -89,20 +90,32 @@ public class ServiceImpl<T> implements Service<T> {
         }
     }
 
-//    @Override
-//    public Service<T> select(Annotation... qualifiers) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    @Override
-//    public <U extends T> Service<U> select(Class<U> subtype, Annotation... qualifiers) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    @Override
-//    public <U extends T> Service<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
+    @Override
+    public Service<T> select(Annotation... qualifiers) {
+        if (qualifiers == null) {
+            throw new IllegalArgumentException("You can't pass null array of qualifiers");
+        }
+        if (qualifiers.length > 1) {
+            throw new IllegalArgumentException("You can only one OSGi Filter");
+        }
+        for (Annotation qualifier : qualifiers) {
+            if (!qualifier.annotationType().equals(Filter.class)) {
+                throw new IllegalArgumentException("You can only use instances of Filter on OSGi Service<T>");
+            }
+        }
+        this.filter = (Filter) qualifiers[0];
+        return this;
+    }
+
+    @Override
+    public <U extends T> Service<U> select(Class<U> subtype, Annotation... qualifiers) {
+        throw new UnsatisfiedResolutionException("You can't subtype OSGi Services. The contract is the only valid type.");
+    }
+
+    @Override
+    public <U extends T> Service<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+        throw new UnsatisfiedResolutionException("You can't subtype OSGi Services. The contract is the only valid type.");
+    }
 
     @Override
     public boolean isUnsatisfied() {
