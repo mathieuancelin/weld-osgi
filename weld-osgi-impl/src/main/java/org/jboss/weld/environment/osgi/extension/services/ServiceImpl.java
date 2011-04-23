@@ -89,20 +89,20 @@ public class ServiceImpl<T> implements Service<T> {
         }
     }
 
-    @Override
-    public Service<T> select(Annotation... qualifiers) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public <U extends T> Service<U> select(Class<U> subtype, Annotation... qualifiers) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public <U extends T> Service<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+//    @Override
+//    public Service<T> select(Annotation... qualifiers) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//
+//    @Override
+//    public <U extends T> Service<U> select(Class<U> subtype, Annotation... qualifiers) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//
+//    @Override
+//    public <U extends T> Service<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
 
     @Override
     public boolean isUnsatisfied() {
