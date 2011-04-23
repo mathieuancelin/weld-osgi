@@ -62,8 +62,6 @@ public class CDIOSGiExtension implements Extension {
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
-        event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
-        event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));

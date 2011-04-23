@@ -99,7 +99,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Override
     public <T> Service<T> getServiceReference(Class<T> contract) {
-        return new ServiceImpl<T>(contract, bundle);
+        return new ServiceImpl<T>(contract, bundleHolder.getContext());
     }
 
     @PreDestroy

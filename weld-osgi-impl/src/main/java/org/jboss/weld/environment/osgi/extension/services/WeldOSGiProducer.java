@@ -111,7 +111,7 @@ public class WeldOSGiProducer {
     @Produces
     public <T> Service<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
         return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                holder.getBundle());
+                holder.getContext());
     }
 
     @Produces
