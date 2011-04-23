@@ -7,7 +7,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
-import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
@@ -34,8 +33,6 @@ public class ServiceBean implements ServiceBundle1 {
     @Inject DummyServiceImpl dummy;
 
     @Inject @Required Service<DummyService> service;
-
-    @Inject @Required Services<DummyService> services;
 
     @Inject @OSGiService DummyService osgiService;
 
@@ -98,9 +95,9 @@ public class ServiceBean implements ServiceBundle1 {
 
     @Override
     public int timesCollection(int base, int time) {
-        int nbr = services.size();
+        int nbr = service.size();
         int total = 0;
-        for (DummyService ser : services) {
+        for (DummyService ser : service) {
             total = total + ser.times(base, time);
         }
         return total / nbr;

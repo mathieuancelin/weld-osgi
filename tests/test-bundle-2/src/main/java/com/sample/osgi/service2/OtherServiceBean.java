@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.Registrations;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
-import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
@@ -28,8 +27,6 @@ import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
 public class OtherServiceBean implements ServiceBundle2 {
 
     @Inject @Filter("(value=fake)") Service<DummyService> service;
-
-    @Inject @Filter("(value=fake)") Services<DummyService> services;
 
     @Inject @OSGiService @Filter("(value=fake)") DummyService osgiService;
 
@@ -66,9 +63,9 @@ public class OtherServiceBean implements ServiceBundle2 {
 
     @Override
     public int filteredtimesCollection(int base, int time) {
-        int nbr = services.size();
+        int nbr = service.size();
         int total = 0;
-        for (DummyService ser : services) {
+        for (DummyService ser : service) {
             total = total + ser.times(base, time);
         }
         return total / nbr;

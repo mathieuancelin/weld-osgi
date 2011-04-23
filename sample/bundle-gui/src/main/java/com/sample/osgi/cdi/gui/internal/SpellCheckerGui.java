@@ -11,7 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 
 /**
@@ -28,7 +28,7 @@ public class SpellCheckerGui extends JFrame {
     private JLabel result = null;
 
     @Inject
-    private Services<SpellCheckerService> services;
+    private Service<SpellCheckerService> services;
 
     @Inject @OSGiService
     private DictionaryService osgiService;
