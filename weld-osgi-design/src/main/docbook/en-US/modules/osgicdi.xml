@@ -178,7 +178,7 @@
         <section>
             <title>The interfaces</title>
             <para>
-                
+                The extension API provides few interfaces that describe all specifics about OSGi service injection.
             </para>
         <section>
             <title>The <code>Service</code> interface</title>
@@ -241,50 +241,266 @@
                 object corresponding to an service interface or to product a new instance of an unmanaged type.
             </para>
         </section>
-        <section>
-            <title>The <code>BundleContainer</code> and <code>BundleContainers</code> interfaces</title>
-            <programlisting>
-                public interface BundleContainer {
-                    void fire(InterBundleEvent event);
-                }
-            </programlisting>
-            <programlisting>
-                public interface BundleContainers {
-                    Collection&lt;BundleContainer&gt; getContainers();
-                }
-            </programlisting>
-            <para>
-                These interfaces represent the CDI compliant containers used by bean bundle. Such container may be
-                accessible in the OSGi application to provide an event notification system.
-                <code>void fire(InterBundleEvent event)</code>
-                fire an event through the CDI compliant container.
-            </para>
-            <para>
-                Multiple containers can be manipulated by the <code>BundleContainers</code> interface.
-            </para>
-        </section>
         </section>
         <section>
             <title>The events</title>
             <para>
-                
+                Extension API exposes various events that notify about new life-cycle steps for container management,
+                service injection management and communication between bean bundles. They all use CDI event.
             </para>
         <section>
             <title>The <code>BundleContainerInitialized</code> and <code>BundleContainerShutDown</code> events</title>
-            <para>
+            <programlisting>
+                public class BundleContainerInitialized {
+                    private BundleContext bundleContext;
 
+                    public BundleContainerInitialized(final BundleContext context) {
+                        this.bundleContext = context;
+                    }
+
+                    public BundleContext getBundleContext() {
+                        return bundleContext;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public class BundleContainerShutdown {
+
+                    private BundleContext bundleContext;
+
+                    public BundleContainerShutdown(final BundleContext context) {
+                        this.bundleContext = context;
+                    }
+
+                    public BundleContext getBundleContext() {
+                        return bundleContext;
+                    }
+                }
+            </programlisting>
+            <para>
+                These two events advise bean bundle about the state of its CDI compliant container. They are fired
+                respectively when the container has finished its initialization and when the container begin to
+                shutdown. They may be fired by the CDI compliant container run with OSGi-CDI. They expose the
+                coresponding <code>BundleContext</code>.
             </para>
         </section>
         <section>
             <title>The <code>BundleEvents</code> events</title>
             <para>
+                It regroups all the events about bundle life-cycle.
+            </para>
+            <programlisting>
+                public class BundleEvents {
 
+                    public static class BundleInstalled extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleLazyActivation extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleResolved extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleStarted extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleStarting extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleStopped extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleStopping extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleUninstalled extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleUnresolved extends AbstractBundleEvent {
+                        ...
+                    }
+
+                    public static class BundleUpdated extends AbstractBundleEvent {
+                        ...
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleInstalled extends AbstractBundleEvent {
+                    public BundleInstalled(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.INSTALLED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleLazyActivation extends AbstractBundleEvent {
+                    public BundleLazyActivation(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.LAZY_ACTIVATION;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleResolved extends AbstractBundleEvent {
+                    public BundleResolved(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.RESOLVED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleStarted extends AbstractBundleEvent {
+                    public BundleStarted(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.STARTED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleStarting extends AbstractBundleEvent {
+                    public BundleStarting(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.STARTING;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleStopped extends AbstractBundleEvent {
+                    public BundleStopped(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.STOPPED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleStopping extends AbstractBundleEvent {
+                    public BundleStopping(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.STOPPING;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleUninstalled extends AbstractBundleEvent {
+                    public BundleUninstalled(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.UNINSTALLED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleUnresolved extends AbstractBundleEvent {
+                    public BundleUnresolved(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.UNRESOLVED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public static class BundleUpdated extends AbstractBundleEvent {
+                    public BundleUpdated(Bundle bundle) {
+                        super(bundle);
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return EventType.UPDATED;
+                    }
+                }
+            </programlisting>
+            <para>
+                These events are automatically fired by OSGi-CDI and transmitted to other bundles when the
+                corresponding
+                life-cycle step occurs in a bean bundle.
             </para>
         </section>
         <section>
             <title>The <code>ServiceArrival</code>, <code>ServiceChanged</code> and <code>ServiceDeparture</code> events</title>
-            <para>
+            <programlisting>
+                public class ServiceArrival extends AbstractServiceEvent {
+                    public ServiceArrival(ServiceReference ref, BundleContext context) {
+                        super(ref, context);
+                    }
 
+                    @Override
+                    public EventType eventType() {
+                        return EventType.SERVICE_ARRIVAL;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public class ServiceChanged extends AbstractServiceEvent {
+                    public ServiceChanged(ServiceReference ref, BundleContext context) {
+                        super(ref, context);
+                    }
+
+                    @Override
+                    public EventType eventType() {
+                        return EventType.SERVICE_CHANGED;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public class ServiceDeparture extends AbstractServiceEvent {
+                    public ServiceDeparture(ServiceReference ref, BundleContext context) {
+                        super(ref, context);
+                    }
+
+                    @Override
+                    public EventType eventType() {
+                        return EventType.SERVICE_DEPARTURE;
+                    }
+                }
+            </programlisting>
+            <para>
+                These events are automatically fired by OSGi-CDI and transmitted to other bundles when the
+                corresponding
+                life-cycle step occurs in a OSGi service.
             </para>
         </section>
         <section>
@@ -317,6 +533,35 @@
             <para>
                 TODO
             </para>
+            <section>
+                <title>The
+                    <code>BundleContainer</code>
+                    and
+                    <code>BundleContainers</code>
+                    interfaces
+                </title>
+                <programlisting>
+                    public interface BundleContainer {
+                    void fire(InterBundleEvent event);
+                    }
+                </programlisting>
+                <programlisting>
+                    public interface BundleContainers {
+                    Collection&lt;BundleContainer&gt; getContainers();
+                    }
+                </programlisting>
+                <para>
+                    These interfaces represent the CDI compliant containers used by bean bundle. Such container may be
+                    accessible in the OSGi application to provide an event notification system.
+                    <code>void fire(InterBundleEvent event)</code>
+                    fire an event through the CDI compliant container.
+                </para>
+                <para>
+                    Multiple containers can be manipulated by the
+                    <code>BundleContainers</code>
+                    interface.
+                </para>
+            </section>
         </section>
         <section>
             <title>Embedded mode</title>
