@@ -1,5 +1,14 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -7,19 +16,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.util.TypeLiteral;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class ServiceImpl<T> implements Service<T> {
+public class ServiceImpl<T> implements Service<T>, Instance<T> {
 
     private final Class serviceClass;
     private final BundleContext registry;
@@ -91,7 +93,7 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     @Override
-    public Service<T> select(Annotation... qualifiers) {
+    public Instance<T> select(Annotation... qualifiers) {
         if (qualifiers == null) {
             throw new IllegalArgumentException("You can't pass null array of qualifiers");
         }
@@ -108,12 +110,12 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     @Override
-    public <U extends T> Service<U> select(Class<U> subtype, Annotation... qualifiers) {
+    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers) {
         throw new UnsatisfiedResolutionException("You can't subtype OSGi Services. The contract is the only valid type.");
     }
 
     @Override
-    public <U extends T> Service<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
         throw new UnsatisfiedResolutionException("You can't subtype OSGi Services. The contract is the only valid type.");
     }
 
@@ -151,4 +153,5 @@ public class ServiceImpl<T> implements Service<T> {
             return -1;
         }
     }
+
 }

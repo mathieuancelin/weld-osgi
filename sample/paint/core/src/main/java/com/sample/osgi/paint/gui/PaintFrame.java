@@ -3,10 +3,20 @@ package com.sample.osgi.paint.gui;
 import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
 import com.sample.osgi.paint.circle.CircleShape;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
+import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
+import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.osgi.framework.Bundle;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -17,21 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
-import org.osgi.framework.Bundle;
 
 @Singleton
 public class PaintFrame extends JFrame implements MouseListener {
@@ -53,6 +48,7 @@ public class PaintFrame extends JFrame implements MouseListener {
 
     private Map<String, Collection<ShapeComponent>> goneComponents
             = new HashMap<String, Collection<ShapeComponent>>();
+
 
     @Inject
     public PaintFrame(Bundle bundle) {

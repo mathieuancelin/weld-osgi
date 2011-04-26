@@ -1,5 +1,21 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import org.jboss.weld.environment.osgi.api.extension.BundleState;
+import org.jboss.weld.environment.osgi.api.extension.Registrations;
+import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.api.extension.annotation.BundleDataFile;
+import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeader;
+import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeaders;
+import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiBundle;
+import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
+
+import javax.enterprise.inject.New;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -11,21 +27,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import org.jboss.weld.environment.osgi.api.extension.BundleState;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleDataFile;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeader;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeaders;
-import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiBundle;
-import org.jboss.weld.environment.osgi.api.extension.Registrations;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
-import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Version;
 
 /**
  * Producers for Specific injected types;
@@ -84,9 +85,9 @@ public class WeldOSGiProducer {
     }
 
     @Produces @Required
-    public <T> Service<T> getOSGiRequiredService(BundleHolder holder, 
+    public <T> Service<T> getOSGiRequiredService(BundleHolder holder,
             CDIOSGiExtension extension, InjectionPoint p) {
-        
+
         extension.getRequiredOsgiServiceDependencies().add((Class)
             ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
         return getOSGiService(holder, p);

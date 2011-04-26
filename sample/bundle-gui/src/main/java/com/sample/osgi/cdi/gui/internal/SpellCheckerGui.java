@@ -2,17 +2,15 @@ package com.sample.osgi.cdi.gui.internal;
 
 import com.sample.osgi.cdi.services.DictionaryService;
 import com.sample.osgi.cdi.services.SpellCheckerService;
+import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.swing.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 
 /**
  *
