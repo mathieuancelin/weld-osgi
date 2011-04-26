@@ -7,6 +7,8 @@ import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
+import org.jboss.weld.environment.osgi.integration.OSGiProxyService;
+import org.jboss.weld.serialization.spi.ProxyServices;
 
 /**
  * Implements the basic requirements of a {@link Deployment}. Provides a service
@@ -25,7 +27,7 @@ public abstract class AbstractWeldOSGiDeployment implements Deployment {
 
     public AbstractWeldOSGiDeployment(Bootstrap bootstrap) {
         this.serviceRegistry = new SimpleServiceRegistry();
-
+        this.serviceRegistry.add(ProxyServices.class, new OSGiProxyService());
         // OK, Here we can install our own Extensions instances
         this.extensions = bootstrap.loadExtensions(getClass().getClassLoader());
     }

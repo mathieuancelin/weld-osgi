@@ -11,7 +11,7 @@ public interface ServiceRegistry {
     <T> Registration<T> registerService(Class<T> contract, Class<? extends T> implementation);
     <T, U extends T> Registration<T> registerService(Class<T> contract, U implementation);
 
-    <T> Services<T> getServiceReferences(Class<T> contract);
+    <T> Service<T> getServiceReferences(Class<T> contract);
     <T> Service<T> getServiceReference(Class<T> contract);
 
     <T> Provider<T> newTypeInstance(Class<T> unmanagedType);

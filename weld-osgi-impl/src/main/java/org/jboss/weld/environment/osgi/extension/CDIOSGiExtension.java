@@ -22,15 +22,12 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
 import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
 
 import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
-import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServiceRegistryImpl;
-import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
 
 /**
@@ -50,9 +47,6 @@ public class CDIOSGiExtension implements Extension {
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
 
-    private HashMap<Type, Set<InjectionPoint>> filteredServicesToBeInjected
-                            = new HashMap<Type, Set<InjectionPoint>>();
-
     private HashMap<Type, Set<InjectionPoint>> filteredServiceToBeInjected
                             = new HashMap<Type, Set<InjectionPoint>>();
 
@@ -62,8 +56,6 @@ public class CDIOSGiExtension implements Extension {
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
-        event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
-        event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
@@ -84,12 +76,6 @@ public class CDIOSGiExtension implements Extension {
                 break; 
             }
             addBean(event, type, this.servicesToBeInjected.get(type));
-        }
-
-        for (Iterator<Type> iterator = this.filteredServicesToBeInjected.keySet().iterator();
-                                                iterator.hasNext();) {
-            Type type =  iterator.next();
-            addFilteredServices(event, type, this.filteredServicesToBeInjected.get(type));
         }
 
         for (Iterator<Type> iterator = this.filteredServiceToBeInjected.keySet().iterator();
@@ -122,13 +108,9 @@ public class CDIOSGiExtension implements Extension {
         for (Iterator<InjectionPoint> iterator 
                 = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
-            boolean services = false;
             boolean service = false;
             try {
                 if (((ParameterizedType)injectionPoint.getType())
-                        .getRawType().equals(Services.class)) {
-                    services = true;
-                } else if (((ParameterizedType)injectionPoint.getType())
                         .getRawType().equals(Service.class)) {
                     service = true;
                 }
@@ -146,9 +128,6 @@ public class CDIOSGiExtension implements Extension {
 
                 }
                 if (annotation.annotationType().equals(Filter.class)){
-                    if (services) {
-                        addFilteredServicesInjectionInfo(injectionPoint);
-                    }
                     if (service) {
                         addFilteredServiceInjectionInfo(injectionPoint);
                     }
@@ -163,14 +142,6 @@ public class CDIOSGiExtension implements Extension {
             filteredServiceToBeInjected.put(key, new HashSet<InjectionPoint>());
         }
         filteredServiceToBeInjected.get(key).add(injectionPoint);
-    }
-
-    private void addFilteredServicesInjectionInfo(InjectionPoint injectionPoint) {
-        Type key = injectionPoint.getType();
-        if (!filteredServicesToBeInjected.containsKey(key)){
-            filteredServicesToBeInjected.put(key, new HashSet<InjectionPoint>());
-        }
-        filteredServicesToBeInjected.get(key).add(injectionPoint);
     }
 
     private void addServiceInjectionInfo(InjectionPoint injectionPoint) {
@@ -191,19 +162,6 @@ public class CDIOSGiExtension implements Extension {
             
             final InjectionPoint injectionPoint = iterator.next();
             event.addBean(new OSGiServiceBean(injectionPoint));
-        }
-    }
-
-    private void addFilteredServices(
-            AfterBeanDiscovery event,
-            final Type type,
-            final Set<InjectionPoint> injectionPoints) {
-
-        for (Iterator<InjectionPoint> iterator
-                = injectionPoints.iterator(); iterator.hasNext();) {
-
-            final InjectionPoint injectionPoint = iterator.next();
-            event.addBean(new FilteredServicesBean(injectionPoint));
         }
     }
 

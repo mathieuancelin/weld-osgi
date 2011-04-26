@@ -21,7 +21,6 @@ import org.jboss.weld.environment.osgi.api.extension.BundleState;
 import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
-import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
@@ -93,13 +92,13 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     }
 
     @Override
-    public <T> Services<T> getServiceReferences(Class<T> contract) {
-        return new ServicesImpl<T>(contract, registry);
+    public <T> Service<T> getServiceReferences(Class<T> contract) {
+        return getServiceReference(contract);
     }
 
     @Override
     public <T> Service<T> getServiceReference(Class<T> contract) {
-        return new ServiceImpl<T>(contract, bundle);
+        return new ServiceImpl<T>(contract, registry);
     }
 
     @PreDestroy

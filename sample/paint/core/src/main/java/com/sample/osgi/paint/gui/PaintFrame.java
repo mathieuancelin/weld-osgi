@@ -25,8 +25,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
-import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
@@ -41,7 +41,7 @@ public class PaintFrame extends JFrame implements MouseListener {
     private String selected;
     private JPanel panel;
 
-    @Inject @Required private Services<ShapeProvider> registeredProviders;
+    @Inject @Required private Service<ShapeProvider> registeredProviders;
 
     @Inject @CircleShape private ShapeProvider defaultProvider;
 

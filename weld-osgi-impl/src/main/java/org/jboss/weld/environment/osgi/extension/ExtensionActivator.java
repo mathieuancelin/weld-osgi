@@ -1,8 +1,9 @@
 package org.jboss.weld.environment.osgi.extension;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -189,7 +190,7 @@ public class ExtensionActivator implements BundleActivator,
 
     private Annotation[] filteredServicesQualifiers(AbstractServiceEvent event,
             SpecificationAnnotation specific, Instance<Object> instance) {
-        List<Annotation> eventQualifiers = new ArrayList<Annotation>();
+        Set<Annotation> eventQualifiers = new HashSet<Annotation>();
         eventQualifiers.add(specific);
         CDIOSGiExtension ext = instance.select(CDIOSGiExtension.class).get();
         for (Annotation anno : ext.getObservers()) {

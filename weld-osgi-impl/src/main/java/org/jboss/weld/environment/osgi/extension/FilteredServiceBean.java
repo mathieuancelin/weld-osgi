@@ -95,8 +95,8 @@ public class FilteredServiceBean<Service> implements Bean<Service> {
 
     @Override
     public Service create(CreationalContext creationalContext) {
-        return (Service) new ServiceImpl(type, FrameworkUtil.getBundle(
-                injectionPoint.getMember().getDeclaringClass()), filter);
+        return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], FrameworkUtil.getBundle(
+                injectionPoint.getMember().getDeclaringClass()).getBundleContext(), filter);
     }
 
     @Override

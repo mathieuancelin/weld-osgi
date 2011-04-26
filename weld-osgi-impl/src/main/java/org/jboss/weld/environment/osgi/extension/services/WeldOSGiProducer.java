@@ -20,6 +20,7 @@ import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeader;
 import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeaders;
 import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiBundle;
 import org.jboss.weld.environment.osgi.api.extension.Registrations;
+import org.jboss.weld.environment.osgi.api.extension.Service;
 import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
@@ -83,16 +84,7 @@ public class WeldOSGiProducer {
     }
 
     @Produces @Required
-    public <T> ServicesImpl<T> getOSGiRequiredServices(BundleHolder holder, 
-            CDIOSGiExtension extension, InjectionPoint p) {
-
-        extension.getRequiredOsgiServiceDependencies().add((Class)
-            ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
-        return getOSGiServices(holder, p);
-    }
-
-    @Produces @Required
-    public <T> ServiceImpl<T> getOSGiRequiredService(BundleHolder holder, 
+    public <T> Service<T> getOSGiRequiredService(BundleHolder holder, 
             CDIOSGiExtension extension, InjectionPoint p) {
         
         extension.getRequiredOsgiServiceDependencies().add((Class)
@@ -101,15 +93,9 @@ public class WeldOSGiProducer {
     }
 
     @Produces
-    public <T> ServicesImpl<T> getOSGiServices(BundleHolder holder, InjectionPoint p) {
-        return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-               holder.getContext());
-    }
-
-    @Produces
-    public <T> ServiceImpl<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
+    public <T> Service<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
         return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                holder.getBundle());
+                holder.getContext());
     }
 
     @Produces

@@ -37,6 +37,6 @@ public class RegistrationImpl<T> implements Registration<T> {
 
     @Override
     public <T> Service<T> getServiceReference() {
-        return new ServiceImpl<T>(contract, bundle);
+        return new ServiceImpl<T>(contract, registry);
     }
 }
