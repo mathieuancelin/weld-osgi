@@ -1,13 +1,14 @@
 package com.sample.osgi.paint;
 
 import com.sample.osgi.paint.gui.PaintFrame;
+import org.osgi.cdi.api.extension.events.BundleContainerInitialized;
+import org.osgi.cdi.api.extension.events.BundleContainerShutdown;
+import org.osgi.cdi.api.extension.events.Invalid;
+import org.osgi.cdi.api.extension.events.Valid;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
-import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
-import org.jboss.weld.environment.osgi.api.extension.events.Valid;
 
 @ApplicationScoped
 public class App {

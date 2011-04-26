@@ -1,7 +1,7 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import org.jboss.weld.environment.osgi.api.extension.Registration;
-import org.jboss.weld.environment.osgi.api.extension.Service;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.Service;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;

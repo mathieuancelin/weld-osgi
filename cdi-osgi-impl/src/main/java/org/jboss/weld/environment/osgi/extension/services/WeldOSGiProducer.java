@@ -1,14 +1,14 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import org.jboss.weld.environment.osgi.api.extension.BundleState;
-import org.jboss.weld.environment.osgi.api.extension.Registrations;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleDataFile;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeader;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleHeaders;
-import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiBundle;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
 import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.osgi.cdi.api.extension.BundleState;
+import org.osgi.cdi.api.extension.Registrations;
+import org.osgi.cdi.api.extension.Service;
+import org.osgi.cdi.api.extension.annotation.BundleDataFile;
+import org.osgi.cdi.api.extension.annotation.BundleHeader;
+import org.osgi.cdi.api.extension.annotation.BundleHeaders;
+import org.osgi.cdi.api.extension.annotation.OSGiBundle;
+import org.osgi.cdi.api.extension.annotation.Required;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;

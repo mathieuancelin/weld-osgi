@@ -1,12 +1,13 @@
 package org.jboss.weld.environment.osgi.integration;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.jboss.weld.bootstrap.api.Singleton;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *

@@ -2,12 +2,13 @@ package com.sample.osgi.paint.square;
 
 import com.sample.osgi.paint.api.Shape;
 import com.sample.osgi.paint.api.ShapeProvider;
+import org.osgi.cdi.api.extension.annotation.Publish;
+import org.osgi.cdi.api.extension.annotation.Sent;
+import org.osgi.cdi.api.extension.annotation.Specification;
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Sent;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 
 @Publish
 @ApplicationScoped

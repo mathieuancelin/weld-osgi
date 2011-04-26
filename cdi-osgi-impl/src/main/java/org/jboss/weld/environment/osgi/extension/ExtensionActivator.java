@@ -1,33 +1,16 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.AnnotationLiteral;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleName;
-import org.jboss.weld.environment.osgi.api.extension.annotation.BundleVersion;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Sent;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
-import org.jboss.weld.environment.osgi.api.extension.events.AbstractBundleEvent;
-import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleInstalled;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleLazyActivation;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleResolved;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStarted;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStarting;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStopped;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleStopping;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUninstalled;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUnresolved;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleEvents.BundleUpdated;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.osgi.cdi.api.extension.annotation.BundleName;
+import org.osgi.cdi.api.extension.annotation.BundleVersion;
+import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.api.extension.annotation.Sent;
+import org.osgi.cdi.api.extension.annotation.Specification;
+import org.osgi.cdi.api.extension.events.AbstractBundleEvent;
+import org.osgi.cdi.api.extension.events.AbstractServiceEvent;
+import org.osgi.cdi.api.extension.events.BundleEvents;
+import org.osgi.cdi.api.extension.events.ServiceArrival;
+import org.osgi.cdi.api.extension.events.ServiceChanged;
+import org.osgi.cdi.api.extension.events.ServiceDeparture;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -37,6 +20,14 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.util.AnnotationLiteral;
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * It seems we cannot get the BundleContext in the Extension, so
@@ -81,34 +72,34 @@ public class ExtensionActivator implements BundleActivator,
                 AbstractBundleEvent bundleEvent = null;
                 switch (event.getType()) {
                     case BundleEvent.INSTALLED:
-                        bundleEvent = new BundleInstalled(bundle);
+                        bundleEvent = new BundleEvents.BundleInstalled(bundle);
                     break;
                     case BundleEvent.LAZY_ACTIVATION:
-                        bundleEvent = new BundleLazyActivation(bundle);
+                        bundleEvent = new BundleEvents.BundleLazyActivation(bundle);
                     break;
                     case BundleEvent.RESOLVED:
-                        bundleEvent = new BundleResolved(bundle);
+                        bundleEvent = new BundleEvents.BundleResolved(bundle);
                     break;
                     case BundleEvent.STARTED:
-                        bundleEvent = new BundleStarted(bundle);
+                        bundleEvent = new BundleEvents.BundleStarted(bundle);
                     break;
                     case BundleEvent.STARTING:
-                        bundleEvent = new BundleStarting(bundle);
+                        bundleEvent = new BundleEvents.BundleStarting(bundle);
                     break;
                     case BundleEvent.STOPPED:
-                        bundleEvent = new BundleStopped(bundle);
+                        bundleEvent = new BundleEvents.BundleStopped(bundle);
                     break;
                     case BundleEvent.STOPPING:
-                        bundleEvent = new BundleStopping(bundle);
+                        bundleEvent = new BundleEvents.BundleStopping(bundle);
                     break;
                     case BundleEvent.UNINSTALLED:
-                        bundleEvent = new BundleUninstalled(bundle);
+                        bundleEvent = new BundleEvents.BundleUninstalled(bundle);
                     break;
                     case BundleEvent.UNRESOLVED:
-                        bundleEvent = new BundleUnresolved(bundle);
+                        bundleEvent = new BundleEvents.BundleUnresolved(bundle);
                     break;
                     case BundleEvent.UPDATED:
-                        bundleEvent = new BundleUpdated(bundle);
+                        bundleEvent = new BundleEvents.BundleUpdated(bundle);
                     break;
                 }
                 if (bundleEvent != null) {

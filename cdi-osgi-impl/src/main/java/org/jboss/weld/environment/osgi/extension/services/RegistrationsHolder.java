@@ -1,9 +1,10 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import org.osgi.framework.ServiceRegistration;
+
+import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  *

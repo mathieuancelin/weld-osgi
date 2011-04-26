@@ -1,9 +1,10 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import javax.enterprise.context.ApplicationScoped;
-import org.jboss.weld.environment.osgi.api.extension.BundleState;
+import org.osgi.cdi.api.extension.BundleState;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+
+import javax.enterprise.context.ApplicationScoped;
 
 /**
  *

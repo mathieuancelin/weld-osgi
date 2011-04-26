@@ -1,14 +1,15 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
+import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
+import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
+import org.jboss.weld.environment.osgi.extension.services.ServiceRegistryImpl;
+import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
+import org.osgi.cdi.api.extension.Service;
+import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.api.extension.annotation.OSGiService;
+import org.osgi.cdi.api.extension.annotation.Required;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -19,16 +20,15 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
-import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Required;
-import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
-import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
-
-import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
-import org.jboss.weld.environment.osgi.extension.services.ServiceRegistryImpl;
-import org.jboss.weld.environment.osgi.extension.services.WeldOSGiProducer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Weld OSGi extension.

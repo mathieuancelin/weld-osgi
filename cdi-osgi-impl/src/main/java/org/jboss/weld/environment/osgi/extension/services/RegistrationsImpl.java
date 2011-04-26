@@ -1,13 +1,14 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import org.jboss.weld.environment.osgi.api.extension.Registration;
-import org.jboss.weld.environment.osgi.api.extension.Registrations;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.Registrations;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *

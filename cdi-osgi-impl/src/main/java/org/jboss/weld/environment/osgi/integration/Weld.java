@@ -1,5 +1,27 @@
 package org.jboss.weld.environment.osgi.integration;
 
+import org.jboss.weld.bootstrap.WeldBootstrap;
+import org.jboss.weld.bootstrap.api.Bootstrap;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
+import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
+import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
+import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
+import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
+import org.jboss.weld.manager.api.WeldManager;
+import org.osgi.cdi.api.extension.annotation.Publish;
+import org.osgi.cdi.api.extension.events.BundleContainerInitialized;
+import org.osgi.cdi.api.extension.events.BundleContainerShutdown;
+import org.osgi.cdi.api.integration.BundleContainer;
+import org.osgi.cdi.api.integration.BundleContainers;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -11,29 +33,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Qualifier;
-import org.jboss.weld.bootstrap.WeldBootstrap;
-
-import org.jboss.weld.bootstrap.api.Bootstrap;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerShutdown;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
-import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
-import org.jboss.weld.environment.osgi.extension.services.BundleHolder;
-import org.jboss.weld.environment.osgi.extension.services.ContainerObserver;
-import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
-import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
-import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
-import org.jboss.weld.manager.api.WeldManager;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  *

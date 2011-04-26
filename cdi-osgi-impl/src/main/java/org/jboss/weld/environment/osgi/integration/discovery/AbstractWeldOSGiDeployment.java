@@ -1,7 +1,5 @@
 package org.jboss.weld.environment.osgi.integration.discovery;
 
-import javax.enterprise.inject.spi.Extension;
-
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
@@ -9,6 +7,8 @@ import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
 import org.jboss.weld.environment.osgi.integration.OSGiProxyService;
 import org.jboss.weld.serialization.spi.ProxyServices;
+
+import javax.enterprise.inject.spi.Extension;
 
 /**
  * Implements the basic requirements of a {@link Deployment}. Provides a service

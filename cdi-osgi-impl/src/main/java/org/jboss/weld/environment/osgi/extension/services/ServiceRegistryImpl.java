@@ -1,11 +1,23 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.osgi.cdi.api.extension.BundleState;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.Service;
+import org.osgi.cdi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.events.AbstractServiceEvent;
+import org.osgi.cdi.api.extension.events.BundleContainerInitialized;
+import org.osgi.cdi.api.extension.events.Invalid;
+import org.osgi.cdi.api.extension.events.ServiceArrival;
+import org.osgi.cdi.api.extension.events.ServiceChanged;
+import org.osgi.cdi.api.extension.events.ServiceDeparture;
+import org.osgi.cdi.api.extension.events.Valid;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
@@ -17,23 +29,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import org.jboss.weld.environment.osgi.api.extension.BundleState;
-import org.jboss.weld.environment.osgi.api.extension.Registration;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
-import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent;
-import org.jboss.weld.environment.osgi.api.extension.events.BundleContainerInitialized;
-import org.jboss.weld.environment.osgi.api.extension.events.Invalid;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceChanged;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
-import org.jboss.weld.environment.osgi.api.extension.events.Valid;
-import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *

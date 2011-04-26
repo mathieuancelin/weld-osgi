@@ -16,14 +16,14 @@
  */
 package org.jboss.weld.environment.osgi.integration.discovery;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Represents a BeanDeploymentArchive for a Bundle.

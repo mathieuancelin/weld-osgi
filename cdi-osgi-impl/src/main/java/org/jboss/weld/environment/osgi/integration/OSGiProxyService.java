@@ -1,11 +1,12 @@
 package org.jboss.weld.environment.osgi.integration;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import org.jboss.weld.exceptions.WeldException;
 import org.jboss.weld.logging.messages.BeanMessage;
 import org.jboss.weld.serialization.spi.ProxyServices;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 /**
  *

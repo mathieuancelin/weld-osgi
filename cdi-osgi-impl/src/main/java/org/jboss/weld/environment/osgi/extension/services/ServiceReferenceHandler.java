@@ -1,9 +1,10 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  *

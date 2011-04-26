@@ -1,10 +1,11 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+import org.osgi.cdi.api.integration.BundleContainer;
+import org.osgi.cdi.api.integration.BundleContainers;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
 
 /**
  *

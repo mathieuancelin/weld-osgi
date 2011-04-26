@@ -1,18 +1,26 @@
 package org.jboss.weld.environment.osgi.integration;
 
 import org.jboss.weld.bootstrap.api.SingletonProvider;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
-import org.osgi.framework.*;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SentAnnotation;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SpecificationAnnotation;
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+import org.osgi.cdi.api.integration.BundleContainer;
+import org.osgi.cdi.api.integration.BundleContainers;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.ServiceRegistration;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
-import java.util.*;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
-import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
-import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SentAnnotation;
-import org.jboss.weld.environment.osgi.extension.ExtensionActivator.SpecificationAnnotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -142,7 +150,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Bu
         public void fire(InterBundleEvent event) {
             Long set = CDIOSGiExtension.currentBundle.get();
             CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-            container.getEvent().select(InterBundleEvent.class, 
+            container.getEvent().select(InterBundleEvent.class,
                     new SpecificationAnnotation(event.type()),
                     new SentAnnotation()).fire(event);
             if (set != null) {

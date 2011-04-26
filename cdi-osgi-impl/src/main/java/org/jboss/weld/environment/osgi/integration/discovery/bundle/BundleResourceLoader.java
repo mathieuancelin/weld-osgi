@@ -16,14 +16,14 @@
  */
 package org.jboss.weld.environment.osgi.integration.discovery.bundle;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
-
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.resources.spi.ResourceLoadingException;
 import org.jboss.weld.util.collections.EnumerationList;
 import org.osgi.framework.Bundle;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collection;
 
 /**
  * A simple resource loader.

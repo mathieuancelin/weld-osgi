@@ -1,11 +1,9 @@
 package org.jboss.weld.environment.osgi.extension;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
+import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.framework.FrameworkUtil;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
@@ -13,9 +11,12 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
-import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
-import org.osgi.framework.FrameworkUtil;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *

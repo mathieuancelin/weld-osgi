@@ -11,8 +11,10 @@ Embed-Dependency *; scope=compile; inline=true, \
                 org.jboss.weld.bean; \
                 org.jboss.weld.bean.builtin; \
                 org.jboss.weld.bean.proxy; \
-                org.jboss.weld.environment.osgi.extension; \
-                org.jboss.weld.environment.osgi.integration; \
+                org.osgi.cdi.api.extension; \
+                org.osgi.cdi.api.extension.annotation; \
+                org.osgi.cdi.api.extension.events; \
+                org.osgi.cdi.api.integration; \
                 org.jboss.weld.environment.osgi.*; \
                 org.jboss.weld.bootstrap; \
                 org.jboss.weld.bootstrap.*; \

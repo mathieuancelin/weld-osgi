@@ -1,18 +1,19 @@
 package org.jboss.weld.environment.osgi.integration;
 
-import java.awt.Event;
+import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
+import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+import org.osgi.cdi.api.integration.BundleContainer;
+import org.osgi.cdi.api.integration.BundleContainers;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.BeanManager;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainer;
-import org.jboss.weld.environment.osgi.api.extension.BundleContainers;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
-import org.jboss.weld.environment.osgi.extension.CDIOSGiExtension;
-import org.jboss.weld.environment.osgi.extension.ExtensionActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  *

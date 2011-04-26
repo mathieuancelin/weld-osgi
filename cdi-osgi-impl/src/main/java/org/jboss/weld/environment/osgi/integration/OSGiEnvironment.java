@@ -1,11 +1,12 @@
 package org.jboss.weld.environment.osgi.integration;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.jboss.weld.bootstrap.api.Environment;
 import org.jboss.weld.bootstrap.api.Service;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.resources.spi.ScheduledExecutorServiceFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
