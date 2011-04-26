@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.osgi.cdi</groupId>
   <artifactId>weld-osgi-core</artifactId>
   <packaging>jar</packaging>
   <name>Weld OSGi :: Core</name>
