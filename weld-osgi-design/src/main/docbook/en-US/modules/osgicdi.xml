@@ -132,66 +132,41 @@
             </para>
         </section>
         <section>
-            <title>The Java extension mechanism</title>
+            <title>OSGi-CDI features</title>
             <para>
-                TODO
-            </para>
-        </section>
-        <section>
-            <title>OSGi-CDI provides these features :</title>
-            <para>
-                TO REDO
+                As an extension to OSGi, OSGi-CDI provides several features :
                 <itemizedlist>
                     <listitem>
                         <para>
-                            Global management using extender pattern with a
-                            infra
-                            bundle providing features to the entire application
+                            Complete integration in OSGi world by the use of extender pattern and extension bundle.
+                            Thus
+                            complete compatibility with already existent tools.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-                            Embedded modes to manage your own bundles, with
-                            various
-                            control policies, in classic OSGi application
+                            Non intruding, configurable and customizable behavior in new or upgraded application.
+                            Simple
+                            configuration and usage using annotation, completely xml free.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-                            Full annotation configuration following CDI model
+                            Intern full CDI support for application bundles: injection, producers, interceptors,
+                            decorators ...
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-                            Intra bundle CDI full support: injection, producers,
-                            interceptors, decorators ...
+                            Lot of ease features for OSGi usages: injectable services, event notifications,
+                            inter-bundle
+                            communication ...
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-                            Services injection, with full support of
-                            requirement,
-                            ldap filtering and OSGi dynamism
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                            Automatic services publication fully compatible with
-                            OSGi
-                            service registering system
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                            Support for OSGi specific injection (such as bundle
-
-                            or
-                            manifest headers
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                            Event notification and inter bundles communication
+                            OSGi and CDI compliance all along the way ensuring compatibility with all CDI compliant
+                            container and easy application realisation or portage.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -206,27 +181,86 @@
                 
             </para>
         <section>
-            <title>The <code>Service</code> and <code>Services</code> interfaces</title>
+            <title>The <code>Service</code> interface</title>
+            <programlisting>
+                public interface Service&lt;T&gt; extends Instance&lt;T&gt; {
+                }
+            </programlisting>
             <para>
-
+                It represent a service producer parametrized by the service you want to inject. It has the same
+                comportment than
+                <code>Instance&lt;T&gt;</code>
+                except that it represents only OSGi service beans.
             </para>
         </section>
         <section>
             <title>The <code>Registration</code> and <code>Registrations</code> interfaces</title>
+            <programlisting>
+                public interface Registration&lt;T&gt; {
+                    void unregister();
+                    &lt;T&gt; Service&lt;T&gt; getServiceReference();
+                }
+            </programlisting>
+            <programlisting>
+                public interface Registrations&lt;T&gt; extends Iterable&lt;Registration&lt;T&gt;&gt; {
+                    int size();
+                }
+            </programlisting>
             <para>
-
+                These interfaces represent the registrations of a injectable OSGi services in the service resgistry.
+                It
+                permits to act on a previously registered service.
+                <code>Unregister()</code>
+                remove the service from the service registry and
+                <code>&lt;T&gt; Service&lt;T&gt; getServiceReference()</code>
+                return the
+                <code>Service&lt;T&gt;</code>
+                object representing the registred service.
+            </para>
+            <para>
+                Multiple registrations can be manipulated by the iterable <code>Registrations</code> interface.
             </para>
         </section>
         <section>
             <title>The <code>ServiceRegistry</code> interface</title>
+            <programlisting>
+                public interface ServiceRegistry {
+                    &lt;T&gt; Registration&lt;T&gt; registerService(Class&lt;T&gt; contract, Class&lt;? extends T&gt; implementation);
+                    &lt;T, U extends T&gt; Registration&lt;T&gt; registerService(Class&lt;T&gt; contract, U implementation);
+                    &lt;T&gt; Service&lt;T&gt; getServiceReferences(Class&lt;T&gt; contract);
+                    &lt;T&gt; Service&lt;T&gt; getServiceReference(Class&lt;T&gt; contract);
+                    &lt;T&gt; Provider&lt;T&gt; newTypeInstance(Class&lt;T&gt; unmanagedType);
+                }
+            </programlisting>
             <para>
-
+                This is where the injectable services may be registered and retrieved. It allows to register services
+                with their interface and implementation, getting back the corespondent
+                <code>Registration&lt;T&gt;</code>
+                , to obtain the
+                <code>Service&lt;T&gt;</code>
+                object corresponding to an service interface or to product a new instance of an unmanaged type.
             </para>
         </section>
         <section>
             <title>The <code>BundleContainer</code> and <code>BundleContainers</code> interfaces</title>
+            <programlisting>
+                public interface BundleContainer {
+                    void fire(InterBundleEvent event);
+                }
+            </programlisting>
+            <programlisting>
+                public interface BundleContainers {
+                    Collection&lt;BundleContainer&gt; getContainers();
+                }
+            </programlisting>
             <para>
-                
+                These interfaces represent the CDI compliant containers used by bean bundle. Such container may be
+                accessible in the OSGi application to provide an event notification system.
+                <code>void fire(InterBundleEvent event)</code>
+                fire an event through the CDI compliant container.
+            </para>
+            <para>
+                Multiple containers can be manipulated by the <code>BundleContainers</code> interface.
             </para>
         </section>
         </section>
