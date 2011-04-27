@@ -70,8 +70,7 @@
                         </format>
                         <format>
                             <formatName>html_single</formatName>
-                            <stylesheetResource>classpath:/xslt/org/jboss/weld/xhtml-single.xsl
-                            </stylesheetResource>
+                            <stylesheetResource>classpath:/xslt/org/jboss/weld/xhtml-single.xsl</stylesheetResource>
                             <finalName>index.html</finalName>
                         </format>
                     </formats>
