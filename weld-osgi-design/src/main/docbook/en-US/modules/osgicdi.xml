@@ -117,9 +117,19 @@
                 So this is where the magic happens and where your OSGi application become much more simple.
             </para>
         </section>
-        <para>
-            The next sections explain in details the capacity of these three artifacts.
-        </para>
+        <section>
+            <para>
+                The next sections present what is exposed by these three artifacts. If you just want to use
+                OSGi-CDI
+                you should jump to next chapter. If you want to understand how things may work you should stay.
+            </para>
+            <para>
+                Although the next sections are technical they just rapidly present APIs for more details about how
+                use
+                them
+                please refer to their javadoc.
+            </para>
+        </section>
     </section>
     <section>
         <title>An OSGi extension for CDI support</title>
@@ -178,7 +188,7 @@
         <section>
             <title>The interfaces</title>
             <para>
-                The extension API provides few interfaces that describe all specifics about OSGi service injection.
+                Extension API provides few interfaces that describe all specifics about OSGi service injection.
             </para>
         <section>
             <title>The <code>Service</code> interface</title>
@@ -245,8 +255,8 @@
         <section>
             <title>The events</title>
             <para>
-                Extension API exposes various events that notify about new life-cycle steps for container management,
-                service injection management and communication between bean bundles. They all use CDI event.
+                Extension API provides various events that notify about new life-cycle steps for container management,
+                service injection management and communication between bean bundles. They all use CDI event system.
             </para>
         <section>
             <title>The <code>BundleContainerInitialized</code> and <code>BundleContainerShutDown</code> events</title>
@@ -505,24 +515,308 @@
         </section>
         <section>
             <title>The <code>AbstractBundleEvent</code> and <code>AbstractServiceEvent</code> events</title>
-            <para>
+            <programlisting>
+                public abstract class AbstractBundleEvent {
+                
+                    public static enum EventType {
+                        INSTALLED,LAZY_ACTIVATION,RESOLVED,STARTED,STARTING,
+                        STOPPED,STOPPING,UNINSTALLED,UNRESOLVED,UPDATED,
+                    }
 
+                    private final Bundle bundle;
+
+                    public AbstractBundleEvent(Bundle bundle) {
+                        this.bundle = bundle;
+                    }
+
+                    public abstract EventType getType();
+
+                    public long getBundleId() {
+                        return bundle.getBundleId();
+                    }
+
+                    public String getSymbolicName() {
+                        return bundle.getSymbolicName();
+                    }
+
+                    public Version getVersion() {
+                        return bundle.getVersion();
+                    }
+
+                    public Bundle getBundle() {
+                        return bundle;
+                    }
+                }
+            </programlisting>
+            <programlisting>
+                public abstract class AbstractServiceEvent {
+
+                    public static enum EventType {
+                        SERVICE_ARRIVAL, SERVICE_DEPARTURE, SERVICE_CHANGED
+                    }
+
+                    private final ServiceReference ref;
+                    private final BundleContext context;
+                    private List&lt;String&gt; classesNames;
+                    private List&lt;Class&lt;?&gt;&gt; classes;
+                    private Map&lt;Class, Boolean&gt; assignable = new HashMap&lt;Class, Boolean&gt;();
+
+                    public AbstractServiceEvent(
+                        ServiceReference ref, BundleContext context) {
+                        this.ref = ref;
+                        this.context = context;
+                    }
+
+                    public abstract EventType eventType();
+
+                    public ServiceReference getRef() {
+                        return ref;
+                    }
+
+                    public &lt;T&gt; TypedService&lt;T&gt; type(Class&lt;T&gt; type) {
+                        if (isTyped(type)) {
+                            return TypedService.create(type, context, ref);
+                        } else {
+                            throw new RuntimeException("the type " + type
+                            + " isn't supported for the service. Supported types are "
+                            + getServiceClasses());
+                        }
+                    }
+
+                    public Object getService() {
+                        return context.getService(ref);
+                    }
+
+                    public boolean ungetService() {
+                        return context.ungetService(ref);
+                    }
+
+                    public boolean isTyped(Class&lt;?&gt; type) {
+                        boolean typed = false;
+                        if (!assignable.containsKey(type)) {
+                            for (Class clazz : getServiceClasses()) {
+                                if (type.isAssignableFrom(clazz)) {
+                                    typed = true;
+                                    break;
+                                }
+                            }
+                            assignable.put(type, typed);
+                        }
+                        return assignable.get(type);
+                    }
+
+                    public Bundle getRegisteringBundle() {
+                        return ref.getBundle();
+                    }
+
+                    public List&lt;String&gt; getServiceClassNames() {
+                        if (classesNames == null) {
+                            classesNames = Arrays.asList((String[])
+                            ref.getProperty(Constants.OBJECTCLASS));
+                        }
+                        return classesNames;
+                    }
+
+                    public List&lt;Class&lt;?&gt;&gt; getServiceClasses() {
+                        if (classes == null) {
+                            classes = new ArrayList&lt;Class&lt;?&gt;&gt;();
+                            for (String className : getServiceClassNames()) {
+                                try {
+                                    classes.add(getClass().getClassLoader().loadClass(className));
+                                } catch (ClassNotFoundException ex) {
+                                    return null;
+                                }
+                            }
+                        }
+                        return classes;
+                    }
+
+                    public static class TypedService&lt;T&gt; {
+
+                        private final BundleContext context;
+                        private final ServiceReference ref;
+                        private final Class&lt;T&gt; type;
+
+                        TypedService(BundleContext context, ServiceReference ref, Class&lt;T&gt; type) {
+                            this.context = context;
+                            this.ref = ref;
+                            this.type = type;
+                        }
+
+                        static &lt;T&gt; TypedService&lt;T&gt; create(Class&lt;T&gt; type, BundleContext context, ServiceReference ref) {
+                            return new TypedService&lt;T&gt;(context, ref, type);
+                        }
+
+                        public T getService() {
+                            return type.cast(context.getService(ref));
+                        }
+
+                        public boolean ungetService() {
+                            return context.ungetService(ref);
+                        }
+                    }
+                }
+            </programlisting>
+            <para>
+                These two abstract classes represent the information that bundle and service events may carry when they are fired.
             </para>
         </section>
         <section>
             <title>The <code>Valid</code> and <code>Invalid</code> events</title>
+            <programlisting>
+                public class Valid {
+                }
+            </programlisting>
+            <programlisting>
+                public class Invalid {
+                }
+            </programlisting>
             <para>
-
+                These two events notify about the state of a bundle dependency resolution.
             </para>
         </section>
         </section>
         <section>
             <title>The annotations</title>
             <para>
-
+                Extension API provides annotations in order to easily use CDI-OSGi features.
             </para>
             <section>
-                <title>TO BE CONTINUED</title>
+                <title>The <code>OSGiBundle</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface OSGiBundle {
+                        @Nonbinding String value();
+                        @Nonbinding String version() default "";
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point that represents a bundle.
+                </para>
+            </section>
+            <section>
+                <title>The <code>BundleDataFile</code>, <code>BundleHeader</code>, <code>BundleHeaders</code>, <code>
+                    BundleName</code> and <code>BundleVersion</code> annotations</title>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface BundleDataFile {
+                        @Nonbinding String value();
+                    }
+                </programlisting>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface BundleHeader {
+                        @Nonbinding String value();
+                    }
+                </programlisting>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface BundleHeaders {
+                    }
+                </programlisting>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface BundleName {
+                        String value();
+                    }
+                </programlisting>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface BundleVersion {
+                        String value();
+                    }
+                </programlisting>
+                <para>
+                    These annotations qualify an injection point that represents bundle relative information.
+                </para>
+            </section>
+            <section>
+                <title>The <code>OSGiService</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Target({ TYPE, METHOD, PARAMETER, FIELD })
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface OSGiService {
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point that represents a service in the OSGi service registry.
+                </para>
+            </section>
+            <section>
+                <title>The <code>Publish</code>  annotation</title>
+                <programlisting>
+                    @Target({ TYPE })
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface Publish {
+                        public Class[] contracts() default {};
+                        public String[] properties() default {};
+                        public boolean useQualifiersAsProperties() default false;
+                    }
+                </programlisting>
+                <para>
+                    This annotation notice that this type is an OSGi service that may be automatically published in
+                    the
+                    OSGi service registry.
+                </para>
+            </section>
+            <section>
+                <title>The <code>Required</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface Required {
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point that represents a required service.
+                </para>
+            </section>
+            <section>
+                <title>The <code>Filter</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface Filter {
+                        String value();
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point with an LDAP filter.
+                </para>
+            </section>
+            <section>
+                <title>The <code>Specification</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Target({ PARAMETER })
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface Specification {
+                        Class value();
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point by specifying the expected specification class.
+                </para>
+            </section>
+            <section>
+                <title>The <code>Sent</code> annotation</title>
+                <programlisting>
+                    @Qualifier
+                    @Target({ PARAMETER })
+                    @Retention(RetentionPolicy.RUNTIME)
+                    public @interface Sent {
+                    }
+                </programlisting>
+                <para>
+                    This annotation qualifies an injection point that represents a incoming inter bundle communication.
+                </para>
             </section>
         </section>
     </section>

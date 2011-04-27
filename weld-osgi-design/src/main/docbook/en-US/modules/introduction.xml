@@ -40,11 +40,22 @@
             </para>
         </section>
         <section>
+            <title>APIs bundle</title>
+            <para>
+                The APIs bundle is a bundle that only provides APIs used by CDI-OSGi. The two exposed APIS are
+                extension
+                API and integration API. They are needed by the extension, the implementation bundle and business bundles.
+            </para>
+            <para>
+                It takes the form of a library bundle that is used by every bundles in a CDI-OSGi application.
+            </para>
+        </section>
+        <section>
             <title>Extension bundle</title>
             <para>
-                The extension bundle is a bean bundle that manage all the other bean bundle of the current OSGi
-                application. It manage all CDI relevant functionality and communication exposed in extension API. For
-                that purpose it requires a implementation bundle obtained through integration API.
+                The extension bundle is a bundle that manage all the bean bundles of the current OSGi
+                application. It manages all CDI relevant functionality and communications exposed in extension API. For
+                that purpose it requires a implementation bundle conform to integration API.
             </para>
             <para>
                 It is the form that takes OSGi-CDI master bundle.
@@ -57,7 +68,7 @@
                 environment. It provides to the extension bundle the containers for managed bean bundles.
             </para>
             <para>
-                Weld-OSGi take the form of one implementation bundle.
+                Weld-OSGi takes the form of one implementation bundle.
             </para>
         </section>
         <section>
