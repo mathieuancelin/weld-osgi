@@ -16,7 +16,7 @@
         <section>
             <title>OSGi bundle</title>
             <para>
-                A bundle is a Java archive, such as a jar or a folder, that contains a special marker file:<code>
+                A bundle is a Java archive, such as a jar or a folder, that contains some special OSGi marker headers in its <code>
                 META-INF/Manifest.MF</code>.
             </para>
             <para>
@@ -26,35 +26,38 @@
         <section>
             <title>Bean bundle</title>
             <para>
-                A bean bundle is a java archive that contains both special marker file:
+                A bean bundle is a java archive that contains both special marker file
                 <code>META-INF/bean.xml</code>
-                and<code>META-INF/Manifest.MF</code>.
+                and special OSGi marker headers in its<code>META-INF/Manifest.MF</code>.
             </para>
             <para>
-                A bean bundle may be deploy in an OSGi environment using OSGi-CDI infrastructure bundle. It enables
+                A bean bundle may be deploy in an OSGi environment using OSGi-CDI extension bundle. It enables
                 both OSGi and CDI functionality for that bundle. It also enables potential special functionality
-                provided by the container bundle in use.
+                provided by the implementation bundle in use.
+            </para>
+            <para>
+                That the form that take business bundles in a OSGi-CDI application.
             </para>
         </section>
         <section>
-            <title>Infrastructure bundle</title>
+            <title>Extension bundle</title>
             <para>
-                The infrastructure bundle is a bean bundle that manage all the other bean bundle of the current OSGi
+                The extension bundle is a bean bundle that manage all the other bean bundle of the current OSGi
                 application. It manage all CDI relevant functionality and communication exposed in extension API. For
-                that purpose it requires a container bundle obtained through integration API.
+                that purpose it requires a implementation bundle obtained through integration API.
             </para>
             <para>
-                It is the form that takes OSGi-CDI.
+                It is the form that takes OSGi-CDI master bundle.
             </para>
         </section>
         <section>
-            <title>Container bundle</title>
+            <title>Implementation bundle</title>
             <para>
-                The container bundle is a bean bundle that is implementation of a CDI compliant container in a OSGi
-                environment. It provides to the infrastructure bundle the containers for managed bean bundles.
+                The implementation bundle is a bean bundle that is implementation of a CDI compliant container in a OSGi
+                environment. It provides to the extension bundle the containers for managed bean bundles.
             </para>
             <para>
-                Weld-OSGi take the form of one container bundle.
+                Weld-OSGi take the form of one implementation bundle.
             </para>
         </section>
         <section>

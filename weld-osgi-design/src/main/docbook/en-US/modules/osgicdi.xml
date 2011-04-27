@@ -1,7 +1,7 @@
 <chapter>
     <title id="osgicdipresentation">Organization of OSGi-CDI</title>
     <section>
-        <title>APIs and infrastructure bundle</title>
+        <title>APIs and extension bundle</title>
         <para>
             OSGi-CDI is composed of two bundles. One provides the APIs used to define utilities provided and hooking
             up
@@ -13,7 +13,7 @@
             OSGi-CDI and for CDI compliant container integration. These two sides are presented in the next sections.
         </para>
         <para>
-            The infrastructure bundle is the orchestrator of OSGi-CDI. It may be use by any application that require
+            The extension bundle is the orchestrator of OSGi-CDI. It may be use by any application that require
             OSGi-CDI. It runs in shadow using a CDI compliant container. This bundle is presented at the end of this
             section.
         </para>
@@ -43,7 +43,7 @@
                 <title>Extension API</title>
                 <para>
                     The extension API defines all the utilities provided to OSGi environment using CDI specification.
-                    It exposes all the new utilities and defines the comportment of the infrastructure bundle.
+                    It exposes all the new utilities and defines the comportment of the extension bundle.
                 </para>
                 <para>
                     It exposes all the interfaces, events and annotations usable by a developers in order to realize
@@ -53,7 +53,7 @@
                     publishing and consuming injectable services in a CDI way to do.
                 </para>
                 <para>
-                    It also describes the object the infrastructure bundle needs to orchestrate bean bundles.
+                    It also describes the object the extension bundle needs to orchestrate bean bundles.
                 </para>
                 <para>
                     So this where to search for the new usages you could do of OSGi.
@@ -63,12 +63,12 @@
                 <title>Integration API</title>
                 <para>
                     The integration API defines how a CDI container, such as Weld, should bootstrap with the CDI OSGi
-                    extension. So any CDI environment implementation could use the CDI OSGi extension transparently.
+                    extension. So any CDI environment implementation could use the CDI OSGi extension transparently. The CDI compliant container may be provided using a implementation bundle.
                 </para>
                 <para>
                     This aims at providing the minimum integration in order to start a CDI compliant container with
                     every
-                    managed bean bundle. Then the infrastructure bundle can get a CDI container to provide to every
+                    managed bean bundle. Then the extension bundle can get a CDI container to provide to every
                     one
                     of
                     its manages bean bundle.
@@ -76,7 +76,7 @@
                 <para>
                     Moreover the integration API allows to mix CDI compliant container in the same application by
                     providing
-                    a embedded mode. In this mode a bean bundle is decoupled from the infrastructure bundle and is
+                    a embedded mode. In this mode a bean bundle is decoupled from the extension bundle and is
                     managed
                     on its own. Thus you can use various implementations of CDI container or particularize the
                     behavior
@@ -85,8 +85,8 @@
                     particular bean bundle.
                 </para>
                 <para>
-                    All this bootstrapping mechanism works using the service layer of OSGi. A CDI compliant container
-                    bundle may provide a service that allows the infrastructure bundle to obtain a new container for
+                    All this bootstrapping mechanism works using the service layer of OSGi. A CDI compliant implementation
+                    bundle may provide a service that allows the extension bundle to obtain a new container for
                     every bean bundle.
                 </para>
                 <para>
@@ -95,9 +95,9 @@
             </section>
         </section>
         <section>
-            <title>Infrastructure bundle : the puppet master</title>
+            <title>Extension bundle : the puppet master</title>
             <para>
-                The infrastructure bundle is the heart of OSGi-CDI application. Once it is started, providing that it
+                The extension bundle is the heart of OSGi-CDI application. Once it is started, providing that it
                 finds a CDI compliant container to use, it manages all the bean bundle. It is in charge of
                 inter-bundle
                 injection, service injection, OSGi to CDI and inter-bundle communications.
@@ -109,7 +109,7 @@
                 functionality. They just use CDI injection and service injection.
             </para>
             <para>
-                In order to perform injections the infrastructure bundle search for a CDI compliant container service
+                In order to perform injections the extension bundle search for a CDI compliant container service
                 provider
                 once it is started. Thus it can only work coupled with a bundle providing such a service.
             </para>
@@ -126,7 +126,7 @@
         <section>
             <title>The extender pattern</title>
             <para>
-                OSGi-CDI provides an extension to OSGi as an extender OSGi pattern. The infrastructure bundle, the
+                OSGi-CDI provides an extension to OSGi as an extender OSGi pattern. The extension bundle, the
                 extender, tracks for bean bundles, the extensions, to be started. Then CDI utilities are enabled for
                 these bean bundles over OSGi environment.
             </para>
@@ -571,17 +571,17 @@
         </section>
     </section>
     <section>
-        <title>A orchestrator : the infrastructure bundle</title>
+        <title>A orchestrator : the extension bundle</title>
         <para>
 
         </para>
         <section>
-            <title>The infrastructure bundle works that way:</title>
+            <title>The extension bundle works that way:</title>
             <para>
                 <programlisting>
                     BEGIN
                     start
-                    WHILE ! container_bundle.isStarted
+                    WHILE ! implementation_bundle.isStarted
                     wait
                     END_WHILE
                     obtain_container
@@ -589,7 +589,7 @@
                     manage_bean_bundle
                     provide_container
                     END_FOR
-                    WHILE container_bundle.isStarted
+                    WHILE implementation_bundle.isStarted
                     wait_event
                     OnBeanBundleStart
                     manage_bean_bundle
@@ -607,7 +607,7 @@
             </para>
         </section>
         <section>
-            <title>A container bundle may work that way:</title>
+            <title>A implementation bundle may work that way:</title>
             <para>
                 <programlisting>
                     HOW DO I WORK ?
@@ -643,7 +643,7 @@
         <para>
             However there is a few other information that Weld-OSGi might need in order to perform a correct
             extension.
-            In particular you might want a bean bundle to be not manage by the infrastructure bundle but by his own
+            In particular you might want a bean bundle to be not manage by the extension bundle but by his own
             embedded CDI container. For that there is a new manifest header.
         </para>
         <section>
@@ -669,12 +669,12 @@
                 header
             </title>
             <para>
-                This header prevents the infrastructure bundle to automatically manage the bean bundle that set this
+                This header prevents the extension bundle to automatically manage the bean bundle that set this
                 manifest header to true. So the bean bundle can be manage more finely by the user or use a different
                 CDI
                 container. If this header is set to false or is not present in the
                 <code>META-INF/Manifest.MF</code>
-                file then the bean bundle will be automatically manage by the infrastructure bundle (if it is started).
+                file then the bean bundle will be automatically manage by the extension bundle (if it is started).
             </para>
         </section>
     </section>
