@@ -823,17 +823,25 @@
     <section>
         <title>A standard bootstrap API for CDI container integration</title>
         <section>
-            <title>Intergration API</title>
+            <title>Why an integration API</title>
             <para>
-                TODO
+                OSGi-CDI could have been carry out with an internal CDI compliant container and work very well. Every
+                one of the specification above would have been fulfilled. But no other specific utilities or CDI
+                evolution could have been added without a complete modification of CDI-OSGi.
+            </para>
+            <para>
+                Then there is the integration API. With that, developers are able to provide their own implementation
+                bundle. Thus you can use your favorite CDI compliant container for your CDI-OSGi application or mix
+                up
+                different CDI compliant containers for different bundles.
+            </para>
+            <para>
+                Integration API describe what needs the extension bundle to work (and therefore what may provide the
+                implementation bundle) and what provides the extension bundle (and therefore what should use the
+                implementation bundle).
             </para>
             <section>
-                <title>The
-                    <code>BundleContainer</code>
-                    and
-                    <code>BundleContainers</code>
-                    interfaces
-                </title>
+                <title>The <code>BundleContainer</code> and <code>BundleContainers</code> interfaces</title>
                 <programlisting>
                     public interface BundleContainer {
                     void fire(InterBundleEvent event);
@@ -847,8 +855,6 @@
                 <para>
                     These interfaces represent the CDI compliant containers used by bean bundle. Such container may be
                     accessible in the OSGi application to provide an event notification system.
-                    <code>void fire(InterBundleEvent event)</code>
-                    fire an event through the CDI compliant container.
                 </para>
                 <para>
                     Multiple containers can be manipulated by the
@@ -856,11 +862,32 @@
                     interface.
                 </para>
             </section>
+            <section>
+                <title>The <code>BundleContainerFactory</code> interface</title>
+                <programlisting>
+                    public interface BundleContainerFactory {
+
+                        Class&lt;? extends BundleContainerFactory&gt; delegateClass();
+
+                        String getID();
+
+                        Set&lt;String&gt; getContractBlacklist();
+
+                        BundleContainer container(Bundle bundle);
+
+                    }
+                </programlisting>
+                <para>
+                    This the how the extension bundle require a CDI compliant container from the implementation
+                    bundle.
+                    This latter should publish an OSGi service that complies with this interface.
+                </para>
+            </section>
         </section>
         <section>
             <title>Embedded mode</title>
             <para>
-                TODO
+                TODO How does it work ? Should we provide something ? Should business bundles use the integration API ? A template activator ?
             </para>
         </section>
     </section>
