@@ -901,42 +901,61 @@
             <para>
                 <programlisting>
                     BEGIN
-                    start
-                    WHILE ! implementation_bundle.isStarted
-                    wait
-                    END_WHILE
-                    obtain_container
-                    FOR bean_bundle : started_bundles
-                    manage_bean_bundle
-                    provide_container
-                    END_FOR
-                    WHILE implementation_bundle.isStarted
-                    wait_event
-                    OnBeanBundleStart
-                    manage_bean_bundle
-                    provide_container
-                    OnBeanBundleStop
-                    unmanage_bean_bundle
-                    END_WHILE
-                    stop
-                    FOR bean_bundle : namaged_bundles
-                    unmanage_bean_bundle
-                    stop_bean_bundle
-                    END_FOR
+                        start
+                        WHILE ! implementation_bundle.isStarted
+                            wait
+                        END_WHILE
+                        obtain_container
+                        FOR bean_bundle : started_bundles
+                            manage_bean_bundle
+                            provide_container
+                        END_FOR
+                        WHILE implementation_bundle.isStarted
+                            wait_event
+                            OnBeanBundleStart
+                                manage_bean_bundle
+                                provide_container
+                            OnBeanBundleStop
+                                unmanage_bean_bundle
+                        END_WHILE
+                        stop
+                        FOR bean_bundle : namaged_bundles
+                            unmanage_bean_bundle
+                            stop_bean_bundle
+                        END_FOR
                     END
                 </programlisting>
             </para>
         </section>
+    </section>
+    <section>
+        <title>The implementation bundle</title>
+        <para>
+            Although the implementation bundle is not a part of CDI-OSGi it is necessary in a CDI-OSGi application.
+            So
+            this section explains the part the implementation bundle plays but does not enter in specifics.
+        </para>
+        <para>
+            You will see how an implementation bundle can work in the chapter about Weld-OSGi.
+        </para>
         <section>
             <title>A implementation bundle may work that way:</title>
             <para>
                 <programlisting>
-                    HOW DO I WORK ?
+                    BEGIN
+                        start
+                        register_container_factory_service
+                        WHILE true
+                            wait
+                            OnContainerRequest
+                                provide_container
+                        END_WHILE
+                        unregister_container_factory_service
+                    END
                 </programlisting>
             </para>
         </section>
     </section>
-
     <section>
         <title>How to make a bundle or a bean archive a bean bundle</title>
         <para>
