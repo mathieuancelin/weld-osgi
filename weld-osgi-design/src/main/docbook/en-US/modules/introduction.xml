@@ -95,6 +95,27 @@
                 environment facilitation. It comes with a complete documentation and sample applications.
             </para>
         </section>
+        <section>
+            <title>Organization and interactions between bundles</title>
+            <figure>
+                <title>Organization and interactions between bundles</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/CDI-OSGi.png"/>
+                    </imageobject>
+                    <textobject>
+                        <phrase>
+                            Organization diagram.
+                        </phrase>
+                    </textobject>
+                    <caption>
+                        <para>
+                            This diagram shows the organization of bundles and how they act with each other.
+                        </para>
+                    </caption>
+                </mediaobject>
+            </figure>
+        </section>
     </section>
     <section>
         <title>What about other frameworks</title>
