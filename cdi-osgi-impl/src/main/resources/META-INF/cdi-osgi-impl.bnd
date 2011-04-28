@@ -1,0 +1,21 @@
+Export-Package org.osgi.cdi.impl.extension; \
+               org.osgi.cdi.impl.extension.services
+
+Import-Package org.osgi.cdi.api.extension; \
+               org.osgi.cdi.api.extension.annotation; \
+               org.osgi.cdi.api.extension.events; \
+               org.osgi.cdi.api.integration; \
+               javax.inject; \
+               javax.decorator; \
+               javax.annotation; \
+               javax.interceptor; \
+               javax.enterprise.context; \
+               javax.enterprise.context.spi; \
+               javax.enterprise.event;, \
+               javax.enterprise.inject; \
+               javax.enterprise.inject.spi; \
+               javax.enterprise.util; \
+               org.osgi.framework
+
+DynamicImport-Package *
+Bundle-Activator org.osgi.cdi.impl.Activator
