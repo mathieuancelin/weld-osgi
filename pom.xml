@@ -19,6 +19,7 @@
         <module>cdi-osgi-impl</module>
         <module>sample</module>
         <module>weld-osgi-impl</module>
+        <module>owb-osgi-impl</module>
     </modules>
 
     <repositories>

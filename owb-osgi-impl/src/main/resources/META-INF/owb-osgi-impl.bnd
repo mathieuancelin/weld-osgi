@@ -1,0 +1,21 @@
+Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-api|cdi-osgi-impl|javax.inject|jsr250-api|cdi-api|el-api, \
+                 slf4j-jdk14; inline=true
+
+Import-Package org.osgi.cdi.api.extension; \
+               org.osgi.cdi.api.extension.annotation; \
+               org.osgi.cdi.api.extension.events; \
+               org.osgi.cdi.api.integration; \
+               javax.el; \
+               javax.inject; \
+               javax.decorator; \
+               javax.annotation; \
+               javax.interceptor; \
+               javax.enterprise.context; \
+               javax.enterprise.context.spi; \
+               javax.enterprise.event; \
+               javax.enterprise.inject; \
+               javax.enterprise.inject.spi; \
+               javax.enterprise.util
+
+DynamicImport-Package *
+Bundle-Activator org.apache.openwebbeans.environment.osgi.Activator

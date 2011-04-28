@@ -16,6 +16,7 @@
                 <include>com.sample.osgi:paint-triangle</include>
                 <include>com.sample.osgi:paint-square</include>
                 <include>org.jboss.weld.osgi:weld-osgi-impl</include>
+                <include>org.jboss.weld.osgi:owb-osgi-impl</include>
                 <include>org.osgi.cdi:cdi-osgi-api</include>
                 <include>org.osgi.cdi:cdi-osgi-impl</include>
                 <include>org.apache.felix:org.apache.felix.bundlerepository</include>
