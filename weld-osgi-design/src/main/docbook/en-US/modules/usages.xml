@@ -1,14 +1,15 @@
 <chapter>
     <title id="usages">How to make OSGi easy peasy</title>
     <section>
-        <title>CDI usage in your bean bundles</title>
+        <title>CDI usage in bean bundles</title>
         <para>
-            Everything you did in your CDI application you can do in your bean bundle. You can take advantage of
-            injection, producers, interceptors and decorators everywhere in your bean bundle. But influence boundary
-            of
-            the CDI compliant container stay within the bean bundle for classic CDI usages. So you cannot inject
-            external dependencies or use interceptor, decorator or alternative of another bean bundle (yet you still
-            need to declare your own interceptors, decorators and alternatives in the bean bundle bean.xml).
+            Everything possible in CDI application is possible in bean bundle. They can take advantage of
+            injection, producers, interceptors, decorators and alternative. But influence boundary
+            of the CDI compliant container stay within the bean bundle for classic CDI usages. So external
+            dependencies
+            cannot be injected and interceptor, decorator or alternative of another bean bundle cannot be used (yet
+            you
+            still need to declare your own interceptors, decorators and alternatives in the bean bundle bean.xml file).
         </para>
         <para>
             That is all we will say about classic CDI usages, please report to CDI documentation for more information.
@@ -27,12 +28,15 @@
             some general OSGi utilities.
         </para>
         <section>
-            <title>OSGi services management</title>
+            <title>OSGi services injection</title>
             <para>
-                Intro ?
+                CDI-OSGi allows developers to publish and consume OSGi services as CDI beans. However, since OSGi
+                services are dynamic there are some differences with classic bean injection. This section presents
+                how
+                OSGi services can be published and consumed using CDI-OSGi.
             </para>
             <para>
-                For our examples we will use this very sophisticated service interface :
+                Examples use this very sophisticated service interface :
                 <programlisting>
                     public interface MyService {
                         void doSomething();
@@ -40,68 +44,102 @@
                 </programlisting>
             </para>
             <section>
-                <title>Obtain a service using injection</title>
-                <section>
-                    <title>Direct injection using <code>@OSGiService</code></title>
-                    <para>
-                        The main way to perform an OSGi injection is to use the
-                        <code>@Inject @OSGiService</code>
-                        annotation combination. It acts like a common injection except that CDI-OSGi will search for
-                        injectable instances in the ServiceRegistry.
-                    </para>
-                    <para>
-                        That is how it looks like :
-                        <programlisting>
-                            @Inject @OSGiService MyService service;
-                            service.doSomething();
-                        </programlisting>
-                    </para>
-                </section>
-                <section>
-                    <title>Filtering services</title>
-                    <para>
-                        You may not use regular qualifier like with classic injection in OSGi service injection point. Instead you can filter the services obtained using LDAP filter. For that there is the <code>Filter</code> annotation.
-                    </para>
-                    <para>
-                        It works that way:
-                        <programlisting>
-                            @Inject @OSGiService @Filter("(&amp;(lang=EN)(country=US))") MyService service;
-                        </programlisting>
-                    </para>
-                </section>
-                <section>
-                    <title>Obtain a service using programmatic lookup</title>
-                    <para>
-                        As in classic CDI injection you can obtain all the implementation of a service available and
-                        then select one at runtime. For that you might use the interface <code>Service&lt;T&gt;</code>.
-                    </para>
-                    <para>
-                        You can iterate over all implementation like that:
-                        <programlisting>
-                            @Inject Service&lt;MyService&gt; services;
-                            if (service.size() > 0) {
-                                for (MyService service : services) {
-                                    service.doSomething();
-                                }
-                            }
-                        </programlisting>
-                        Or you can select the implementation you want:
-                        <programlisting>
-                            service.select(new AnnotationLiteral&lt;AnyFilter&gt;() {}).get().doSomething();
-                        </programlisting>
-                        It is possible to add filter directly on the injection point:
-                        <programlisting>
-                            @Inject @Filter("(&amp;(lang=EN)(country=US))") Service&lt;MyService&gt; service;
-                        </programlisting>
-                    </para>
-                    <para>
-                        <code>Service&lt;T&gt;</code> extends CDI <code>Instance&lt;T&gt;</code>
-                        so the comportment is the same except that CDI-OSGi will search for injectable instances in
-                        the
-                        ServiceRegistry.
-                    </para>
-                </section>
+                <title>Direct injection using
+                    <code>@OSGiService</code>
+                </title>
+                <para>
+                    The main way to perform an OSGi injection is to use the
+                    <code>@Inject @OSGiService</code>
+                    annotation combination. It acts like a common injection except that CDI-OSGi will search for
+                    injectable instances in the service registry.
+                </para>
+                <para>
+                    That is how it looks like :
+                    <programlisting>
+                        @Inject @OSGiService MyService service;
+                        service.doSomething();
+                    </programlisting>
+                </para>
+                <para>
+                    The behavior is similar with classic CDI injection.
+                    <code>@OSGiService</code>
+                    is just a special qualifier that allows extension bundle to manage the injection.
+                </para>
+            </section>
+            <section>
+                <title>Obtain a service using programmatic lookup</title>
+                <para>
+                    As in classic CDI injection you can obtain all the implementation of a service available and
+                    then select one at runtime. For that you might use the interface<code>Service&lt;T&gt;</code>.
+                    CDI-OSGi will search for all injectable instance in the service registry.
+                </para>
+                <para>
+                    You can get the service like that:
+                    <programlisting>
+                        @Inject Service&lt;MyService&gt; services;
+                        services.get().doSomething();
+                    </programlisting>
+                    You can also iterate over all implementation like that:
+                    <programlisting>
+                        @Inject Service&lt;MyService&gt; services;
+                        for (MyService service : services) {
+                        service.doSomething();
+                        }
+                    </programlisting>
+                </para>
+                <para>
+                    <code>Service&lt;T&gt;</code>
+                    extends CDI
+                    <code>Instance&lt;T&gt;</code>
+                    so the behavior is similar except that the injection process is managed by the extension bundle.
+                </para>
             </section>
         </section>
+        <section>
+            <title>Clearly specify a service implementation</title>
+            <para>
+                There might be multiple implementations of the same OSGi service. Like regular bean injection it
+                is
+                possible to qualify an OSGi service implementation or injection point using qualifiers. But,
+                as they
+                are OSGi services, it is also possible to use LDAP filter.
+            </para>
+            <section>
+                <title>Using qualifiers</title>
+                <para>
+
+                </para>
+            </section>
+            <section>
+                <title>Filtering services</title>
+                <para>
+
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Contextual services</title>
+            <para>
+
+            </para>
+        </section>
+        <section>
+            <title>Service registry</title>
+            <para>
+
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>CDI-OSGi events</title>
+        <para>
+
+        </para>
+    </section>
+    <section>
+        <title>OSGi utilities</title>
+        <para>
+
+        </para>
     </section>
 </chapter>

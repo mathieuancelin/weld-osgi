@@ -67,9 +67,8 @@
             <para>
                 The implementation bundle is a bundle that is implementation of a CDI compliant container in a
                 CDI-OSGi
-                environment. It provides to the extension bundle the containers for managed bean bundles. You should
-                see
-                it as a glu between CDI vendor-specific APIs and CDI-OSGi integration API contract.
+                environment. It provides to the extension bundle the containers for managed bean bundles. It should
+                be seen as a glu between CDI vendor-specific APIs and CDI-OSGi integration API contract.
             </para>
             <para>
                 Weld-OSGi is one implementation bundle.
@@ -88,9 +87,9 @@
     <section>
         <title>What are CDI-OSGi and Weld-OSGi ?</title>
         <section>
-            <title>OSGi-CDI</title>
+            <title>CDI-OSGi</title>
             <para>
-                OSGi-CDI aims at simplifying application development in an OSGi environment by providing a more
+                CDI-OSGi aims at simplifying application development in an OSGi environment by providing a more
                 modern,
                 more user-friendly and faster way to interact with the OSGi Framework.
             </para>
@@ -106,11 +105,11 @@
         <section>
             <title>Weld-OSGi</title>
             <para>
-                Weld-OSGi is an implementation of Weld in the OSGi environment using OSGi-CDI. It is the exhibit
-                implementation of features exposes by OSGi-CDI APIs.
+                Weld-OSGi is an implementation of Weld in the OSGi environment using CDI-OSGi. It is the exhibit
+                implementation of features exposes by CDI-OSGi APIs.
             </para>
             <para>
-                But Weld-OSGi is more than a simple implementation of OSGi-CDI. It provides other utilities for OSGi
+                But Weld-OSGi is more than a simple implementation of CDI-OSGi. It provides other utilities for OSGi
                 environment facilitation. It comes with a complete documentation and sample applications.
             </para>
         </section>
@@ -139,14 +138,14 @@
     <section>
         <title>What about other frameworks</title>
         <para>
-            OSGi-CDI stays compliant with CDI specification and uses only standard OSGi mechanisms. Every things it
+            CDI-OSGi stays compliant with CDI specification and uses only standard OSGi mechanisms. Every things it
             does (or nothing from it) CDI and OGSi can do.
         </para>
         <para>
             Thereby is compatible with most of the current frameworks dealing with OSGi service management.
         </para>
         <para>
-            Weld-OSGi has the same compatibility since it is a implementation of OSGi-CDI. But as it provides some
+            Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as it provides some
             additional features it may be impossible to use all its possibilities coupling with other frameworks.
         </para>
     </section>
@@ -158,7 +157,7 @@
             <itemizedlist>
                 <listitem>
                     <para>
-                        The OSGi-CDI specification for core functionality usages and CDI container integration.
+                        The CDI-OSGi specification for core functionality usages and CDI container integration.
                     </para>
                 </listitem>
                 <listitem>
