@@ -31,12 +31,13 @@
                 and special OSGi marker headers in its<code>META-INF/Manifest.MF</code>.
             </para>
             <para>
-                A bean bundle may be deploy in an OSGi environment using OSGi-CDI extension bundle. It enables
-                both OSGi and CDI functionality for that bundle. It also enables potential special functionality
-                provided by the implementation bundle in use.
+                A bean bundle may be deploy in an OSGi environment and then be managed by the CDI-OSGI extension
+                bundle. It enables both OSGi and CDI functionality for that bundle. CDI functionality is provided by
+                the
+                implementation bundle with which the extension bundle works.
             </para>
             <para>
-                That the form that take business bundles in a OSGi-CDI application.
+                It is the form taken by OSGi-CDI application component bundles.
             </para>
         </section>
         <section>
@@ -47,7 +48,7 @@
                 API and integration API. They are needed by the extension, the implementation bundle and business bundles.
             </para>
             <para>
-                It takes the form of a library bundle that is used by every bundles in a CDI-OSGi application.
+                It is library bundle that is used by every bundles in a CDI-OSGi application.
             </para>
         </section>
         <section>
@@ -64,11 +65,14 @@
         <section>
             <title>Implementation bundle</title>
             <para>
-                The implementation bundle is a bean bundle that is implementation of a CDI compliant container in a OSGi
-                environment. It provides to the extension bundle the containers for managed bean bundles.
+                The implementation bundle is a bundle that is implementation of a CDI compliant container in a
+                CDI-OSGi
+                environment. It provides to the extension bundle the containers for managed bean bundles. You should
+                see
+                it as a glu between CDI vendor-specific APIs and CDI-OSGi integration API contract.
             </para>
             <para>
-                Weld-OSGi takes the form of one implementation bundle.
+                Weld-OSGi is one implementation bundle.
             </para>
         </section>
         <section>
@@ -82,19 +86,20 @@
         </section>
     </section>
     <section>
-        <title>What are OSGi-CDI and Weld-OSGi ?</title>
+        <title>What are CDI-OSGi and Weld-OSGi ?</title>
         <section>
             <title>OSGi-CDI</title>
             <para>
-                OSGi-CDI aims at simplifying the access to the OSGi environment by providing a more modern, more
-                user-friendly and faster way to interact with the OSGi Framework.
+                OSGi-CDI aims at simplifying application development in an OSGi environment by providing a more
+                modern,
+                more user-friendly and faster way to interact with the OSGi Framework.
             </para>
             <para>
                 It addresses the OSGi complexity about services management using CDI specification (JSR-299). Thus it
-                provides an CDI OSGi extension with injection utilities for the OSGi environment.
+                provides a CDI OSGi extension with injection utilities for the OSGi environment.
             </para>
             <para>
-                Moreover an integration with any CDI implementation, such as Weld, is possible through a standard
+                Moreover an integration with any CDI implementation, such as Weld, is possible through a well-defined
                 bootstrapping API.
             </para>
         </section>
@@ -141,7 +146,7 @@
             Thereby is compatible with most of the current frameworks dealing with OSGi service management.
         </para>
         <para>
-            Weld-OSGi as the same compatibility since it is a implementation of OSGi-CDI. But as it provides some
+            Weld-OSGi has the same compatibility since it is a implementation of OSGi-CDI. But as it provides some
             additional features it may be impossible to use all its possibilities coupling with other frameworks.
         </para>
     </section>
