@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class WeldOSGiProducer {
+public class CDIOSGiProducer {
 
     @Produces
     public BundleState getBundleState(BundleHolder holder) {
