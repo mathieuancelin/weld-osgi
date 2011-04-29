@@ -2,7 +2,7 @@ package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.impl.extension.services.BundleHolder;
 import org.osgi.cdi.impl.extension.services.ContainerObserver;
-import org.osgi.cdi.impl.extension.services.WeldOSGiProducer;
+import org.osgi.cdi.impl.extension.services.CDIOSGiProducer;
 import org.osgi.cdi.impl.extension.services.RegistrationsHolder;
 import org.osgi.cdi.impl.extension.services.ServiceRegistryImpl;
 import org.osgi.cdi.api.extension.Service;
@@ -55,7 +55,7 @@ public class CDIOSGiExtension implements Extension {
     private Set<Class<?>> requiredOsgiServiceDependencies = new HashSet<Class<?>>();
 
     public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-        event.addAnnotatedType(manager.createAnnotatedType(WeldOSGiProducer.class));
+        event.addAnnotatedType(manager.createAnnotatedType(CDIOSGiProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
