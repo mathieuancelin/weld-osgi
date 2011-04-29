@@ -186,8 +186,8 @@ public class MyServiceImpl implements MyService {
                 <title>Links between qualifier annotations and LDAP filtering</title>
                 <para>TODO Is @AnyQualifier similar with @Property(name="anyqualifier", value="") ?
                     And is @Property(name="anyqualifier", value="anyValue") similar with
-                    @AnyQualifier("anyValue") ? To any qualifier correspond a generated filter ? To
-                    any filter correpond an implicit qualifier (oO even possible ?) ?</para>
+                    @AnyQualifier("anyValue") ? To any qualifier correspond a generated filter
+                    ?</para>
                 <para>Consider this code, will it work ? (it'll be cool!
                     )<programlisting>@Publish
 @Lang(Languages.EN)

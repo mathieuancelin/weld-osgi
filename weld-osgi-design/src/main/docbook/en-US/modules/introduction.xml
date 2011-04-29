@@ -4,114 +4,80 @@
         <title>About naming and references</title>
         <section>
             <title>Bean archive</title>
-            <para>
-                A bean archive is a java archive, such as a jar or a Java EE module, that contains a special marker
-                file:<code>META-INF/bean.xml</code>.
-            </para>
-            <para>
-                A bean archive may be deploy in a CDI environment. It enables all CDI functionality in that bean
-                archive.
-            </para>
+            <para>A bean archive is a java archive, such as a jar or a Java EE module, that contains
+                a special marker file:<code>META-INF/bean.xml</code>.</para>
+            <para>A bean archive may be deploy in a CDI environment. It enables all CDI
+                functionality in that bean archive.</para>
         </section>
         <section>
             <title>OSGi bundle</title>
-            <para>
-                A bundle is a Java archive, such as a jar or a folder, that contains some special OSGi marker headers in its <code>
-                META-INF/Manifest.MF</code>.
-            </para>
-            <para>
-                A bundle may be deploy in an OSGi environment. It enables all OSGi functionality for that bundle.
-            </para>
+            <para>A bundle is a Java archive, such as a jar or a folder, that contains some special
+                OSGi marker headers in its <code> META-INF/Manifest.MF</code>.</para>
+            <para>A bundle may be deploy in an OSGi environment. It enables all OSGi functionality
+                for that bundle.</para>
         </section>
         <section>
             <title>Bean bundle</title>
-            <para>
-                A bean bundle is a java archive that contains both special marker file
-                <code>META-INF/bean.xml</code>
-                and special OSGi marker headers in its<code>META-INF/Manifest.MF</code>.
-            </para>
-            <para>
-                A bean bundle may be deploy in an OSGi environment and then be managed by the CDI-OSGI extension
-                bundle. It enables both OSGi and CDI functionality for that bundle. CDI functionality is provided by
-                the
-                implementation bundle with which the extension bundle works.
-            </para>
-            <para>
-                It is the form taken by OSGi-CDI application component bundles.
-            </para>
+            <para>A bean bundle is a java archive that contains both special marker file
+                    <code>META-INF/bean.xml</code> and special OSGi marker headers in
+                    its<code>META-INF/Manifest.MF</code>.</para>
+            <para>A bean bundle may be deploy in an OSGi environment and then be managed by the
+                CDI-OSGI extension bundle. It enables both OSGi and CDI functionality for that
+                bundle. CDI functionality is provided by the implementation bundle with which the
+                extension bundle works.</para>
+            <para>It is the form taken by OSGi-CDI application component bundles.</para>
         </section>
         <section>
             <title>APIs bundle</title>
-            <para>
-                The APIs bundle is a bundle that only provides APIs used by CDI-OSGi. The two exposed APIS are
-                extension
-                API and integration API. They are needed by the extension, the implementation bundle and business bundles.
-            </para>
-            <para>
-                It is library bundle that is used by every bundles in a CDI-OSGi application.
-            </para>
+            <para>The APIs bundle is a bundle that only provides APIs used by CDI-OSGi. The two
+                exposed APIS are extension API and integration API. They are needed by the
+                extension, the implementation bundle and business bundles.</para>
+            <para>It is library bundle that is used by every bundles in a CDI-OSGi
+                application.</para>
         </section>
         <section>
             <title>Extension bundle</title>
-            <para>
-                The extension bundle is a bundle that manage all the bean bundles of the current OSGi
-                application. It manages all CDI relevant functionality and communications exposed in extension API. For
-                that purpose it requires a implementation bundle conform to integration API.
-            </para>
-            <para>
-                It is the form that takes OSGi-CDI master bundle.
-            </para>
+            <para>The extension bundle is a bundle that manage all the bean bundles of the current
+                OSGi application. It manages all CDI relevant functionality and communications
+                exposed in extension API. For that purpose it requires a implementation bundle
+                conform to integration API.</para>
+            <para>It is the form that takes OSGi-CDI master bundle.</para>
         </section>
         <section>
             <title>Implementation bundle</title>
-            <para>
-                The implementation bundle is a bundle that is implementation of a CDI compliant container in a
-                CDI-OSGi
-                environment. It provides to the extension bundle the containers for managed bean bundles. It should
-                be seen as a glu between CDI vendor-specific APIs and CDI-OSGi integration API contract.
-            </para>
-            <para>
-                Weld-OSGi is one implementation bundle.
-            </para>
+            <para>The implementation bundle is a bundle that is implementation of a CDI compliant
+                container in a CDI-OSGi environment. It provides to the extension bundle the
+                containers for managed bean bundles. It should be seen as a glu between CDI
+                vendor-specific APIs and CDI-OSGi integration API contract.</para>
+            <para>Weld-OSGi is one implementation bundle.</para>
         </section>
         <section>
             <title>References</title>
-            <para>
-                This document uses both CDI and OSGi specification documentations as technical references. You may
-                refer
-                to these documents for a better understanding of CDI and OSGi functionality, references and naming
-                conventions.
-            </para>
+            <para>This document uses both CDI and OSGi specification documentations as technical
+                references. You may refer to these documents for a better understanding of CDI and
+                OSGi functionality, references and naming conventions.</para>
         </section>
     </section>
     <section>
         <title>What are CDI-OSGi and Weld-OSGi ?</title>
         <section>
             <title>CDI-OSGi</title>
-            <para>
-                CDI-OSGi aims at simplifying application development in an OSGi environment by providing a more
-                modern,
-                more user-friendly and faster way to interact with the OSGi Framework.
-            </para>
-            <para>
-                It addresses the OSGi complexity about services management using CDI specification (JSR-299). Thus it
-                provides a CDI OSGi extension with injection utilities for the OSGi environment.
-            </para>
-            <para>
-                Moreover an integration with any CDI implementation, such as Weld, is possible through a well-defined
-                bootstrapping API.
-            </para>
+            <para>CDI-OSGi aims at simplifying application development in an OSGi environment by
+                providing a more modern, more user-friendly and faster way to interact with the OSGi
+                Framework.</para>
+            <para>It addresses the OSGi complexity about services management using CDI specification
+                (JSR-299). Thus it provides a CDI OSGi extension with injection utilities for the
+                OSGi environment.</para>
+            <para>Moreover an integration with any CDI implementation, such as Weld, is possible
+                through a well-defined bootstrapping API.</para>
         </section>
         <section>
             <title>Weld-OSGi</title>
-            <para>
-                Weld-OSGi is an implementation of Weld in the OSGi environment using CDI-OSGi. It is the exhibit
-                implementation of features exposes by CDI-OSGi APIs.
-            </para>
-            <para>
-                But Weld-OSGi is more than a simple implementation of CDI-OSGi. It provides other utilities for OSGi
-                environment facilitation. It comes with a complete documentation and sample applications.
-            </para>
+            <para>Weld-OSGi is an implementation of Weld in the OSGi environment using CDI-OSGi. It
+                is the exhibit implementation of features exposes by CDI-OSGi APIs.</para>
+            <para>But Weld-OSGi is more than a simple implementation of CDI-OSGi. It provides other
+                utilities for OSGi environment facilitation. It comes with a complete documentation
+                and sample applications.</para>
         </section>
         <section>
             <title>Organization and interactions between bundles</title>
@@ -122,14 +88,11 @@
                         <imagedata fileref="images/CDI-OSGi.png"/>
                     </imageobject>
                     <textobject>
-                        <phrase>
-                            Organization diagram.
-                        </phrase>
+                        <phrase> Organization diagram. </phrase>
                     </textobject>
                     <caption>
-                        <para>
-                            This diagram shows the organization of bundles and how they act with each other.
-                        </para>
+                        <para> This diagram shows the organization of bundles and how they act with
+                            each other. </para>
                     </caption>
                 </mediaobject>
             </figure>
@@ -137,33 +100,25 @@
     </section>
     <section>
         <title>What about other frameworks</title>
-        <para>
-            CDI-OSGi stays compliant with CDI specification and uses only standard OSGi mechanisms. Every things it
-            does (or nothing from it) CDI and OGSi can do.
-        </para>
-        <para>
-            Thereby is compatible with most of the current frameworks dealing with OSGi service management.
-        </para>
-        <para>
-            Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as it provides some
-            additional features it may be impossible to use all its possibilities coupling with other frameworks.
-        </para>
+        <para>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
+            mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</para>
+        <para>Thereby is compatible with most of the current frameworks dealing with OSGi service
+            management.</para>
+        <para>Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as
+            it provides some additional features it may be impossible to use all its possibilities
+            coupling with other frameworks.</para>
     </section>
     <section>
         <title>Organization of this document</title>
-        <para>
-            Since this specification covers two different (but linked) pieces of software it is separated into two
-            majors parts :
-            <itemizedlist>
+        <para>Since this specification covers two different (but linked) pieces of software it is
+            separated into two majors parts : <itemizedlist>
                 <listitem>
-                    <para>
-                        The CDI-OSGi specification for core functionality usages and CDI container integration.
-                    </para>
+                    <para> The CDI-OSGi specification for core functionality usages and CDI
+                        container integration. </para>
                 </listitem>
                 <listitem>
-                    <para>
-                        The Weld-OSGi specification for special functionality usages and sample application review.
-                    </para>
+                    <para> The Weld-OSGi specification for special functionality usages and sample
+                        application review. </para>
                 </listitem>
             </itemizedlist>
         </para>
