@@ -668,11 +668,33 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
         <para>Here there are some examples that concretely show what CDI-OSGi is avoiding to the
             developer:</para>
         <section>
-            <title>Simple service injection</title>
-            <para>CDI-OSGi:<programlisting>@Inject @OSGiService ServiceRegistry registry;</programlisting>versus
-                classic
-                OSGi:<programlisting>ServiceReference reference = bundleContext.getServiceReference(ServiceRegistry.class.getName());
-ServiceRegistry registry = (ServiceRegistry) bundleContext.getService(reference);</programlisting></para>
+            <title>Getting service references and instances</title>
+            <para>How to obtain a service available implementations list ?</para>
+            <para>In
+                CDI-OSGI:<programlisting>@Inject Service&lt;MyService> references;</programlisting>versus
+                in classic OSGi:
+                <programlisting>ServiceReference references = bundleContext.getServiceReferences(MyService.class.getName());</programlisting></para>
+            <para>How to obtain a service instance ?</para>
+            <para>In
+                CDI-OSGi:<programlisting>@Inject @OSGiService MyService service;</programlisting>versus
+                in classic
+                OSGi:<programlisting>ServiceReference reference = bundleContext.getServiceReference(MyService.class.getName());
+MyService service = (MyService) bundleContext.getService(reference);</programlisting></para>
+        </section>
+        <section>
+            <title>Obtaining the current bundle context and bundle</title>
+            <para>How to obtain the current bundle context ?</para>
+            <para>In
+                CDI-OSGi:<programlisting>@Inject BundleContext bundleContext;</programlisting>versus
+                in classic
+                OSGi:<programlisting>//the bundle context mush have been saved in the activator class. Impossible to get for a bundle with no activator ???</programlisting></para>
+            <para>How to obtain the current bundle ?</para>
+            <para>In CDI-OSGi:<programlisting>@Inject Bundle currentBundle;</programlisting>versus
+                in classic
+                OSGi:<programlisting>//assuming that the bundleContext is known
+ServiceReference reference = bundleContext.getServiceReference(PackageAdmin.class.getName());
+PackageAdmin packageAdmin = bundleContext.getService(reference);
+Bundle currentBundle = packageAdmin.getBundle(this);</programlisting></para>
         </section>
         <section>
             <title>TODO other example</title>
