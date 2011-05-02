@@ -314,17 +314,338 @@ Registrations&lt;MyService> myFrenchRegistrations = registry.getRegistrations(My
             </section>
             <section>
                 <title>And everything else ?</title>
-                <para>If it is not indicated otherwhise assume that the compotment is the same as
+                <para>If it is not indicated otherwise assume that the comportment is the same as
                     CDI or OSGi without CDI-OSGi.</para>
             </section>
         </section>
     </section>
     <section>
         <title>CDI-OSGi events</title>
-        <para> TODO</para>
+        <para>CDI-OSGi makes heavy usage of CDI events. These events allow CDI-OSGi to do its work.
+            Events are important for the running of CDI-OSGi itself but they can also be use by
+            client bean bundles to perform some operations or overide some normal CDI-OSGi
+            behavior.</para>
+        <para>This section shows the numerous events provided by CDI-OSGi and the ways to use
+            them.</para>
         <section>
-            <title>TODO</title>
-            <para>TODO</para>
+            <title>CDI container lifecycle events</title>
+            <para>Two events inform about the state of the CDI container of every bean bundle:
+                    <code>BundleContainerInitialized</code> and <code>BundleContainerShutdown</code>
+                events.</para>
+            <para>The <code>BundleContext</code> from where the event comes is sent with these
+                events so developers can retrieve useful information (such as the bundle owning the
+                CDI container).</para>
+            <section>
+                <title>When the container is started: <code>BundleContainerInitialized</code>
+                    event</title>
+                <para>The <code>BundleContainerInitialized</code> event is fired every time a CDI
+                    container is initialized in a bean bundle. It point out that the CDI container
+                    is ready to manage the bean bundle with the CDI-OSGi features.</para>
+                <para>Here the way to listen this event:
+                    <programlisting>public void onStartup(@Observes BundleContainerInitialized event) {
+    BundleContext bundleContext = event.getBundleContext();
+    Bundle firingBundle = bundleContext.getBundle();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When the container is stopped: <code>BundleContainerShutdown</code>
+                    event</title>
+                <para>The <code>BundleContainerShutdown</code> event is fired every time a CDI
+                    container is stopped in a bean bundle. It point out that the CDI container wil
+                    not manage the bean bundle with CDI-OSGi anymore.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void onShutdown(@Observes BundleContainerShutdown event) {
+    BundleContext bundleContext = event.getBundleContext();
+    Bundle firingBundle = bundleContext.getBundle();
+}</programlisting></para>
+            </section>
+        </section>
+        <section>
+            <title>Bundle lifecycle events</title>
+            <para>Ten events might be fired during a bundle lifecycle. They represent the possible
+                states of a bundle and monitor the changes occurred in bundle lifecycles. These
+                events carry the <code>Bundle</code> object from where the event comes so developers
+                can retrieve useful information (such as the bundle id).</para>
+            <section>
+                <title>Listen all bundle events: <code>AbstractBundleEvent</code> event</title>
+                <para>CDI-OSGi provides a way to listen all bundle events in a single method: the
+                        <code>AbstractBundleEvent</code> abstract class. Every bundle lifecycle
+                    event is an <code>AbstractBundleEvent</code> and a method allows to retrieve the
+                    actual fired bundle event. All bundle states are listed in the
+                        <code>BundleEventType</code> enumeration. Then this event can be used as the
+                    corresponding bundle event.</para>
+                <para>Here the way to listen all bundle events and to retrieve the corresponding
+                    bundle
+                    state:<programlisting>public void bundleChanged(@Observes AbstractBundleEvent event) {
+    BundleEventType event.getType();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is installed: <code>BundleInstalled</code> event</title>
+                <para>An event is fired every time a bundle is install in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void bindBundle(@Observes BundleInstalled event) {
+    Bundle bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is uninstalled: <code>BundleUninstalled</code> event</title>
+                <para>An event is fired every time a bundle is uninstall from the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void unbindBundle(@Observes BundleUninstalled event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is lazy activated: <code>BundleLazyActivation</code>
+                    event</title>
+                <para>An event is fired every time a bundle is lazy activated in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void lazyInitBundle(@Observes BundleLazyActivation event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is resolved: <code>BundleResolved</code> event</title>
+                <para>An event is fired every time a bundle is resolved in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void resolveBundle(@Observes BundleResolved event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is unresolved: <code>BundleUnresolved</code> event</title>
+                <para>An event is fired every time a bundle is unresolved in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void unresolveBundle(@Observes BundleUnresolved event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is updated: <code>BundleUpdated</code> event</title>
+                <para>An event is fired every time a bundle is updated in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void updateBundle(@Observes BundleUpdated event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is started: <code>BundleStarted</code> event</title>
+                <para>An event is fired every time a bundle is started in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void startBundle(@Observes BundleStarted event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is starting: <code>BundleStrating</code> event</title>
+                <para>An event is fired every time a bundle is starting in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void startingBundle(@Observes BundleStarting event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is stopped: <code>BundleStopped</code> event</title>
+                <para>An event is fired every time a bundle is stopped in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void stopBundle(@Observes BundleStopped event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle is stopping: <code>BundleStopping</code> event</title>
+                <para>An event is fired every time a bundle is stopping in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void stoppingBundle(@Observes BundleStopping event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>Filtering bundle events: <code>BundleName</code> and
+                        <code>BundleVersion</code> annotations</title>
+                <para>It is possible to filter the listened events depending on the bundles that are
+                    concerned. This filter might cover the name or the version of the
+                    bundles.</para>
+                <para>Here the way to filter bundle events on the bundle
+                    names:<programlisting>public void bindBundle(@Observes @BundleName("com.sample.gui") BundleInstalled event) {
+}</programlisting>or
+                    on the bundle
+                    versions:<programlisting>public void bindBundle(@Observes @BundleVersion("4.2.1") BundleInstalled event) {
+}</programlisting>or
+                    on both bundle names and
+                    versions:<programlisting>public void bindBundle(@Observes @BundleName("com.sample.gui") @BundleVersion("4.2.1") BundleInstalled event) {
+}</programlisting></para>
+            </section>
+        </section>
+        <section>
+            <title>Service lifecyle events</title>
+            <para>Three events might be fired during a service lifecycle. They represent the
+                possible states of a service and monitor the changes occurred in service lifecycles.
+                These events carry the <code>BundleContext</code> object from where the event comes
+                and the <code>ServiceReference</code> object corespondign to the service so
+                developers can retrieve useful information (such as the registering bundle) and
+                acces useful actions (such as register or enregister services).</para>
+            <section>
+                <title>Listen all service events: <code>AbstractServiceEvent</code> event</title>
+                <para>CDI-OSGi provides a way to listen all service events in a single method: the
+                        <code>AbstractServiceEvent</code> abstract class. Every service lifecycle
+                    event is an <code>AbstractServiceEvent</code> and a method allows to retrieve
+                    the actual fired service event. All service states are listed in the
+                        <code>ServiceEventType</code> enumeration. Then this event can be used as
+                    the corresponding service event.</para>
+                <para>Here the way to listen all service events and to retrieve the corresponding
+                    service
+                    state:<programlisting>public void serviceEvent(@Observes AbstractServiceEvent event) {
+    ServiceEventType event.getType();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a service is published: <code>ServiceArrival</code> event</title>
+                <para>An event is fired every time a service is published in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void bindService(@Observes ServiceArrival event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a service is unpublished: <code>ServiceDeparture</code> event</title>
+                <para>An event is fired every time a service is unpublished in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void unbindService(@Observes ServiceDeparture event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When a service is changed: <code>ServiceChange</code> event</title>
+                <para>An event is fired every time a service is changed in the OSGi
+                    environment.</para>
+                <para>Here the way to listen this
+                    event:<programlisting>public void changeService(@Observes ServiceChange event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</programlisting></para>
+            </section>
+            <section>
+                <title>Filtering service events: <code>Specification</code> and <code>Filter</code>
+                    annotations</title>
+                <para>It is possible to filter the listened events depending on the services that
+                    are concerned. This filter might cover the service specificaton class or it
+                    might be a LDAP filter.</para>
+                <para>Here the way to filter service events on the specification
+                    class:<programlisting>public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {
+}</programlisting>or
+                    using a LDAP
+                    filter:<programlisting>public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {
+}</programlisting>or
+                    on both specification class and LDAP
+                    filter:<programlisting>public void bindService(@Observes @Specification(MyService.class) @Filter("(&amp;(lang=EN)(country=US))") ServiceArrival event) {
+}</programlisting></para>
+            </section>
+        </section>
+        <section>
+            <title>Application dependency validation events</title>
+            <para>Some bean bundle might declare required dependencies on services (using the
+                    <code>Required</code> annotation). CDI-OSGi fired events when these required
+                dependencies are all validated or when at least one is invalidated. It allows
+                application to be automatically started or stoped.</para>
+            <section>
+                <title>When all dependencies are validated: <code>Valid</code> event</title>
+                <para>An event is fired every time all the required dependencies are
+                    validated.</para>
+                <para>Here the way to listen this event:
+                    <programlisting>public void validate(@Observes Valid event) {
+}</programlisting></para>
+            </section>
+            <section>
+                <title>When at least one dependency is invalidated: <code>Invalid</code>
+                    event</title>
+                <para>An event is fired every time at least one of the required dependencies is
+                    invalidated.</para>
+                <para>Here the way to listen this event:
+                    <programlisting>public void invalidate(@Observes Invalid event) {
+}</programlisting></para>
+            </section>
+        </section>
+        <section>
+            <title>Intra and inter bundles communication events</title>
+            <para>CDI-OSGi provides a way to communicate whithin and between bean bundles. This
+                communication occurs in a totally decoupled manner using CDI events.</para>
+            <section>
+                <title>Firing a bundle communication event: <code>InterBundleEvent</code>
+                    event</title>
+                <para>An <code>InterBundleEvent</code> is a message containing a object and
+                    transmited using CDI event.</para>
+                <para>Here the way to fire such an
+                    event:<programlisting>@Inject Event&lt;InterBundleEvent> event;
+MyMessage myMessage = new MyMessage();
+event.fire(new InterBundleEvent(myMessage));</programlisting></para>
+            </section>
+            <section>
+                <title>When a bundle communication is received: <code>InterBundleEvent</code>
+                    event</title>
+                <para>When an <code>InterBundleEvent</code> is fired it might be catch either within
+                    the bundle or in other bundles or both.</para>
+                <para>Here the way to receive a communcation event from within the
+                    bundle:<programlisting>public void listenAllEvents(@Observes InterBundleEvent event) {
+}</programlisting></para>
+                <para>Here the way to receive a communication event from another
+                    bundles:<programlisting>public void listenAllEventsFromOtherBundles(@Observes @Sent InterBundleEvent event) {
+}</programlisting></para>
+            </section>
+            <section>
+                <title>Filtering communication events: <code>Specification</code> annotation</title>
+                <para>It is possible to filter the listened events depending on the message type.
+                    This filter may specify the type of message that is listened.</para>
+                <para>Here the way to filter communication events specifying a message type:
+                    <programlisting>public void listenStringEventsFromOtherBundles(@Observes @Sent @Specification(MyMessage.class) InterBundleEventevent) {
+}</programlisting>Only
+                    the message with type <code>MyMessage</code> will be received.</para>
+            </section>
         </section>
     </section>
     <section>
