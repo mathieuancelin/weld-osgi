@@ -6,9 +6,8 @@
             advantage of injection, producers, interceptors, decorators and alternative. But
             influence boundary of the CDI compliant container stay within the bean bundle for
             classic CDI usages. So external dependencies cannot be injected and interceptor,
-            decorator or alternative of another bean bundle cannot be used (yet you still need to
-            declare your own interceptors, decorators and alternatives in the bean bundle bean.xml
-            file). </para>
+            decorator or alternative of another bean bundle cannot be used (yet interceptors,
+            decorators and alternatives still need to be declares in the bean bundle bean.xml file). </para>
         <para>That is all we will say about classic CDI usages, please report to CDI documentation
             for more information.</para>
     </section>
@@ -62,10 +61,6 @@ service.doSomething(); </programlisting></para>
             </section>
             <section>
                 <title>Injection using programmatic lookup</title>
-                <para>TODO As in classic CDI injection you can obtain all the implementation of an
-                    availables bean and then instantiate one at runtime. The interface
-                        <code>Service&lt;T&gt;</code> allows the same thing with services. CDI-OSGi
-                    will search for all injectable implementations in the service registry. </para>
                 <para>Instead of obtain directly a service instance it is possible to choose between
                     service implementations and instanciate one at runtime. The interface
                         <code>Service&lt;T></code> works as a service instance producer: it
@@ -74,8 +69,8 @@ service.doSomething(); </programlisting></para>
                 <para>Service implementations and a corresponding instance can be obtained like
                     that:
                     <programlisting>@Inject Service&lt;MyService> services;
-services.get().doSomething();</programlisting>You
-                    can also iterate over all implementations like that:
+services.get().doSomething();</programlisting>All
+                    implementations can also be iterated like that:
                     <programlisting>@Inject Service&lt;MyService> services;
 for (MyService service : services) {
     service.get().doSomething();
@@ -656,10 +651,16 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
             bundle:<programlisting>@Inject Bundle bundle;</programlisting></para>
         <para>Here a way to obtain the current bundle
             context:<programlisting>@Inject BundleContext bundleContext;</programlisting></para>
+        <para>Here a way to obtain a specified bundle from its name and
+            version:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;</programlisting></para>
         <para>Here a way to obtain all the current bundle
             headers:<programlisting>@Inject @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
             a particular
             header<programlisting>@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
+        <para>Here a way to obtain all the specified bundle
+            headers:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
+            a particular
+            header:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
         <para>Here a way to obtain a resource file from the current
             bundle:<programlisting>@Injec t@BundleDataFile("test.txt") File file;</programlisting></para>
     </section>
@@ -691,7 +692,7 @@ MyService service = (MyService) bundleContext.getService(reference);</programlis
             <para>How to obtain the current bundle ?</para>
             <para>In CDI-OSGi:<programlisting>@Inject Bundle currentBundle;</programlisting>versus
                 in classic
-                OSGi:<programlisting>//assuming that the bundleContext is known
+                OSGi:<programlisting>//assuming that the bundleContext is known, impossible if not ???
 ServiceReference reference = bundleContext.getServiceReference(PackageAdmin.class.getName());
 PackageAdmin packageAdmin = bundleContext.getService(reference);
 Bundle currentBundle = packageAdmin.getBundle(this);</programlisting></para>
