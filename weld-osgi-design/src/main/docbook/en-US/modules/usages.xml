@@ -613,7 +613,7 @@ Registrations&lt;MyService> myFrenchRegistrations = registry.getRegistrations(My
         </section>
         <section>
             <title>Intra and inter bundles communication events</title>
-            <para>CDI-OSGi provides a way to communicate whithin and between bean bundles. This
+            <para>CDI-OSGi provides a way to communicate within and between bean bundles. This
                 communication occurs in a totally decoupled manner using CDI events.</para>
             <section>
                 <title>Firing a bundle communication event: <code>InterBundleEvent</code>
@@ -630,7 +630,7 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
                     event</title>
                 <para>When an <code>InterBundleEvent</code> is fired it might be catch either within
                     the bundle or in other bundles or both.</para>
-                <para>Here the way to receive a communcation event from within the
+                <para>Here the way to receive a communication event from within the
                     bundle:<programlisting>public void listenAllEvents(@Observes InterBundleEvent event) {
 }</programlisting></para>
                 <para>Here the way to receive a communication event from another
@@ -650,9 +650,18 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
     </section>
     <section>
         <title>OSGi utilities</title>
-        <para>
-
-        </para>
+        <para>CDI-OSGi provide some facilities for OSGi usage. It allows to obtain, by injection,
+            some of the useful objects of the OSGi environment.</para>
+        <para>Here a way to obtain the current
+            bundle:<programlisting>@Inject Bundle bundle;</programlisting></para>
+        <para>Here a way to obtain the current bundle
+            context:<programlisting>@Inject BundleContext bundleContext;</programlisting></para>
+        <para>Here a way to obtain all the current bundle
+            headers:<programlisting>@Inject @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
+            a particular
+            header<programlisting>@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
+        <para>Here a way to obtain a resource file from the current
+            bundle:<programlisting>@Injec t@BundleDataFile("test.txt") File file;</programlisting></para>
     </section>
     <section>
         <title>CDI-OSGi, what else ?</title>
