@@ -85,15 +85,10 @@
                 <title>Organization and interactions between bundles</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/CDI-OSGi.png"/>
+                        <imagedata fileref="../images/CDI-OSGi.png"/>
                     </imageobject>
-                    <textobject>
-                        <phrase> Organization diagram. </phrase>
-                    </textobject>
-                    <caption>
-                        <para> This diagram shows the organization of bundles and how they act with
-                            each other. </para>
-                    </caption>
+                    <caption>This diagram shows the organization of bundles and how they act with
+                        each other in a CDI-OSGi application.</caption>
                 </mediaobject>
             </figure>
         </section>
