@@ -1,21 +1,27 @@
 <chapter>
-    <title id="osgicdipresentation">Organization of OSGi-CDI</title>
+    <title id="osgicdipresentation">Organization of CDI-OSGi</title>
     <section>
-        <title>APIs and extension bundle</title>
-        <para>OSGi-CDI is composed of two bundles. One provides the APIs used to define utilities
-            provided and hooking up system with CDI container, the other the implementation et CDI
-            management over OSGi environment.</para>
-        <para>The APIs bundle exposed all packages that could be needed by developers; both for
-            client application using OSGi-CDI and for CDI compliant container integration. These two
-            sides are presented in the next sections.</para>
-        <para>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any application
-            that require CDI-OSGi. It runs in shadow using a CDI compliant container. This bundle is
-            presented at the end of this section.</para>
-        <para>Therefor the APIs bundle may be use as a dependence for bean bundles and
-            implementation bundles while the extension bundle may be just started at the beginning
-            of an CDI-OSGi application.</para>
+        <title>APIs bundle, extension bundle and implementation bundle</title>
+        <para>CDI-OSGi is composed of three bundles: <itemizedlist>
+                <listitem>
+                    <para>The APIs bundle that provides the APIs used to define both utilities
+                        provided and hooking up system with implementation bundle,</para>
+                </listitem>
+                <listitem>
+                    <para>The extension bundle that provides CDI-OSGi functionalities for bean
+                        bundles by managing them,</para>
+                </listitem>
+                <listitem>
+                    <para>An implementation bundle provides CDI functionalities usable by the
+                        extension bundle through an OSGi service.</para>
+                </listitem>
+            </itemizedlist></para>
         <section>
             <title>Extention API versus integration API</title>
+            <para>The APIs bundle exposed all packages that could be needed by developers; both for
+                client application using CDI-OSGi and for CDI compliant container integration. It
+                may be use as a dependency for bean bundles, extension bundle and implementation
+                bundle.</para>
             <para>CDI-OSGi APIs bundle provides two distinct APIs: <itemizedlist>
                     <listitem>
                         <para> The extension API that describes all the new functionality provided
@@ -63,25 +69,50 @@
             </section>
         </section>
         <section>
-            <title>Extension bundle : the puppet master</title>
+            <title>Extension bundle: the puppet master</title>
+            <para>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any
+                application that requires CDI-OSGi. It may be just started at the begining of a
+                CDI-OSGi application. It requests the APIs bundle as a dependency.</para>
             <para>The extension bundle is the heart of CDI-OSGi application. Once it is started,
                 provided that it finds a started implementation bundle, it manages all the bean
-                bundles. It is in charge of inter-bundle injection, service injection, OSGi to CDI
-                and inter-bundle communications.</para>
-            <para>It is a worker in the shadow, it just need to be started at the beginning of the
-                application, then everything is transparent the user. Client bundles do not have to
-                do anything in order to use CDI-OSGi functionality. They just use CDI injection and
-                service injection.</para>
+                bundles. It is in charge of service automatic publishings, service injections, CDI
+                event notifications and bundle communications.</para>
+            <para>It runs in background, it just need to be started at the beginning of the
+                application, then everything is transparent to the user. Client bean bundles do not
+                have to do anything in order to use CDI-OSGi functionality.</para>
             <para>In order to perform injections the extension bundle search for a CDI compliant
                 container service provider once it is started. Thus it can only work coupled with a
-                bundle providing such a service.</para>
+                bundle providing such a service: an implementation bundle.</para>
             <para>So this is where the magic happens and where OSGi applications become much more
                 simple.</para>
-            <para>The next sections present what is exposed by these three artifacts. If you just
-                want to use CDI-OSGi you should jump to next chapter. If you want to understand how
-                things may work you should stay.</para>
-            <para>Although the next sections are technical they just rapidly present APIs, for more
-                details about how use them please refer to their javadoc.</para>
+        </section>
+        <section>
+            <title>Implementation bundle: choose a CDI compliant container</title>
+            <para>The implementation bundle is responsible for providing CDI compliant containers to
+                the extension bundle. It may be started with the extension bundle and publish the
+                right service. It request the APIs bundle as a dependency.</para>
+            <para>It is an implementation of the integration API, thus it may provide a CDI
+                container factory service.</para>
+        </section>
+        <section>
+            <title>CDI-OSGi bundles organization diagram</title>
+            <figure>
+                <title>CDI-OSGI bundles organization</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/CDI-OSGicoreorganization.png"/>
+                    </imageobject>
+                    <caption>This diagram represents the internal organization of CDI-OSGi bundles.
+                        The coupling between the three bundles is represented as well as what is
+                        exposed to bean bundles.</caption>
+                </mediaobject>
+            </figure>
+            <para>The diagram above shows how CDI-OSGi bundles are linked together. The blue part is
+                the core of OSGi and is provided. The red part is a required but interchangeable
+                bundle.</para>
+            <para>All together these three bundle make CDI-OSGi. Then CDI-OSGi functionalities are
+                exposed to bean bundles and an OSGi extension is provided in order to manage these
+                bean bundles.</para>
         </section>
     </section>
     <section>
