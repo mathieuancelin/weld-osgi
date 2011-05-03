@@ -100,7 +100,8 @@
                 <title>CDI-OSGI bundles organization</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="../images/CDI-OSGicoreorganization.png"/>
+                        <imagedata fileref="../images/CDI-OSGicoreorganization.png"
+                            contentwidth="800" align="center"/>
                     </imageobject>
                     <caption>This diagram represents the internal organization of CDI-OSGi bundles.
                         The coupling between the three bundles is represented as well as what is
