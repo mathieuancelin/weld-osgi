@@ -56,7 +56,10 @@
                     <sourceDocumentName>master.xml</sourceDocumentName>
                     <masterTranslationFile>master.xml</masterTranslationFile>
                     <sourceDirectory>${project.basedir}/src/main/docbook</sourceDirectory>
-                    <imagesDirectory>${project.basedir}/src/main/docbook/en-US/images</imagesDirectory>
+                    <imageDirectory>${project.basedir}/src/main/docbook/en-US/images</imageDirectory>
+                    <imageResource>
+                        <directory>${project.basedir}/src/main/docbook/en-US/images</directory>
+                    </imageResource>
                     <formats>
                         <format>
                             <formatName>pdf</formatName>
