@@ -116,7 +116,7 @@
         </section>
     </section>
     <section>
-        <title>An OSGi extension for CDI support</title>
+        <title>An OSGi extension for CDI support: the extension API</title>
         <section>
             <title>The extender pattern</title>
             <para>CDI-OSGi provides an extension to OSGi as an extender OSGi pattern. The extension
@@ -128,7 +128,7 @@
             <para>As an extension to OSGi, CDI-OSGi provides several features : <itemizedlist>
                     <listitem>
                         <para> Complete integration in OSGi world by the use of extender pattern and
-                            extension bundle. Thus complete compatibility with already existent
+                            extension bundle. Thus complete compatibility with already existing
                             tools.</para>
                     </listitem>
                     <listitem>
@@ -150,7 +150,8 @@
                             portage.</para>
                     </listitem>
                 </itemizedlist></para>
-            <para>We will see in the next sections these features in deep.</para>
+            <para>We will see in the next sections these features in deep through the description of
+                the extension API.</para>
         </section>
         <section>
             <title>The interfaces</title>
@@ -159,31 +160,31 @@
             <section>
                 <title>The <code>Service</code> interface</title>
                 <programlisting>public interface Service&lt;T&gt; extends Instance&lt;T&gt; {
+    int size();
 }</programlisting>
                 <para>It represents a service producer parametrized by the service to inject. It has
-                    the same behavior than <code>Instance&lt;T></code> except that it represents
+                    the same behavior than CDI <code>Instance&lt;T></code> except that it represents
                     only OSGi service beans.</para>
             </section>
             <section>
                 <title>The <code>Registration</code> and <code>Registrations</code>
                     interfaces</title>
-                <programlisting>public interface Registration&lt;T> {
+                <programlisting>public interface Registration&lt;T> extends iterable&lt;T> {
 
     void unregister();
     &lt;T> Service&lt;T> getServiceReference();
+    Registration&lt;T> select(Annotation... qualifiers);
+    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
+    &lt;U extends T> Registration&lt;U> select(TypeLiteral&lt;U> subtype, Annotation... qualifiers);
+    int size();
 }
             </programlisting>
-                <programlisting>public interface Registrations&lt;T&gt; extends Iterable&lt;Registration&lt;T>> {
-
-    int size();
-}</programlisting>
-                <para>These interfaces represent the registrations of a injectable OSGi services in
-                    the service resgistry. It permits to act on a previously registered service.
-                        <code>Unregister()</code> remove the service from the service registry and
-                        <code>&lt;T> Service&lt;T> getServiceReference()</code> return the
-                        <code>Service&lt;T></code> object representing the registred service.</para>
-                <para>Multiple registrations can be manipulated by the iterable
-                        <code>Registrations</code> interface.</para>
+                <para>This interface represents the registrations of a injectable OSGi services in
+                    the service resgistry. It permits to act on previously registered services. Its
+                    fonctionnement is similar to <code>Service&lt;T></code>, thus it might represent
+                    the iterable set of all the registration of a service. It allows to select a
+                    particular subset of registrations, to enregister service implementation or to
+                    obtain a corresponding service reference.</para>
             </section>
             <section>
                 <title>The <code>ServiceRegistry</code> interface</title>
@@ -199,12 +200,12 @@
                     allows to register services with their interface and implementation, getting
                     back the corespondent <code>Registration&lt;T></code> , to obtain the
                         <code>Service&lt;T></code> object corresponding to an service interface or
-                    to product a new instance of an unmanaged type. </para>
+                    to obtain a producer object of an unmanaged type. </para>
             </section>
         </section>
         <section>
             <title>The events</title>
-            <para>Extension API provides various events that notify about new life-cycle steps for
+            <para>Extension API provides numerous events that notify about new life-cycle steps for
                 container management, service injection management and communication between bean
                 bundles. They all use CDI event system.</para>
             <section>
@@ -234,11 +235,155 @@
         return bundleContext;
     }
 }</programlisting>
-                <para>These two events advise bean bundle about the state of its CDI compliant
-                    container. They are fired respectively when the container has finished its
-                    initialization and when the container begin to shutdown. They may be fired by
-                    the CDI compliant container run with CDI-OSGi. They expose the coresponding
-                        <code>BundleContext</code>.</para>
+                <para>These two events advise about the state of bean bundles CDI compliant
+                    container. They are fired respectively when a container has finished its
+                    initialization and when a container begin to shutdown. They expose the
+                    coresponding bean bundle <code>BundleContext</code>.</para>
+            </section>
+            <section>
+                <title>The <code>AbstractBundleEvent</code> and <code>AbstractServiceEvent</code>
+                    events</title>
+                <programlisting>public abstract class AbstractBundleEvent {
+                
+    public static enum EventType {
+        INSTALLED,LAZY_ACTIVATION,RESOLVED,STARTED,STARTING,
+        STOPPED,STOPPING,UNINSTALLED,UNRESOLVED,UPDATED,
+    }
+
+    private final Bundle bundle;
+
+    public AbstractBundleEvent(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public abstract EventType getType();
+
+    public long getBundleId() {
+        return bundle.getBundleId();
+    }
+
+    public String getSymbolicName() {
+        return bundle.getSymbolicName();
+    }
+
+    public Version getVersion() {
+        return bundle.getVersion();
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+}</programlisting>
+                <programlisting>public abstract class AbstractServiceEvent {
+
+    public static enum EventType {
+        SERVICE_ARRIVAL, SERVICE_DEPARTURE, SERVICE_CHANGED
+    }
+
+    private final ServiceReference ref;
+    private final BundleContext context;
+    private List&lt;String&gt; classesNames;
+    private List&lt;Class&lt;?&gt;&gt; classes;
+    private Map&lt;Class, Boolean&gt; assignable = new HashMap&lt;Class, Boolean&gt;();
+
+    public AbstractServiceEvent(
+        ServiceReference ref, BundleContext context) {
+        this.ref = ref;
+        this.context = context;
+    }
+
+    public abstract EventType eventType();
+
+    public ServiceReference getRef() {
+        return ref;
+    }
+
+    public &lt;T> TypedService&lt;T> type(Class&lt;T> type) {
+        if (isTyped(type)) {
+            return TypedService.create(type, context, ref);
+        } else {
+            throw new RuntimeException("the type " + type
+                + " isn't supported for the service. Supported types are "
+                + getServiceClasses());
+        }
+    }
+
+    public Object getService() {
+        return context.getService(ref);
+    }
+
+    public boolean ungetService() {
+        return context.ungetService(ref);
+    }
+
+    public boolean isTyped(Class&lt;?> type) {
+        boolean typed = false;
+        if (!assignable.containsKey(type)) {
+            for (Class clazz : getServiceClasses()) {
+                if (type.isAssignableFrom(clazz)) {
+                    typed = true;
+                    break;
+                }
+            }
+            assignable.put(type, typed);
+        }
+        return assignable.get(type);
+    }
+
+    public Bundle getRegisteringBundle() {
+        return ref.getBundle();
+    }
+
+    public List&lt;String> getServiceClassNames() {
+        if (classesNames == null) {
+            classesNames = Arrays.asList((String[])
+            ref.getProperty(Constants.OBJECTCLASS));
+        }
+        return classesNames;
+    }
+
+    public List&lt;Class&lt;?>> getServiceClasses() {
+        if (classes == null) {
+            classes = new ArrayList&lt;Class&lt;?&gt;&gt;();
+            for (String className : getServiceClassNames()) {
+                try {
+                    classes.add(getClass().getClassLoader().loadClass(className));
+                } catch (ClassNotFoundException ex) {
+                return null;
+                }
+            }
+        }
+        return classes;
+    }
+
+    public static class TypedService&lt;T> {
+
+        private final BundleContext context;
+        private final ServiceReference ref;
+        private final Class&lt;T> type;
+
+        TypedService(BundleContext context, ServiceReference ref, Class&lt;T> type) {
+            this.context = context;
+            this.ref = ref;
+            this.type = type;
+        }
+
+        static &lt;T> TypedService&lt;T> create(Class&lt;T> type, BundleContext context, ServiceReference ref) {
+            return new TypedService&lt;T>(context, ref, type);
+        }
+
+        public T getService() {
+            return type.cast(context.getService(ref));
+        }
+
+        public boolean ungetService() {
+            return context.ungetService(ref);
+        }
+    }
+}</programlisting>
+                <para>These two abstract classes represent the information that bundle and service
+                    events may carry when they are fired. They also allows to listen for all bundle
+                    or service events in one operation.</para>
             </section>
             <section>
                 <title>The <code>BundleEvents</code> events</title>
@@ -438,157 +583,14 @@
                     bundles when the corresponding life-cycle step occurs in a OSGi service.</para>
             </section>
             <section>
-                <title>The <code>AbstractBundleEvent</code> and <code>AbstractServiceEvent</code>
-                    events</title>
-                <programlisting>public abstract class AbstractBundleEvent {
-                
-    public static enum EventType {
-        INSTALLED,LAZY_ACTIVATION,RESOLVED,STARTED,STARTING,
-        STOPPED,STOPPING,UNINSTALLED,UNRESOLVED,UPDATED,
-    }
-
-    private final Bundle bundle;
-
-    public AbstractBundleEvent(Bundle bundle) {
-        this.bundle = bundle;
-    }
-
-    public abstract EventType getType();
-
-    public long getBundleId() {
-        return bundle.getBundleId();
-    }
-
-    public String getSymbolicName() {
-        return bundle.getSymbolicName();
-    }
-
-    public Version getVersion() {
-        return bundle.getVersion();
-    }
-
-    public Bundle getBundle() {
-        return bundle;
-    }
-}</programlisting>
-                <programlisting>public abstract class AbstractServiceEvent {
-
-    public static enum EventType {
-        SERVICE_ARRIVAL, SERVICE_DEPARTURE, SERVICE_CHANGED
-    }
-
-    private final ServiceReference ref;
-    private final BundleContext context;
-    private List&lt;String&gt; classesNames;
-    private List&lt;Class&lt;?&gt;&gt; classes;
-    private Map&lt;Class, Boolean&gt; assignable = new HashMap&lt;Class, Boolean&gt;();
-
-    public AbstractServiceEvent(
-        ServiceReference ref, BundleContext context) {
-        this.ref = ref;
-        this.context = context;
-    }
-
-    public abstract EventType eventType();
-
-    public ServiceReference getRef() {
-        return ref;
-    }
-
-    public &lt;T> TypedService&lt;T> type(Class&lt;T> type) {
-        if (isTyped(type)) {
-            return TypedService.create(type, context, ref);
-        } else {
-            throw new RuntimeException("the type " + type
-                + " isn't supported for the service. Supported types are "
-                + getServiceClasses());
-        }
-    }
-
-    public Object getService() {
-        return context.getService(ref);
-    }
-
-    public boolean ungetService() {
-        return context.ungetService(ref);
-    }
-
-    public boolean isTyped(Class&lt;?> type) {
-        boolean typed = false;
-        if (!assignable.containsKey(type)) {
-            for (Class clazz : getServiceClasses()) {
-                if (type.isAssignableFrom(clazz)) {
-                    typed = true;
-                    break;
-                }
-            }
-            assignable.put(type, typed);
-        }
-        return assignable.get(type);
-    }
-
-    public Bundle getRegisteringBundle() {
-        return ref.getBundle();
-    }
-
-    public List&lt;String> getServiceClassNames() {
-        if (classesNames == null) {
-            classesNames = Arrays.asList((String[])
-            ref.getProperty(Constants.OBJECTCLASS));
-        }
-        return classesNames;
-    }
-
-    public List&lt;Class&lt;?>> getServiceClasses() {
-        if (classes == null) {
-            classes = new ArrayList&lt;Class&lt;?&gt;&gt;();
-            for (String className : getServiceClassNames()) {
-                try {
-                    classes.add(getClass().getClassLoader().loadClass(className));
-                } catch (ClassNotFoundException ex) {
-                return null;
-                }
-            }
-        }
-        return classes;
-    }
-
-    public static class TypedService&lt;T> {
-
-        private final BundleContext context;
-        private final ServiceReference ref;
-        private final Class&lt;T> type;
-
-        TypedService(BundleContext context, ServiceReference ref, Class&lt;T> type) {
-            this.context = context;
-            this.ref = ref;
-            this.type = type;
-        }
-
-        static &lt;T> TypedService&lt;T> create(Class&lt;T> type, BundleContext context, ServiceReference ref) {
-            return new TypedService&lt;T>(context, ref, type);
-        }
-
-        public T getService() {
-            return type.cast(context.getService(ref));
-        }
-
-        public boolean ungetService() {
-            return context.ungetService(ref);
-        }
-    }
-}</programlisting>
-                <para>These two abstract classes represent the information that bundle and service
-                    events may carry when they are fired.</para>
-            </section>
-            <section>
                 <title>The <code>Valid</code> and <code>Invalid</code> events</title>
                 <programlisting>public class Valid {
 }</programlisting>
                 <programlisting>public class Invalid {
 }</programlisting>
-                <para>These two events notify about the state of a bundle dependency
-                    resolution.</para>
+                <para>These two events notify about the state of bean bundles dependency resolution.
+                    They are automatically fired by CDI-OSGi when all required service are available
+                    or when at least one required service is unavailable.</para>
             </section>
         </section>
         <section>
@@ -700,11 +702,11 @@ public @interface Sent {
         </section>
     </section>
     <section>
-        <title>A standard bootstrap API for CDI container integration</title>
+        <title>A standard bootstrap for CDI container integration: the integration API</title>
         <section>
             <title>Why an integration API</title>
-            <para>CDI-OSGi could have been carry out with an internal CDI compliant container and
-                work very well. Every one of the specification above would have been fulfilled. But
+            <para>CDI-OSGi could have been carried out with an internal CDI compliant container and
+                work very well. Every one of the specifications above would have been fulfilled. But
                 no other specific utilities or CDI evolution could have been added without a
                 complete modification of CDI-OSGi.</para>
             <para>Then there is the integration API. With that, developers are able to provide their
@@ -783,10 +785,10 @@ END</programlisting>
         </section>
     </section>
     <section>
-        <title>The implementation bundle</title>
-        <para>Although the implementation bundle is not a part of CDI-OSGi it is necessary in a
-            CDI-OSGi application. So this section explains the part the implementation bundle plays
-            but does not enter in specifics.</para>
+        <title>A interchangeable CDI container factory: the implementation bundle</title>
+        <para>The implementation bundle is is necessary in a CDI-OSGi application. This section
+            explains the part the implementation bundle plays but does not enter in specifics
+            because it depends on the CDI vendor implementation used.</para>
         <para>Weld-OSGi chapter presents how an implementation bundle can work.</para>
         <section>
             <title>A implementation bundle may work that way:</title>
@@ -820,8 +822,8 @@ END</programlisting>
             </itemizedlist></para>
         <para>Thus a bean bundle has both <code>META-INF/bean.xml</code> file and OSGi marker
             headers in its <code>META-INF/Manifest.MF</code> file.</para>
-        <para>However there is a few other information that Weld-OSGi might need in order to perform
-            a correct extension. In particular a bean bundle might not be manage by the extension
+        <para>However there is a few other information that CDI-OSGi might need in order to perform
+            a correct extension. In particular a bean bundle can not be manage by the extension
             bundle but by his own embedded CDI container. For that there is a new manifest
             header.</para>
         <section>
