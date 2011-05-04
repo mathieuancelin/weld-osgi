@@ -1,5 +1,6 @@
 package org.osgi.cdi.impl.extension.services;
 
+import org.osgi.cdi.api.extension.RegistrationHolder;
 import org.osgi.framework.ServiceRegistration;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,26 +10,31 @@ import java.util.List;
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu Clochard
  */
 @ApplicationScoped
-public class RegistrationsHolder {
+public class RegistrationsHolderImpl implements RegistrationHolder {
 
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
 
-    public List<ServiceRegistration> getRegistrations() {
+    @Override public List<ServiceRegistration> getRegistrations() {
         return registrations;
     }
 
-    public void addRegistration(ServiceRegistration reg) {
+    @Override public void addRegistration(ServiceRegistration reg) {
         registrations.add(reg);
     }
 
-    public void removeRegistration(ServiceRegistration reg) {
+    @Override public void removeRegistration(ServiceRegistration reg) {
         registrations.remove(reg);
     }
 
-    public void clear() {
+    @Override public void clear() {
         registrations.clear();
+    }
+
+    @Override public int size() {
+        return registrations.size();
     }
 
 }

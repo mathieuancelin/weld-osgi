@@ -1,14 +1,15 @@
 package org.osgi.cdi.impl.extension.services;
 
-import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.api.extension.BundleState;
-import org.osgi.cdi.api.extension.Registrations;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.RegistrationHolder;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.BundleDataFile;
 import org.osgi.cdi.api.extension.annotation.BundleHeader;
 import org.osgi.cdi.api.extension.annotation.BundleHeaders;
 import org.osgi.cdi.api.extension.annotation.OSGiBundle;
 import org.osgi.cdi.api.extension.annotation.Required;
+import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -32,6 +33,7 @@ import java.util.Set;
  * Producers for Specific injected types;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu Clochard
  */
 public class CDIOSGiProducer {
 
@@ -100,16 +102,12 @@ public class CDIOSGiProducer {
     }
 
     @Produces
-    public <T> Registrations<T> getRegistrations(
-            @New RegistrationsImpl registration,
+    public <T> Registration<T> getRegistrations(
             BundleHolder bundleHolder,
-            RegistrationsHolder holder,
+            RegistrationHolder holder,
             InjectionPoint p) {
-        registration.setType(((Class<T>) ((ParameterizedType)p.getType()).getActualTypeArguments()[0]));
-        registration.setHolder(holder);
-        registration.setRegistry(bundleHolder.getContext());
-        registration.setBundle(bundleHolder.getBundle());
-        return registration;
+        Class<T> contract = ((Class<T>) ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
+        return new RegistrationImpl<T>(contract,bundleHolder.getContext(),bundleHolder.getBundle(),holder);
     }
 
     @Produces @BundleHeaders

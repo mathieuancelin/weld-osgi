@@ -170,7 +170,7 @@
             <section>
                 <title>The <code>Registration</code> and <code>Registrations</code>
                     interfaces</title>
-                <programlisting>public interface Registration&lt;T> extends iterable&lt;T> {
+                <programlisting>public interface Registration&lt;T> extends Iterable&lt;T> {
 
     void unregister();
     &lt;T> Service&lt;T> getServiceReference();

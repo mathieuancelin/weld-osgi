@@ -39,6 +39,7 @@ import java.util.Set;
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu Clochard
  */
 @ApplicationScoped
 public class ServiceRegistryImpl implements ServiceRegistry {
@@ -53,7 +54,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     private Instance<Object> instances;
     
     @Inject
-    private RegistrationsHolder holder;
+    private RegistrationsHolderImpl holder;
 
     @Inject
     private BeanManager manager;
@@ -80,7 +81,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
                 instances.select(implementation).get(), null);
         holder.addRegistration(reg);
         return new RegistrationImpl<T>(
-                contract, reg, registry, bundle, holder);
+                contract, registry, bundle, holder);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
                 implementation, null);
         holder.addRegistration(reg);
         return new RegistrationImpl<T>(
-                contract, reg, registry, bundle, holder);
+                contract, registry, bundle, holder);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.osgi.cdi.impl.integration;
 
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
-import org.osgi.cdi.impl.extension.services.RegistrationsHolder;
+import org.osgi.cdi.impl.extension.services.RegistrationsHolderImpl;
 import org.osgi.cdi.api.extension.annotation.Publish;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
@@ -104,7 +104,7 @@ public class ServicePublisher {
         }
         if (registration != null) {
             CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-            instance.select(RegistrationsHolder.class).get().addRegistration(registration);
+            instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
         }
     }
 
