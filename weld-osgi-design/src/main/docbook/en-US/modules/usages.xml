@@ -234,11 +234,27 @@ public class MyServiceImpl implements MyService {
     public void doSomething() {
     }
 }                </programlisting>A
-                new instance is created for every request. </para>
+                new instance is created for every request.</para>
+            <para>If no scope is provided <code>@Dependent</code> is assumed, a new instance will be
+                create for every injection.</para>
         </section>
         <section>
             <title>The registration</title>
-            <para>TODO</para>
+            <para>A registration object represent all the bindings between a service contract class
+                and its OSGi <code>ServiceRegistration</code>s. With this object it is possible to
+                navigate through multiple implementations of the same service, obtain the
+                coresponding <code>Service&lt;T></code> or unregister these implementations.</para>
+            <para>A registration is obtained like
+                that:<programlisting>@Inject Registration&lt;MyService> registrations;</programlisting>It
+                is possible to iterate through
+                registration:<programlisting>if(registrations.size() > 0) {
+    for(Registration&lt;T> registration : registrations) {
+    }
+}</programlisting>A
+                registration allows to obtain service
+                implementations:<programlisting>Service&lt;T> myServiceImplementations = registrations.getServiceReference();</programlisting>And
+                it allows to enregister service
+                implementations:<programlisting>registrations.unregister();</programlisting></para>
         </section>
         <section>
             <title>Service registry</title>
@@ -276,16 +292,11 @@ for (MyService service : services) {
 }</programlisting></para>
             </section>
             <section>
-                <title>Obtain registrations and unresister service implementation</title>
-                <para>Obtain all registrations or registration of a filtered or not filtered
-                    specified service:
-                    <programlisting>Registrations&lt;?> registrations = registry.getRegistrations();
-Registrations&lt;MyService> myRegistrations = registry.getRegistrations(MyService.class);
-Registrations&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyService.class,"(lang=FR)");</programlisting>Unregister
-                    a service implementation:
-                    <programlisting>for(Registration registration : registrations) {
-    registration.unregister()
-}           </programlisting></para>
+                <title>Obtain registrations</title>
+                <para>Obtain all registrations of a filtered or not filtered specified service:
+                    <programlisting>Registration&lt;?> registrations = registry.getRegistrations();
+Registration&lt;MyService> myRegistrations = registry.getRegistrations(MyService.class);
+Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyService.class,"(lang=FR)");     </programlisting></para>
             </section>
         </section>
         <section>
