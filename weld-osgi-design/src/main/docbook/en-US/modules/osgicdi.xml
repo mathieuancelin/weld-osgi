@@ -168,15 +168,11 @@
                     only OSGi service beans.</para>
             </section>
             <section>
-                <title>The <code>Registration</code> and <code>Registrations</code>
-                    interfaces</title>
-                <programlisting>public interface Registration&lt;T> extends Iterable&lt;T> {
+                <title>The <code>Registration</code> interface</title>
+                <programlisting>public interface Registration&lt;T> extends Iterable&lt;Registration&lt;T>> {
 
     void unregister();
     &lt;T> Service&lt;T> getServiceReference();
-    Registration&lt;T> select(Annotation... qualifiers);
-    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
-    &lt;U extends T> Registration&lt;U> select(TypeLiteral&lt;U> subtype, Annotation... qualifiers);
     int size();
 }
             </programlisting>
@@ -186,6 +182,22 @@
                     the iterable set of all the registration of a service. It allows to select a
                     particular subset of registrations, to enregister service implementation or to
                     obtain a corresponding service reference.</para>
+            </section>
+            <section>
+                <title>The <code>RegistrationHolder</code> interface</title>
+                <para>
+                    <programlisting>public interface RegistrationHolder {
+
+    List&lt;ServiceRegistration> getRegistrations();
+    void addRegistration(ServiceRegistration reg);
+    void removeRegistration(ServiceRegistration reg);
+    void clear();
+    int size();
+}</programlisting>
+                </para>
+                <para>This interface wraps the OSGi <code>ServiceRegistration</code>s in order to be
+                    used by CDI-OSGi <code>Registration</code>. It provides utilitary methods to
+                    handle the registration list of a given service.</para>
             </section>
             <section>
                 <title>The <code>ServiceRegistry</code> interface</title>
