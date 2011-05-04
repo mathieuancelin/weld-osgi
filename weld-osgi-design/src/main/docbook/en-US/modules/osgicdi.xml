@@ -173,10 +173,10 @@
 
     void unregister();
     &lt;T> Service&lt;T> getServiceReference();
-    Service&lt;T> select(Annotation... qualifiers);
-    Service&lt;T> select(String filter);
-    &lt;U extends T> Service&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
-    &lt;U extends T> Service&lt;U> select(Class&lt;U> subtype, String filter);
+    Registration&lt;T> select(Annotation... qualifiers);
+    Registration&lt;T> select(String filter);
+    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
+    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, String filter);
     int size();
 }
             </programlisting>

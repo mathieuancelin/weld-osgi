@@ -7,6 +7,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,26 @@ public class RegistrationImpl<T> implements Registration<T> {
     @Override
     public <T> Service<T> getServiceReference() {
         return new ServiceImpl<T>(contract, registry);
+    }
+
+    @Override
+    public Registration<T> select(Annotation... qualifiers) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Registration<T> select(String filter) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public <U extends T> Registration<U> select(Class<U> subtype, Annotation... qualifiers) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public <U extends T> Registration<U> select(Class<U> subtype, String filter) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
