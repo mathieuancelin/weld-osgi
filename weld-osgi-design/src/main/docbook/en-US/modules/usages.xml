@@ -129,14 +129,11 @@ public class MyServiceQualifiedImpl implements MyService {
                     injection point:
                     <programlisting>
 @Inject @OSGiService @AnyQualifier MyService qualifiedService; 
-qualifiedService.doSomething();</programlisting>Qualified
-                    service producer:
+qualifiedService.doSomething();</programlisting>or
+                    with <code>Service&lt;T></code>
                     <programlisting>
 @Inject @AnyQualifier Service&lt;MyService> service;
-service.get().doSomething();
-
-@Inject Service&lt;MyService> services;
-services.select(new AnnotationLiteral&lt;AnyQualifier>() {}).get().deSomething();</programlisting></para>
+service.get().doSomething();</programlisting></para>
                 <para>The qualifiers should be seen as the service properties. Here another example:
                     <programlisting>@Publish
 @Lang(Languages.EN)
@@ -175,7 +172,8 @@ public class MyServiceImpl implements MyService {
                     registered with the service implementation.</para>
                 <para>Then it is possible to filter an injection point with the <code>Filter</code>
                     annotation like a regular LDAP filter:
-                    <programlisting>@Inject Service&lt;MyService> @Filter("(&amp;(lang=*)(country=US))") service;</programlisting></para>
+                    <programlisting>@Inject @Filter("(&amp;(lang=*)(country=US))") Service&lt;MyService> service;</programlisting>or</para>
+                <programlisting>@Inject @Filter("(&amp;(lang=*)(country=US))") MyService service;</programlisting>
             </section>
             <section>
                 <title>Links between qualifier annotations and LDAP filtering</title>
@@ -195,7 +193,7 @@ public class MyServiceImpl implements MyService {
     }
 }
 
-@Inject Service&lt;MyService> @Filter("(&amp;(lang=*)(country=US))") service;</programlisting></para>
+@Inject @Filter("(&amp;(lang=*)(country=US))") Service&lt;MyService> service;</programlisting></para>
                 <para>And this
                     ?<programlisting>@Publish({
     @Property(name="lang", value="EN"),
@@ -209,7 +207,18 @@ public class MyServiceImpl implements MyService {
     }
 }
 
-@Inject Service&lt;MyService> @Lang(Languages.EN) @Country(Countries.US) service;</programlisting></para>
+@Inject @Lang(Languages.EN) @Country(Countries.US) Service&lt;MyService> service;</programlisting></para>
+            </section>
+            <section>
+                <title>Filtering after injection</title>
+                <para>It is possible to do a programmatic filtering after injection using
+                        <code>Service&lt;T></code> like with
+                    <code>Instance&lt;T></code>:<programlisting>@Inject Service&lt;MyService> services;
+services.select(new AnnotationLiteral&lt;AnyQualifier>() {}).get().deSomething();</programlisting>or<programlisting>@Inject Service&lt;MyService> services;
+services.select("(&amp;(lang=*)(country=US))").get().deSomething();</programlisting></para>
+                <para>However OSGi service may not be subtyped, thus it is not possible to use
+                        <code>select()</code> methods with a specified subclass like with
+                        <code>Instance&lt;T></code></para>
             </section>
         </section>
         <section>
@@ -265,8 +274,8 @@ public class MyServiceImpl implements MyService {
                     a LDAP
                     filter:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select("(&amp;(lang=EN)(country=US))");</programlisting>or
                     both:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier>() {}).select("(&amp;(lang=EN)(country=US))");</programlisting>Link
-                    between qualifier and LDAP filter are explain above in service injection
-                    section.</para>
+                    between qualifier and LDAP filter as well as subtyped service selection are
+                    explain above in service injection section.</para>
             </section>
             <section>
                 <title>Registration usages</title>
