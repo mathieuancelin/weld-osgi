@@ -15,8 +15,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.INSTALLED;
+        public BundleEventType getType() {
+            return BundleEventType.INSTALLED;
         }
     }
 
@@ -27,8 +27,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.LAZY_ACTIVATION;
+        public BundleEventType getType() {
+            return BundleEventType.LAZY_ACTIVATION;
         }
     }
 
@@ -39,8 +39,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.RESOLVED;
+        public BundleEventType getType() {
+            return BundleEventType.RESOLVED;
         }
     }
 
@@ -51,8 +51,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.STARTED;
+        public BundleEventType getType() {
+            return BundleEventType.STARTED;
         }
     }
 
@@ -63,8 +63,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.STARTING;
+        public BundleEventType getType() {
+            return BundleEventType.STARTING;
         }
     }
 
@@ -75,8 +75,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.STOPPED;
+        public BundleEventType getType() {
+            return BundleEventType.STOPPED;
         }
     }
 
@@ -87,8 +87,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.STOPPING;
+        public BundleEventType getType() {
+            return BundleEventType.STOPPING;
         }
     }
 
@@ -99,8 +99,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.UNINSTALLED;
+        public BundleEventType getType() {
+            return BundleEventType.UNINSTALLED;
         }
     }
 
@@ -111,8 +111,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.UNRESOLVED;
+        public BundleEventType getType() {
+            return BundleEventType.UNRESOLVED;
         }
     }
 
@@ -123,8 +123,8 @@ public class BundleEvents {
         }
 
         @Override
-        public EventType getType() {
-            return EventType.UPDATED;
+        public BundleEventType getType() {
+            return BundleEventType.UPDATED;
         }
     }
 }

@@ -15,7 +15,7 @@ public class ServiceArrival extends AbstractServiceEvent {
     }
 
     @Override
-    public EventType eventType() {
-        return EventType.SERVICE_ARRIVAL;
+    public ServiceEventType eventType() {
+        return ServiceEventType.SERVICE_ARRIVAL;
     }
 }

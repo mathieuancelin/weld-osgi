@@ -15,7 +15,7 @@ public class ServiceChanged extends AbstractServiceEvent {
     }
 
     @Override
-    public EventType eventType() {
-        return EventType.SERVICE_CHANGED;
+    public ServiceEventType eventType() {
+        return ServiceEventType.SERVICE_CHANGED;
     }
 }

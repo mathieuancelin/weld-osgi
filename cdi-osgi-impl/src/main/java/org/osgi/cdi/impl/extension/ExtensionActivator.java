@@ -189,7 +189,7 @@ public class ExtensionActivator implements BundleActivator,
             try {
                 org.osgi.framework.Filter filter 
                         = context.createFilter(value);
-                if (filter.match(event.getRef())) {
+                if (filter.match(event.getReference())) {
                     eventQualifiers.add(new FilterAnnotation(value));
                 }
             } catch (InvalidSyntaxException ex) {
