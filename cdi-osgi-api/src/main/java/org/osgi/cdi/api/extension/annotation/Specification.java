@@ -8,11 +8,13 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
+ * <p>Qualifies an injection point for a OSGi service.</p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD
  */
 @Qualifier
-@Target({ PARAMETER })
+@Target({PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Specification {
     Class value();

@@ -678,22 +678,30 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
         <title>OSGi utilities</title>
         <para>CDI-OSGi provide some facilities for OSGi usage. It allows to obtain, by injection,
             some of the useful objects of the OSGi environment.</para>
-        <para>Here a way to obtain the current
-            bundle:<programlisting>@Inject Bundle bundle;</programlisting></para>
-        <para>Here a way to obtain the current bundle
-            context:<programlisting>@Inject BundleContext bundleContext;</programlisting></para>
-        <para>Here a way to obtain a specified bundle from its name and
-            version:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;</programlisting></para>
-        <para>Here a way to obtain all the current bundle
-            headers:<programlisting>@Inject @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
-            a particular
-            header<programlisting>@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
-        <para>Here a way to obtain all the specified bundle
-            headers:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
-            a particular
-            header:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
-        <para>Here a way to obtain a resource file from the current
-            bundle:<programlisting>@Injec t@BundleDataFile("test.txt") File file;</programlisting></para>
+        <section>
+            <title>From the current bundle</title>
+            <para>Here a way to obtain the current
+                bundle:<programlisting>@Inject Bundle bundle;</programlisting></para>
+            <para>Here a way to obtain the current bundle
+                context:<programlisting>@Inject BundleContext bundleContext;</programlisting></para>
+            <para>Here a way to obtain all the current bundle
+                headers:<programlisting>@Inject @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
+                a particular
+                header<programlisting>@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
+            <para>Here a way to obtain a resource file from the current
+                bundle:<programlisting>@Injec @BundleDataFile("test.txt") File file;</programlisting></para>
+        </section>
+        <section>
+            <title>From external bundle</title>
+            <para>Here a way to obtain a specified bundle from its name and
+                version:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;</programlisting>or
+                just from its
+                name:<programlisting>@Inject @BundleName("com.sample.gui") bundle;</programlisting></para>
+            <para>Here a way to obtain all the specified bundle
+                headers:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting>or
+                a particular
+                header:<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
+        </section>
     </section>
     <section>
         <title>CDI-OSGi, what else ?</title>

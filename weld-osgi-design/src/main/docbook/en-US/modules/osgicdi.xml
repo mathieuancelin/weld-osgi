@@ -178,12 +178,12 @@
     int size();
 }
             </programlisting>
-                <para>This interface represents the registrations of a injectable OSGi services in
-                    the service resgistry. It permits to act on previously registered services. Its
-                    fonctionnement is similar to <code>Service&lt;T></code>, thus it might represent
-                    the iterable set of all the registration of a service. It allows to select a
-                    particular subset of registrations, to unregister service implementation or to
-                    obtain a corresponding service reference.</para>
+                <para>This interface represents the binding between a service and its registered
+                    implementations, the registrations of a injectable * OSGi services in the
+                    service resgistry. Its fonctionnement is similar to <code>Service&lt;T></code>,
+                    thus it might represent the iterable set of all the registration of a service.
+                    It allows to select a particular subset of registrations, to unregister service
+                    implementations or to obtain a corresponding service references.</para>
             </section>
             <section>
                 <title>The <code>RegistrationHolder</code> interface</title>
