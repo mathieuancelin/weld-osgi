@@ -244,32 +244,37 @@ public class MyServiceImpl implements MyService {
                 and its OSGi <code>ServiceRegistration</code>s. With this object it is possible to
                 navigate through multiple implementations of the same service, obtain the
                 coresponding <code>Service&lt;T></code> or unregister these implementations.</para>
-            <para>A registration is obtained like
-                that:<programlisting>@Inject Registration&lt;MyService> registrations;</programlisting>The
-                injection point can be filtered using
-                qualifiers:<programlisting>@Inject @AnyQualifier Registration&lt;MyService> qualifiedRegistrations;</programlisting>or
-                using LDAP
-                filter:<programlisting>@Inject @Filter("(&amp;(lang=EN)(country=US))") Registration&lt;MyService> qualifiedRegistrations;</programlisting></para>
-            <para>It is possible to iterate through
-                registration:<programlisting>if(registrations.size() > 0) {
+            <section>
+                <title>registration injection</title>
+                <para>A registration is obtained like
+                    that:<programlisting>@Inject Registration&lt;MyService> registrations;</programlisting>The
+                    injection point can be filtered using
+                    qualifiers:<programlisting>@Inject @AnyQualifier Registration&lt;MyService> qualifiedRegistrations;</programlisting>or
+                    using LDAP
+                    filter:<programlisting>@Inject @Filter("(&amp;(lang=EN)(country=US))") Registration&lt;MyService> qualifiedRegistrations;</programlisting></para>
+            </section>
+            <section>
+                <title>Navigate into registrations and filter them</title>
+                <para>It is possible to iterate through
+                    registration:<programlisting>if(registrations.size() > 0) {
     for(Registration&lt;T> registration : registrations) {
     }
 }</programlisting></para>
-            <para>It is also possible to request a subset of the service implementations using
-                qualifiers:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier>() {});</programlisting>or
-                a LDAP
-                filter:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select("(&amp;(lang=EN)(country=US))");</programlisting>or
-                both:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier>() {}).select("(&amp;(lang=EN)(country=US))");</programlisting></para>
-            <para>The implementation subset can also be on a service subtype (combined with any
-                qualifier or LDAP
-                filter):<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(MyServiceChild.class);
-Registration&lt;T> filteredRegistrations = registrations.select(MyServiceChild.class, new AnnotationLiteral&lt;AnyQualifier>() {});
-Registration&lt;T> filteredRegistrations = registrations.select(MyServiceChild.class, "(&amp;(lang=EN)(country=US))");
-Registration&lt;T> filteredRegistrations = registrations.select(MyServiceChild.class).select("(&amp;(lang=EN)(country=US))");;</programlisting></para>
-            <para>A registration allows to obtain service
-                implementations:<programlisting>Service&lt;T> myServiceImplementations = registrations.getServiceReference();</programlisting>And
-                it allows to enregister service
-                implementations:<programlisting>registrations.unregister();</programlisting></para>
+                <para>It is also possible to request a subset of the service implementations using
+                    qualifiers:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier>() {});</programlisting>or
+                    a LDAP
+                    filter:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select("(&amp;(lang=EN)(country=US))");</programlisting>or
+                    both:<programlisting>Registration&lt;T> filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier>() {}).select("(&amp;(lang=EN)(country=US))");</programlisting>Link
+                    between qualifier and LDAP filter are explain above in service injection
+                    section.</para>
+            </section>
+            <section>
+                <title>Registration usages</title>
+                <para>A registration allows to obtain service
+                    implementations:<programlisting>Service&lt;T> myServiceImplementations = registrations.getServiceReference();</programlisting>And
+                    it allows to enregister service
+                    implementations:<programlisting>registrations.unregister();</programlisting></para>
+            </section>
         </section>
         <section>
             <title>Service registry</title>

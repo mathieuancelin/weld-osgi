@@ -163,9 +163,9 @@
                 <programlisting>public interface Service&lt;T&gt; extends Instance&lt;T&gt; {
     int size();
 }</programlisting>
-                <para>It represents a service producer parametrized by the service to inject. It has
-                    the same behavior than CDI <code>Instance&lt;T></code> except that it represents
-                    only OSGi service beans.</para>
+                <para>It represents a service instance producer parametrized by the service to
+                    inject. It has the same behavior than CDI <code>Instance&lt;T></code> except
+                    that it represents only OSGi service beans.</para>
             </section>
             <section>
                 <title>The <code>Registration</code> interface</title>
@@ -175,8 +175,6 @@
     &lt;T> Service&lt;T> getServiceReference();
     Registration&lt;T> select(Annotation... qualifiers);
     Registration&lt;T> select(String filter);
-    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
-    &lt;U extends T> Registration&lt;U> select(Class&lt;U> subtype, String filter);
     int size();
 }
             </programlisting>

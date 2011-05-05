@@ -5,7 +5,7 @@ import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 
 /**
- *
+ * 
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 // should extends Instance<T> but weld doesn't seems to like it

@@ -18,7 +18,5 @@ public interface Registration<T> extends Iterable<Registration<T>> {
 
     Registration<T> select(Annotation... qualifiers);
     Registration<T> select(String filter);
-    <U extends T> Registration<U> select(Class<U> subtype, Annotation... qualifiers);
-    <U extends T> Registration<U> select(Class<U> subtype, String filter);
     int size();
 }
