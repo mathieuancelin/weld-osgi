@@ -182,7 +182,7 @@
                     the service resgistry. It permits to act on previously registered services. Its
                     fonctionnement is similar to <code>Service&lt;T></code>, thus it might represent
                     the iterable set of all the registration of a service. It allows to select a
-                    particular subset of registrations, to enregister service implementation or to
+                    particular subset of registrations, to unregister service implementation or to
                     obtain a corresponding service reference.</para>
             </section>
             <section>
@@ -198,7 +198,7 @@
 }</programlisting>
                 </para>
                 <para>This interface wraps the OSGi <code>ServiceRegistration</code>s in order to be
-                    used by CDI-OSGi <code>Registration</code>. It provides utilitary methods to
+                    used by CDI-OSGi <code>Registration</code>. It provides utility methods to
                     handle the registration list of a given service.</para>
             </section>
             <section>
@@ -208,7 +208,6 @@
     &lt;T> Registration&lt;T> registerService(Class&lt;T> contract, Class&lt;? extends T> implementation);
     &lt;T, U extends T> Registration&lt;T> registerService(Class&lt;T> contract, U implementation);
     &lt;T> Service&lt;T> getServiceReferences(Class&lt;T> contract);
-    &lt;T> Service&lt;T> getServiceReference(Class&lt;T> contract);
     &lt;T> Provider&lt;T> newTypeInstance(Class&lt;T> unmanagedType);
 }</programlisting>
                 <para>This is where the injectable services may be registered and retrieved. It

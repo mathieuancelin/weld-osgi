@@ -95,11 +95,6 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     @Override
     public <T> Service<T> getServiceReferences(Class<T> contract) {
-        return getServiceReference(contract);
-    }
-
-    @Override
-    public <T> Service<T> getServiceReference(Class<T> contract) {
         return new ServiceImpl<T>(contract, registry);
     }
 
