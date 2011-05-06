@@ -12,16 +12,31 @@ public class InterBundleEvent {
 
     private boolean sent = false;
 
+    private Class<?> type;
+
     public InterBundleEvent(Object event) {
         this.event = event;
     }
 
+    public InterBundleEvent(Object event, Class<?> type) {
+        this.event = event;
+        this.type = type;
+    }
+
     public Class<?> type() {
-        return event.getClass();
+        if (type != null) {
+            return type;
+        } else {
+            return event.getClass();
+        }
     }
 
     public boolean isTyped(Class<?> type) {
-        return event.getClass().equals(type);
+        if (this.type != null) {
+            return this.type.equals(type);
+        } else {
+            return event.getClass().equals(type);
+        }
     }
 
     public <T> Provider<T> typed(Class<T> type) {
