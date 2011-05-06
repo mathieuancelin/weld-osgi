@@ -166,6 +166,28 @@
                 <para>It represents a service instance producer parametrized by the service to
                     inject. It has the same behavior than CDI <code>Instance&lt;T></code> except
                     that it represents only OSGi service beans.</para>
+                <para>IT allows to:<itemizedlist>
+                        <listitem>
+                            <para>Wrap a list of potential service implementations as an
+                                    <code>Iterable</code> java object,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Select a subset of these service implementations filtered by
+                                    <code>Qualifier</code>s or LDAP filters,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Iterate through these service implementations,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain an instance of the first remaining service
+                                implementations,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain utility informations about the contained service
+                                implementations.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>OSGi services should not be subtyped.</para>
             </section>
             <section>
                 <title>The <code>Registration</code> interface</title>
@@ -178,12 +200,33 @@
     int size();
 }
             </programlisting>
-                <para>This interface represents the binding between a service and its registered
-                    implementations, the registrations of a injectable * OSGi services in the
+                <para>This interface represents the registrations of a injectable service in the
                     service resgistry. Its fonctionnement is similar to <code>Service&lt;T></code>,
-                    thus it might represent the iterable set of all the registration of a service.
-                    It allows to select a particular subset of registrations, to unregister service
-                    implementations or to obtain a corresponding service references.</para>
+                    thus it might represent the iterable set of all the registrations of a
+                    service.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Wrap a list of service registration (i.e. the bindings between a
+                                service and its implementations) as an <code>Iterable</code> java
+                                object,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Select a subset of these registration filtered by
+                                    <code>Qualfier</code>s or LDAP filters,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Iterate through these service registrations,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the service implementations list as a
+                                    <code>Service&lt;T></code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Get the number of registration (i.e the number of registered
+                                service implementations).</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>OSGi services should not be subtyped.</para>
             </section>
             <section>
                 <title>The <code>RegistrationHolder</code> interface</title>
@@ -197,9 +240,19 @@
     int size();
 }</programlisting>
                 </para>
-                <para>This interface wraps the OSGi <code>ServiceRegistration</code>s in order to be
-                    used by CDI-OSGi <code>Registration</code>. It provides utility methods to
-                    handle the registration list of a given service.</para>
+                <para>This interface represents the bindings between a service and its registered
+                    implementations. It is used by <code>Registration</code> to maintain the list of
+                    registration bindings. It uses OSGi <code>ServiceRegistration</code>.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Wrap a list of <code>ServiceRegistration</code> as binding between
+                                a service and its implementations as a <code>List</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Handle this list with addition, removal, clearing and size
+                                operations.</para>
+                        </listitem>
+                    </itemizedlist></para>
             </section>
             <section>
                 <title>The <code>ServiceRegistry</code> interface</title>
@@ -210,11 +263,21 @@
     &lt;T> Service&lt;T> getServiceReferences(Class&lt;T> contract);
     &lt;T> Provider&lt;T> newTypeInstance(Class&lt;T> unmanagedType);
 }</programlisting>
-                <para>This is where the injectable services may be registered and retrieved. It
-                    allows to register services with their interface and implementation, getting
-                    back the corespondent <code>Registration&lt;T></code> , to obtain the
-                        <code>Service&lt;T></code> object corresponding to an service interface or
-                    to obtain a producer object of an unmanaged type. </para>
+                <para>This interface represents a service registry where all OSGi services may be
+                    handled.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Register a service implementation with a service, getting back the
+                                corresponding <code>Registration</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the service implementations list as a
+                                    <code>Service&lt;T></code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain an instance provider for a specified type.</para>
+                        </listitem>
+                    </itemizedlist></para>
             </section>
         </section>
         <section>

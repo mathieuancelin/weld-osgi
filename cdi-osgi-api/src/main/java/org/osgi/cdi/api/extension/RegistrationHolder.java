@@ -5,13 +5,15 @@ import org.osgi.framework.ServiceRegistration;
 import java.util.List;
 
 /**
- * <p>Represents a group of service registrations</p> <p>This interface wraps the OSGi ServiceRegistrations in order
- * to
- * be used by CDI-OSGi Registration. It provides utility methods to handle the registration list of a given
- * service.</p>
+ * <p>This interface represents the bindings between a service and its registered implementations. It is used by
+ * {@link
+ * Registration} to maintain the list of registration bindings. It uses OSGi {@link ServiceRegistration}.</p> <p>It
+ * allows to:<ul> <li> <p>Wrap a list of {@link ServiceRegistration} as binding between a service and its
+ * implementations as a {@link List},</p> </li> <li> <p>Handle this list with addition, removal, clearing and size
+ * operations.</p> </li> </ul></p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu CLOCHARD
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  * @see Registration
  * @see ServiceRegistration
  */

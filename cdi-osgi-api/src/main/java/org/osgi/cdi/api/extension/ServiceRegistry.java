@@ -3,14 +3,15 @@ package org.osgi.cdi.api.extension;
 import javax.inject.Provider;
 
 /**
- * <p>Represents the OSGi service registry. It provides utilities for service management.</p> <p>This is where the
- * injectable services may be registered and retrieved. It allows to register services with their interface and
- * implementation, getting back the corespondent Registration<T> , to obtain the Service<T> object corresponding to
- * an
- * service interface or to obtain a producer object of an unmanaged type.</p>
+ * <p>This interface represents a service registry where all OSGi services may be handled.</p> <p>It allows to:<ul>
+ *     <li>
+ * <p>Register a service implementation with a service, getting back the corresponding {@link Registration},
+ * </p> </li>
+ * <li> <p>Obtain the service implementations list as a {@link Service}</code>,</p> </li> <li> <p>Obtain an instance
+ * provider for a specified type.</p> </li> </ul></p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu CLOCHARD
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  * @see Service
  * @see Registration
  */

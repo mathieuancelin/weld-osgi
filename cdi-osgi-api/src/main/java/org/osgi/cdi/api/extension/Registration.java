@@ -7,15 +7,23 @@ import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 
 /**
- * <p>Represents the binding between a service and its registered implementations, the registrations of a injectable
- * OSGi services in the service resgistry.</p> <p/> <p>Its fonctionnement is similar to Service<T>, thus it might
- * represent the iterable set of all the registration of a service. It allows to select a particular subset of
- * registrations, to unregister service implementations or to obtain a corresponding service references.</p>
+ * <p>This interface represents the registrations of a injectable service in the service resgistry. Its
+ * fonctionnement
+ * is similar to {@link Service}, thus it might represent the iterable set of all the registrations of a service.</p>
+ * <p>It allows to:<ul> <li> <p>Wrap a list of service registration (i.e. the bindings between a service and its
+ * implementations) as an {@link Iterable} java object,</p> </li> <li> <p>Select a subset of these registration
+ * filtered
+ * by {@link javax.inject.Qualifier}s or LDAP filters,</p> </li> <li> <p>Iterate through these service
+ * registrations,</p> </li> <li> <p>Obtain the service implementations list as a {@link Service},
+ * </p> </li> <li> <p>Get
+ * the number of registration (i.e the number of registered service implementations).</p> </li> </ul></p> <p>OSGi
+ * services should not be subtyped.</p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  * @see ServiceRegistry
  * @see Service
+ * @see RegistrationHolder
  */
 public interface Registration<T> extends Iterable<Registration<T>> {
 
