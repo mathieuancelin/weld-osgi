@@ -17,6 +17,8 @@
 
   <modules>
     <module>paint</module>
+	<module>calculator</module>
+	<module>web</module>
 	<module>container</module>
   </modules>
 

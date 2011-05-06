@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>osgi-cdi-container</artifactId>
-    <name>Weld OSGi :: Tests :: Container</name>
+    <name>Weld OSGi :: Samples :: Container</name>
 
     <dependencies>
         <dependency>
@@ -31,6 +31,41 @@
         <dependency>
             <groupId>com.sample.osgi</groupId>
             <artifactId>paint-square</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-log</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-divide</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-minus</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-plus</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>calculator-times</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

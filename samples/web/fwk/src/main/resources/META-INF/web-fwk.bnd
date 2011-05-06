@@ -1,0 +1,21 @@
+Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-api|web-api|servlet-api|javax.inject|groovy-all|org.osgi.compendium|jsr311-api
+
+Import-Package !com.sun.grizzly.*,\
+               !com.sun.net.httpserver,\
+               !org.apache.tools.ant.*, \
+               !javax.ejb.*, \
+               !javax.mail.*, \
+               !javax.persistence.*, \
+               !javax.servlet.annotation.*, \
+               !javax.servlet.jsp.*, \
+
+Export-Package com.sample.web.fwk; \
+               com.sample.web.fwk.api; \
+               com.sample.web.fwk.view
+
+-exportcontents com.sun.jersey.*; \
+                com.sun.ws.*; \
+                javax.ws.rs; \
+                javax.ws.rs.*
+
+DynamicImport-Package *

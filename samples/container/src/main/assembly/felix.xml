@@ -15,6 +15,13 @@
                 <include>com.sample.osgi:paint-core</include>
                 <include>com.sample.osgi:paint-triangle</include>
                 <include>com.sample.osgi:paint-square</include>
+                <include>com.sample:calculator-api</include>
+                <include>com.sample:calculator-core</include>
+                <include>com.sample:calculator-log</include>
+                <include>com.sample:calculator-divide</include>
+                <include>com.sample:calculator-minus</include>
+                <include>com.sample:calculator-plus</include>
+                <include>com.sample:calculator-times</include>
                 <include>org.jboss.weld.osgi:weld-osgi-impl</include>
                 <include>org.jboss.weld.osgi:owb-osgi-impl</include>
                 <include>org.osgi.cdi:cdi-osgi-api</include>
