@@ -33,7 +33,7 @@ public class ContainerObserver {
                     try {
                         container.fire(event);
                     } catch (Throwable t) {
-                        System.out.println("InterBundle event broadcast");
+                        System.out.println("InterBundle event broadcast failed");
                     }
                 }
             }
