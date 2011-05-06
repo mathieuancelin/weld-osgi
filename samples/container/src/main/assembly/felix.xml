@@ -22,6 +22,12 @@
                 <include>com.sample:calculator-minus</include>
                 <include>com.sample:calculator-plus</include>
                 <include>com.sample:calculator-times</include>
+                <include>com.sample:web-api</include>
+                <include>com.sample:web-webapp</include>
+                <include>com.sample:web-fwk</include>
+                <include>com.sample:web-france</include>
+                <include>com.sample:web-spain</include>
+                <include>com.sample:web-england</include>
                 <include>org.jboss.weld.osgi:weld-osgi-impl</include>
                 <include>org.jboss.weld.osgi:owb-osgi-impl</include>
                 <include>org.osgi.cdi:cdi-osgi-api</include>
@@ -29,6 +35,11 @@
                 <include>org.apache.felix:org.apache.felix.bundlerepository</include>
                 <include>org.apache.felix:org.apache.felix.shell.tui</include>
                 <include>org.apache.felix:org.apache.felix.shell</include>
+                <include>org.apache.felix:org.apache.felix.http.bundle</include>
+                <include>org.apache.felix:org.apache.felix.log</include>
+                <include>org.codehaus.groovy:groovy-all</include>
+                <include>org.apache.felix:org.apache.felix.configadmin</include>
+                <include>javax.ws.rs:jsr311-api</include>
             </includes>
         </dependencySet>
         <dependencySet>
