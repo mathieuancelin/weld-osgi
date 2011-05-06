@@ -52,8 +52,8 @@ public class WeldCDIContainer implements CDIContainer {
         Long set = CDIOSGiExtension.currentBundle.get();
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         container.getEvent().select(InterBundleEvent.class,
-                                    new ExtensionActivator.SpecificationAnnotation(event.type()),
-                                    new ExtensionActivator.SentAnnotation()).fire(event);
+                new ExtensionActivator.SpecificationAnnotation(event.type()),
+                new ExtensionActivator.SentAnnotation()).fire(event);
         if (set != null) {
             CDIOSGiExtension.currentBundle.set(set);
         } else {

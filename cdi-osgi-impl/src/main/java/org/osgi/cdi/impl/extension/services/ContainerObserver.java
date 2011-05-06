@@ -30,7 +30,11 @@ public class ContainerObserver {
             for (CDIContainer container : containers) {
                 if (!container.equals(currentContainer)) {
                     event.sent();
-                    container.fire(event);
+                    try {
+                        container.fire(event);
+                    } catch (Throwable t) {
+                        System.out.println("InterBundle event broadcast");
+                    }
                 }
             }
         }
