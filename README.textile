@@ -1,4 +1,4 @@
-You can find documentation at : "http://mathieuancelin.github.com/weld-osgi/":http://mathieuancelin.github.com/weld-osgi/
+You can find actual documentation at : "http://mathieuancelin.github.com/weld-osgi/":http://mathieuancelin.github.com/weld-osgi/
 
 h1. Weld OSGi integration
 
@@ -51,9 +51,9 @@ you can also filter service with :
 @Inject @Filter("(&(lang=EN)(country=US))") Service<MyService> service;
 ...	
 </code></pre>
-* to inject multiple OSGi services (whiteboard pattern), use the OSGi services provider :
+* to inject multiple OSGi services (whiteboard pattern), also use the OSGi service provider :
 <pre><code>
-@Inject Services<MyService> myServices;
+@Inject Service<MyService> myServices;
 ...	
 // print number of available services
 logger.log(myServices.size());
@@ -64,7 +64,7 @@ for (MyService myService : myServices) {
 </code></pre>
 you can also filter services with :
 <pre><code>
-@Inject @Filter("(&(lang=EN)(country=US))") Services<MyService> myServices;
+@Inject @Filter("(&(lang=EN)(country=US))") Service<MyService> myServices;
 ...	
 </code></pre>
 * if you absolutely need certain OSGi services to run your application, you can mark them as Required. Then when the required services will be registered in OSGi service registry, the Valid event will be raised so you can catch it and launch your app. When the required services will be unregistered from OSGi service registry, the Invalid event will be raised.
@@ -73,8 +73,6 @@ you can also filter services with :
 ...
 @Inject @Required Service<MyService> myService;
 ...
-@Inject @Required Services<MyService> myServices;
-...	
 public void validate(@Observes Valid event) {
 	// start application here
 }
@@ -100,6 +98,7 @@ public void bindService(@Observes @BundleName("com.sample.gui") @BundleVersion("
 public void bindService(@Observes ServiceArrival event) {}
 public void unbindService(@Observes ServiceDeparture event) {}
 public void changeService(@Observes ServiceChange event) {}
+...
 </code></pre>
 you can also filter event for specific services types :
 <pre><code>	
@@ -124,9 +123,6 @@ Registration<MyService> registeredService = registry.registerService(MyService.c
 Service<MyService> service = registry.getServiceReference(MyService.class);
 service.get().doSomething();
 ...
-// get all existing services
-Services<MyService> services = registry.getServiceReferences(MyService.class);
-...
 logger.log(services.size());
 ...
 for (MyService service : services) {
@@ -138,7 +134,7 @@ registeredService.unregister();
 </code></pre>
 * to deal with existing services registrations (managed by the Weld container, not directly by OSGi), you can use :
 <pre><code>	
-@Inject Registrations<MyService> registeredServices;
+@Inject Registration<MyService> registeredServices;
 ...
 logger.log(registeredServices.size());
 ...		
@@ -246,3 +242,6 @@ you can also stop bundles. When a bundle is stopped, existing shapes of this bun
 <pre><code>stop 4</code></pre>
 
 !https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-design/src/main/docbook/en-US/images/sample4.png!
+
+
+Other samples are available in the sample container (calculator, webapp), don't hesitate to try them :)
