@@ -1,16 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.sample.calculator.api;
 
 import com.sample.calculator.api.Operator;
 
-/**
- *
- * @author mathieu
- */
 public interface Operation {
 
     Operator getOperator();
