@@ -1,4 +1,4 @@
-You can find documentation at : http://mathieuancelin.github.com/weld-osgi/
+You can find documentation at : "http://mathieuancelin.github.com/weld-osgi/":http://mathieuancelin.github.com/weld-osgi/
 
 h1. Weld OSGi integration
 
