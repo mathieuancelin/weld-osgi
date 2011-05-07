@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * <p>Identifies a OSGi service implementation.</p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu CLOCHARD
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)

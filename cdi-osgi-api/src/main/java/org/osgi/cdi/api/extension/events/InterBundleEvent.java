@@ -35,7 +35,7 @@ public class InterBundleEvent {
         if (this.type != null) {
             return this.type.equals(type);
         } else {
-            return event.getClass().equals(type);
+            return type.isAssignableFrom(event.getClass());
         }
     }
 

@@ -2,6 +2,7 @@ package org.osgi.cdi.api.extension.events;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +69,8 @@ public abstract class AbstractServiceEvent {
             return TypedService.create(type, context, reference);
         } else {
             throw new RuntimeException("the type " + type
-                                       + " isn't supported for the service. Supported types are "
-                                       + getServiceClasses());
+               + " isn't supported for the service. Supported types are "
+               + getServiceClasses());
         }
     }
 
@@ -130,7 +131,7 @@ public abstract class AbstractServiceEvent {
     public List<String> getServiceClassNames() {
         if (classesNames == null) {
             classesNames = Arrays.asList((String[])
-                                                 reference.getProperty(Constants.OBJECTCLASS));
+                 reference.getProperty(Constants.OBJECTCLASS));
         }
         return classesNames;
     }
@@ -148,7 +149,7 @@ public abstract class AbstractServiceEvent {
                     classes.add(getClass()
                                         .getClassLoader().loadClass(className));
                 } catch (ClassNotFoundException ex) {
-                    return null;
+                    return Collections.emptyList();
                 }
             }
         }

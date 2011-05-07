@@ -9,7 +9,7 @@ import javax.inject.Qualifier;
  * <p>Qualifies an injection point for a required OSGi service for the current bundle.</p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu CLOCHARD
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)

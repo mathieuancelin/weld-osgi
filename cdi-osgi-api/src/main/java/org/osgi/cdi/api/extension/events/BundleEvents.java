@@ -4,7 +4,7 @@ import org.osgi.framework.Bundle;
 
 /**
  *
- * @author mathieuancelin
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class BundleEvents {
 
