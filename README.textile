@@ -208,7 +208,7 @@ To use the sample, first build the entire Weld OSGi project with :
 
 then launch the sample with :
 
-<pre><code>./build-weld-osgi.sh</code></pre>
+<pre><code>./run-sample-container.sh</code></pre>
 
 this script will launch an Apache Felix container with the right bundles within. A swing window should be displayed :
 
