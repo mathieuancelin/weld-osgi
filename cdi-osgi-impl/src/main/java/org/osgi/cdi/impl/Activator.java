@@ -6,11 +6,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * Created by IntelliJ IDEA.
- * User: guillaume
- * Date: 27/01/11
- * Time: 22:28
- * To change this template use File | Settings | File Templates.
+ * 
+ * @author Guillaume Sauthier
  */
 public class Activator implements BundleActivator {
 

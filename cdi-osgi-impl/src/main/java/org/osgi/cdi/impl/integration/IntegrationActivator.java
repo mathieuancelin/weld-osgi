@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * 
  * @author Guillaume Sauthier
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
@@ -144,12 +145,12 @@ public class IntegrationActivator implements BundleActivator, BundleListener, CD
             holder.getInstance().select(ContainerObserver.class).get().setContainers(this);
             holder.getInstance().select(ContainerObserver.class).get().setCurrentContainer(holder);
             // fire container start
-            holder.getBeanManager().fireEvent(new BundleContainerInitialized(bundle.getBundleContext()));
             ServicePublisher publisher = new ServicePublisher(holder.getBeanClasses(),
-                                                              bundle, holder.getInstance(),
-                                                              ((CDIContainerFactory) context.getService(factoryRef)).getContractBlacklist());
+                bundle, holder.getInstance(),
+                ((CDIContainerFactory) context.getService(factoryRef)).getContractBlacklist());
             // registering publishable services
             publisher.registerAndLaunchComponents();
+            holder.getBeanManager().fireEvent(new BundleContainerInitialized(bundle.getBundleContext()));
             Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
 
             BundleContext bundleContext = bundle.getBundleContext();

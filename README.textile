@@ -1,3 +1,5 @@
+You can find documentation at : http://mathieuancelin.github.com/weld-osgi/
+
 h1. Weld OSGi integration
 
 This project aims to provide an OSGi integration for Weld.

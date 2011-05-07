@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard
+ * @author Matthieu Clochard - SERLI (matthieu.clochard@serli.com)
  */
 @ApplicationScoped
 public class ServiceRegistryImpl implements ServiceRegistry {

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard
+ * @author Matthieu Clochard - SERLI (matthieu.clochard@serli.com)
  */
 @ApplicationScoped
 public class RegistrationsHolderImpl implements RegistrationHolder {

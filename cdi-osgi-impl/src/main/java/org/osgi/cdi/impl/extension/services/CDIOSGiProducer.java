@@ -14,7 +14,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
 
-import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.io.File;
@@ -33,7 +32,7 @@ import java.util.Set;
  * Producers for Specific injected types;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard
+ * @author Matthieu Clochard - SERLI (matthieu.clochard@serli.com)
  */
 public class CDIOSGiProducer {
 

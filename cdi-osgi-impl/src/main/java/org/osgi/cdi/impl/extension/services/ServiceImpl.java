@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * 
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class ServiceImpl<T> implements Service<T> {

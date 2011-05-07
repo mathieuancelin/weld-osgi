@@ -9,7 +9,6 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.reflect.MapEntry;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard
+ * @author Matthieu Clochard - SERLI (matthieu.clochard@serli.com)
  */
 public class RegistrationImpl<T> implements Registration<T> {
 
