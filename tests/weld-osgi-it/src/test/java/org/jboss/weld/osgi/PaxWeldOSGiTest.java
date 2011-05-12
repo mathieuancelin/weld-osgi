@@ -1,10 +1,10 @@
 package org.jboss.weld.osgi;
 
+import org.osgi.cdi.api.extension.Registration;
 import com.sample.osgi.api.SomeService;
 import org.osgi.framework.ServiceRegistration;
 import com.sample.osgi.api.ServiceBundle2;
 import java.util.Properties;
-import org.jboss.weld.environment.osgi.api.extension.Registration;
 import com.sample.osgi.api.DummyService;
 import com.sample.osgi.api.ServiceBundle1;
 import org.junit.Assert;
@@ -32,7 +32,11 @@ public class PaxWeldOSGiTest {
     @Configuration
     public static Option[] configure() {
         return options(
-            mavenBundle("org.jboss.weld.osgi", "weld-osgi").version("1.0-SNAPSHOT"),
+            mavenBundle("com.sample.osgi", "cdi-bundle").version("1.0-SNAPSHOT"),
+            mavenBundle("org.osgi.cdi", "cdi-osgi-extension-api").version("1.0-SNAPSHOT"),
+            mavenBundle("org.osgi.cdi", "cdi-osgi-integration-api").version("1.0-SNAPSHOT"),
+            mavenBundle("org.jboss.weld.osgi", "weld-osgi-impl").version("1.0-SNAPSHOT"),
+            mavenBundle("org.osgi.cdi", "cdi-osgi-extension-impl").version("1.0-SNAPSHOT"),
             mavenBundle("org.jboss.weld.osgi", "weld-osgi-integration-bundle-api").version("1.0-SNAPSHOT"),
             mavenBundle("org.jboss.weld.osgi", "weld-osgi-integration-bundle1").version("1.0-SNAPSHOT"),
             mavenBundle("org.jboss.weld.osgi", "weld-osgi-integration-bundle2").version("1.0-SNAPSHOT"),

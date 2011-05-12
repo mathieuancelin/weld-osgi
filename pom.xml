@@ -17,7 +17,6 @@
         <module>cdi-osgi-extension-api</module>
         <module>cdi-osgi-integration-api</module>
         <module>cdi-osgi-extension-impl</module>
-        <!--<module>cdi-osgi-integration-impl</module>-->
         <module>weld-osgi-impl</module>
         <!--<module>owb-osgi-impl</module>-->
         <!--<module>tests</module>-->

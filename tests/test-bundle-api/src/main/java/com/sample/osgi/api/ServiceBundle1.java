@@ -1,6 +1,6 @@
 package com.sample.osgi.api;
 
-import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.ServiceRegistry;
 
 /**
  *

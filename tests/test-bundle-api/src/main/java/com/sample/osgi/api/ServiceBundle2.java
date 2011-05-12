@@ -1,7 +1,7 @@
 package com.sample.osgi.api;
 
-import org.jboss.weld.environment.osgi.api.extension.Registrations;
-import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.ServiceRegistry;
 
 /**
  *
@@ -23,7 +23,7 @@ public interface ServiceBundle2 {
 
     void fireString();
 
-    Registrations<SomeService> getRegs();
+    Registration<SomeService> getRegs();
 
     ServiceRegistry getRegistry();
 

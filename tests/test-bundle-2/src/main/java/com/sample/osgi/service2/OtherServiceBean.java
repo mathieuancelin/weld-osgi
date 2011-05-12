@@ -7,16 +7,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import org.jboss.weld.environment.osgi.api.extension.Registrations;
-import org.jboss.weld.environment.osgi.api.extension.Service;
-import org.jboss.weld.environment.osgi.api.extension.ServiceRegistry;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Filter;
-import org.jboss.weld.environment.osgi.api.extension.annotation.OSGiService;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Publish;
-import org.jboss.weld.environment.osgi.api.extension.annotation.Specification;
-import org.jboss.weld.environment.osgi.api.extension.events.InterBundleEvent;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceArrival;
-import org.jboss.weld.environment.osgi.api.extension.events.ServiceDeparture;
+import org.osgi.cdi.api.extension.Registration;
+import org.osgi.cdi.api.extension.Service;
+import org.osgi.cdi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.api.extension.annotation.OSGiService;
+import org.osgi.cdi.api.extension.annotation.Publish;
+import org.osgi.cdi.api.extension.annotation.Specification;
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+import org.osgi.cdi.api.extension.events.ServiceArrival;
+import org.osgi.cdi.api.extension.events.ServiceDeparture;
 
 /**
  *
@@ -34,7 +34,7 @@ public class OtherServiceBean implements ServiceBundle2 {
 
     @Inject Event<InterBundleEvent> ibEventAll;
 
-    @Inject Registrations<SomeService> regs;
+    @Inject Registration<SomeService> regs;
 
     @Inject ServiceRegistry registry;
 
@@ -92,7 +92,7 @@ public class OtherServiceBean implements ServiceBundle2 {
     }
 
     @Override
-    public Registrations<SomeService> getRegs() {
+    public Registration<SomeService> getRegs() {
         return regs;
     }
 
