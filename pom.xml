@@ -14,8 +14,10 @@
     </properties>
 
     <modules>
-        <module>cdi-osgi-api</module>
-        <module>cdi-osgi-impl</module>
+        <module>cdi-osgi-extension-api</module>
+        <module>cdi-osgi-integration-api</module>
+        <module>cdi-osgi-extension-impl</module>
+        <!--<module>cdi-osgi-integration-impl</module>-->
         <module>weld-osgi-impl</module>
         <!--<module>owb-osgi-impl</module>-->
         <!--<module>tests</module>-->
@@ -37,7 +39,6 @@
                 <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
-
         <repository>
             <id>jboss-snapshots</id>
             <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
@@ -48,7 +49,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-
     </repositories>
 
     <build>
@@ -78,6 +78,5 @@
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
 </project>

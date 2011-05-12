@@ -1,0 +1,3 @@
+Export-Package org.osgi.cdi.api.integration;
+
+DynamicImport-Package *

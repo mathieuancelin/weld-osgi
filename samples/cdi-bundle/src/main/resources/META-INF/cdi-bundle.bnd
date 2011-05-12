@@ -1,10 +1,6 @@
-Embed-Dependency *; scope=compile; inline=true; artifactId=!org.osgi.core,
+Embed-Dependency *; scope=compile; inline=true;
 
-Export-Package org.osgi.cdi.api.extension; \
-               org.osgi.cdi.api.extension.annotation; \
-               org.osgi.cdi.api.extension.events; \
-               org.osgi.cdi.api.integration; \
-               javax.el; \
+Export-Package javax.el; \
                javax.inject; \
                javax.decorator; \
                javax.annotation; \
@@ -16,5 +12,3 @@ Export-Package org.osgi.cdi.api.extension; \
                javax.enterprise.inject; \
                javax.enterprise.inject.spi; \
                javax.enterprise.util;
-
-DynamicImport-Package *

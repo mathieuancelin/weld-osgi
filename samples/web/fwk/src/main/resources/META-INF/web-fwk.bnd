@@ -1,4 +1,4 @@
-Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-api|web-api|servlet-api|javax.inject|groovy-all|org.osgi.compendium|jsr311-api
+Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-extension-api|cdi-api|web-api|servlet-api|javax.inject|groovy-all|org.osgi.compendium|jsr311-api
 
 Import-Package !com.sun.grizzly.*,\
                !com.sun.net.httpserver,\

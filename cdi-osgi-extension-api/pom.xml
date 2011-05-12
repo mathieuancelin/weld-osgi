@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>org.osgi.cdi</groupId>
-    <artifactId>cdi-osgi-api</artifactId>
+    <artifactId>cdi-osgi-extension-api</artifactId>
     <packaging>bundle</packaging>
-    <name>CDI OSGi :: API</name>
+    <name>CDI OSGi :: Extension API</name>
 
     <dependencies>
         <dependency>

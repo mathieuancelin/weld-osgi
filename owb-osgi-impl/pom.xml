@@ -52,12 +52,12 @@
         </dependency>
         <dependency>
             <groupId>org.osgi.cdi</groupId>
-            <artifactId>cdi-osgi-api</artifactId>
+            <artifactId>cdi-osgi-integration-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi.cdi</groupId>
-            <artifactId>cdi-osgi-impl</artifactId>
+            <artifactId>cdi-osgi-extension-impl</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

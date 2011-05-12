@@ -28,10 +28,11 @@
                 <include>com.sample:web-france</include>
                 <include>com.sample:web-spain</include>
                 <include>com.sample:web-england</include>
+                <include>com.sample.osgi:cdi-bundle</include>
                 <include>org.jboss.weld.osgi:weld-osgi-impl</include>
-                <include>org.jboss.weld.osgi:owb-osgi-impl</include>
-                <include>org.osgi.cdi:cdi-osgi-api</include>
-                <include>org.osgi.cdi:cdi-osgi-impl</include>
+                <include>org.osgi.cdi:cdi-osgi-extension-api</include>
+                <include>org.osgi.cdi:cdi-osgi-integration-api</include>
+                <include>org.osgi.cdi:cdi-osgi-extension-impl</include>
                 <include>org.apache.felix:org.apache.felix.bundlerepository</include>
                 <include>org.apache.felix:org.apache.felix.shell.tui</include>
                 <include>org.apache.felix:org.apache.felix.shell</include>
