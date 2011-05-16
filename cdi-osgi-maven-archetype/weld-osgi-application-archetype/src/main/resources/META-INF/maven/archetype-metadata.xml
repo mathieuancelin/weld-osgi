@@ -1,0 +1,39 @@
+<archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+                      name="weld-osgi-archetype">
+
+    <requiredProperties>
+        <requiredProperty key="containerGroupId"/>
+        <requiredProperty key="containerArtifactId"/>
+        <requiredProperty key="containerVersion"/>
+    </requiredProperties>
+
+    <fileSets>
+        <fileSet filtered="true" packaged="false" encoding="UTF-8">
+            <directory></directory>
+            <includes>
+                <include>**/run.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="true" packaged="false" encoding="UTF-8">
+            <directory>__containerArtifactId__</directory>
+            <includes>
+                <include>**/pom.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="false" packaged="false" encoding="UTF-8">
+            <directory>__containerArtifactId__/src/main/assembly</directory>
+            <includes>
+                <include>**/felix.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="false" packaged="false" encoding="UTF-8">
+            <directory>__containerArtifactId__/src/main/resources</directory>
+            <includes>
+                <include>**/config.properties</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</archetype-descriptor>

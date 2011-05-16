@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Basics -->
+    <groupId>org.osgi.cdi</groupId>
+    <artifactId>weld-osgi-application-archetype</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>maven-archetype</packaging>
+
+    <!-- Human readables -->
+    <name>Weld-OSGi application Maven archetype</name>
+    <description>Weld-OSGi application Maven archetype, provide Weld-OSGi application archetype</description>
+    <url>http://www.serli.com/</url>
+
+    <!-- Parent -->
+    <parent>
+        <groupId>org.osgi.cdi</groupId>
+        <artifactId>cdi-osgi-maven-archetype</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <!-- Properties -->
+    <properties>
+        <archetype-packaging.version>2.0</archetype-packaging.version>
+        <maven-archetype-plugin.version>2.0</maven-archetype-plugin.version>
+    </properties>
+
+    <!-- Repositories -->
+    <repositories>
+    </repositories>
+
+    <!-- Dependencies -->
+    <dependencies>
+    </dependencies>
+
+    <!-- Build -->
+    <build>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>${archetype-packaging.version}</version>
+            </extension>
+        </extensions>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-archetype-plugin</artifactId>
+                    <version>${maven-archetype-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+</project>
