@@ -1,45 +1,52 @@
 <chapter>
     <title id="osgicdipresentation">Organization of CDI-OSGi</title>
     <section>
-        <title>APIs bundle, extension bundle and implementation bundle</title>
-        <para>CDI-OSGi is composed of three bundles: <itemizedlist>
+        <title>API bundles, extension bundle and integration bundle</title>
+        <para>CDI-OSGi is composed of five bundles: <itemizedlist>
                 <listitem>
-                    <para>The APIs bundle that provides the APIs used to define both utilities
+                    <para>The API bundles that provides the API used to define both utilities
                         provided and hooking up system with implementation bundle,</para>
                 </listitem>
                 <listitem>
-                    <para>The extension bundle that provides CDI-OSGi functionalities for bean
-                        bundles by managing them,</para>
+                    <para>The extension bundle that provides CDI-OSGi features for bean bundles by
+                        managing them,</para>
                 </listitem>
                 <listitem>
-                    <para>An implementation bundle provides CDI functionalities usable by the
-                        extension bundle through an OSGi service.</para>
+                    <para>An integration bundle that provides CDI features usable by the extension
+                        bundle through an OSGi service.</para>
                 </listitem>
             </itemizedlist></para>
+        <para>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an OSGi
+            core bundle too. This one provide OSGi features for all other bundles, including
+            CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</para>
         <section>
-            <title>Extention API versus integration API</title>
-            <para>The APIs bundle exposed all packages that could be needed by developers; both for
-                client application using CDI-OSGi and for CDI compliant container integration. It
+            <title>Extension API, integration API and CDI API</title>
+            <para>Three API bundles expose all packages that could be needed by developers; both for
+                client application using CDI-OSGi and for CDI compliant container integration. They
                 may be use as a dependency for bean bundles, extension bundle and implementation
                 bundle.</para>
-            <para>CDI-OSGi APIs bundle provides two distinct APIs: <itemizedlist>
+            <para>These three distinct API are: <itemizedlist>
                     <listitem>
-                        <para> The extension API that describes all the new functionality provided
-                            by CDI-OSGi in the OSGi environment. </para>
+                        <para>The extension API that describes all the new features provided by
+                            CDI-OSGi in the OSGi environment.</para>
                     </listitem>
                     <listitem>
-                        <para> The integration API that allows CDI compliant container to be used
-                            with CDI-OSGi. </para>
+                        <para>The integration API that allows CDI compliant container to be used
+                            with CDI-OSGi.</para>
+                    </listitem>
+                    <listitem>
+                        <para>The CDI API that describes all the regular CDI features provided by
+                            CDI-OSGi to bean bundles.</para>
                     </listitem>
                 </itemizedlist></para>
-            <para>These two APIs are more described below.</para>
+            <para>These three API are more described below.</para>
             <section>
                 <title>Extension API</title>
-                <para>The extension API defines all the utilities provided to OSGi environment using
+                <para>The extension API defines all the features provided to OSGi environment using
                     CDI specification. It exposes all the new utilities and defines the comportment
                     of the extension bundle.</para>
                 <para>It exposes all the interfaces, events and annotations usable by a developers
-                    in order to realize its client bean bundle. It defines the programming model of
+                    in order to develop its client bean bundles. It defines the programming model of
                     CDI-OSGi client bundle. Mostly it is about publishing and consuming injectable
                     services in a CDI way.</para>
                 <para>It also describes the object the extension bundle needs to orchestrate bean
@@ -67,6 +74,13 @@
                 <para>So this is where to search to make CDI-OSGi use a specific CDI compliant
                     container.</para>
             </section>
+            <section>
+                <title>CDI API</title>
+                <para>The CDI API is described by the CDI specifications. It is provided with
+                    CDI-OSGi and defines all the CDI features usable in bean bundles.</para>
+                <para>This API will not be describe furthermore as it would be redundant with CDI
+                    specifications.</para>
+            </section>
         </section>
         <section>
             <title>Extension bundle: the puppet master</title>
@@ -77,9 +91,9 @@
                 provided that it finds a started implementation bundle, it manages all the bean
                 bundles. It is in charge of service automatic publishings, service injections, CDI
                 event notifications and bundle communications.</para>
-            <para>It runs in background, it just need to be started at the beginning of the
-                application, then everything is transparent to the user. Client bean bundles do not
-                have to do anything in order to use CDI-OSGi functionality.</para>
+            <para>It runs in background, it just need to be started with the OSGi environment, then
+                everything is transparent to the user. Client bean bundles do not have to do
+                anything in order to use CDI-OSGi functionality.</para>
             <para>In order to perform injections the extension bundle search for a CDI compliant
                 container service provider once it is started. Thus it can only work coupled with a
                 bundle providing such a service: an implementation bundle.</para>
@@ -120,7 +134,7 @@
         <title>An OSGi extension for CDI support: the extension API</title>
         <section>
             <title>The extender pattern</title>
-            <para>CDI-OSGi provides an extension to OSGi as an extender OSGi pattern. The extension
+            <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
                 bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
                 CDI utilities are enabled for these bean bundles over OSGi environment.</para>
         </section>
@@ -128,25 +142,25 @@
             <title>CDI-OSGi features</title>
             <para>As an extension to OSGi, CDI-OSGi provides several features : <itemizedlist>
                     <listitem>
-                        <para> Complete integration in OSGi world by the use of extender pattern and
-                            extension bundle. Thus complete compatibility with already existing
+                        <para>Complete integration with OSGi world by the use of extender pattern
+                            and extension bundle. Thus complete compatibility with already existing
                             tools.</para>
                     </listitem>
                     <listitem>
-                        <para> Non intruding, configurable and customizable behavior in new or
-                            upgraded application. Simple configuration and usage using annotation,
+                        <para>Non intruding, configurable and customizable behavior in new or
+                            upgraded application. Simple configuration and usage with annotations,
                             completely xml free.</para>
                     </listitem>
                     <listitem>
-                        <para> Full internal CDI support for bean bundles: injection, producers,
+                        <para>Full internal CDI support for bean bundles: injection, producers,
                             interceptors, decorators ...</para>
                     </listitem>
                     <listitem>
-                        <para> Lot of ease features for OSGi usages: injectable services, event
+                        <para>Lot of ease features for OSGi usages: injectable services, event
                             notifications, inter-bundle communication ...</para>
                     </listitem>
                     <listitem>
-                        <para> OSGi and CDI compliance all along the way ensuring compatibility with
+                        <para>OSGi and CDI compliance all along the way ensuring compatibility with
                             all CDI compliant container and easy application realisation or
                             portage.</para>
                     </listitem>

@@ -89,7 +89,8 @@
             <section>
                 <title>CDI API bundle</title>
                 <para>The fith bundle is the CDI API. It exposes regular CDI features for all client
-                    bundles and exempts the user to load CDI API by himself. </para>
+                    bundles and exempts the user to load CDI API by himself. It is a third-party API
+                    provided for convenience to the user.</para>
             </section>
             <section>
                 <title>Interaction between bundles</title>
@@ -113,7 +114,7 @@
             mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</para>
         <para>Thereby it is compatible with most of the current frameworks dealing with OSGi service
             management.</para>
-        <para>Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as
+        <para>Weld-OSGi has the same compatibility since it is an implementation of CDI-OSGi. But as
             it provides some additional features it may be impossible to use all its possibilities
             coupling with other frameworks.</para>
     </section>
