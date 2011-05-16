@@ -59,7 +59,7 @@
                 <title>The five bundles of CDI-OSGi</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png"/>
+                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png" align="center" format="PNG" width="800" depth="600"/>
                     </imageobject>
                     <caption>This figure shows the five bundles of CDI-OSGi and the links between
                         them. Each is described below.</caption>
