@@ -214,9 +214,9 @@
     int size();
 }
             </programlisting>
-                <para>This interface represents the registrations of a injectable service in the
-                    service resgistry. Its fonctionnement is similar to <code>Service&lt;T></code>,
-                    thus it might represent the iterable set of all the registrations of a
+                <para>This interface represents the registrations of an injectable service in the
+                    service resgistry. Its behavior is similar to <code>Service&lt;T></code>, thus
+                    it might represent the iterable set of all the registrations of a
                     service.</para>
                 <para>It allows to:<itemizedlist>
                         <listitem>
@@ -275,7 +275,6 @@
     &lt;T> Registration&lt;T> registerService(Class&lt;T> contract, Class&lt;? extends T> implementation);
     &lt;T, U extends T> Registration&lt;T> registerService(Class&lt;T> contract, U implementation);
     &lt;T> Service&lt;T> getServiceReferences(Class&lt;T> contract);
-    &lt;T> Provider&lt;T> newTypeInstance(Class&lt;T> unmanagedType);
 }</programlisting>
                 <para>This interface represents a service registry where all OSGi services may be
                     handled.</para>
@@ -286,10 +285,7 @@
                         </listitem>
                         <listitem>
                             <para>Obtain the service implementations list as a
-                                    <code>Service&lt;T></code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Obtain an instance provider for a specified type.</para>
+                                    <code>Service&lt;T></code>.</para>
                         </listitem>
                     </itemizedlist></para>
             </section>
@@ -689,45 +685,96 @@
             <para>Extension API provides annotations in order to easily use CDI-OSGi
                 features.</para>
             <section>
-                <title>The <code>OSGiBundle</code> annotation</title>
+                <title>The <code>OSGiBundle</code>, <code>BundleName</code> and
+                        <code>BundleVersion</code> annotations</title>
                 <programlisting>@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiBundle {
     @Nonbinding String value();
     @Nonbinding String version() default "";
 }</programlisting>
-                <para>This annotation qualifies an injection point that represents a bundle.</para>
-            </section>
-            <section>
-                <title>The <code>BundleDataFile</code>, <code>BundleHeader</code>,
-                        <code>BundleHeaders</code>, <code> BundleName</code> and
-                        <code>BundleVersion</code> annotations</title>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleDataFile {
-    @Nonbinding String value();
-}</programlisting>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleHeader {
-    @Nonbinding String value();
-}</programlisting>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleHeaders {
-}</programlisting>
+                <para>This annotation qualifies an injection point that represents a bundle or a
+                    bundle relative object.</para>
+                <para>It allows to specify:<itemizedlist>
+                        <listitem>
+                            <para>The symbolic name of the bundle, as a required value,</para>
+                        </listitem>
+                        <listitem>
+                            <para>The version of the bundle, as an optional value.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>The symbolic name and version are <emphasis role="bold">not</emphasis>
+                    actually qualifying the injection point, thus this annotation is for global
+                    bundle injection point with additional data. In order to actually discriminate
+                    on the symbolic name or version see <code>BundleName</code> and
+                        <code>BundleVersion</code> annotations.</para>
                 <programlisting>@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BundleName {
     String value();
 }</programlisting>
+                <para>This annotation qualifies an injection point that represents a bundle or a
+                    bundle relative object.</para>
+                <para>It allows to specify the symbolic name of the bundle, as a required
+                    value.</para>
+                <para>The symbolic name actually discriminate the injection point, thus this
+                    annotation is for specific bundle relative injection point. For global bundle
+                    relative injection point see <code>OSGiBundle</code> annotation. To discriminate
+                    the bundle version see <code>BundleVersion</code>.</para>
                 <programlisting>@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BundleVersion {
     String value();
 }</programlisting>
-                <para>These annotations qualify an injection point that represents bundle relative
-                    information.</para>
+                <para>This annotation qualifies an injection point that represents a bundle or a
+                    bundle relative object.</para>
+                <para>It allows to specify the version of the bundle, as a required value.</para>
+                <para>The version actually discriminate the injection point, thus this annotation is
+                    for specific bundle relative injection point. For global bundle relative
+                    injection point see <code>OSGiBundle</code> annotation. To discriminate the
+                    bundle symbolic name see <code>BundleName</code>.</para>
+            </section>
+            <section>
+                <title>The <code>BundleDataFile</code>, <code>BundleHeader</code> and
+                        <code>BundleHeaders</code> annotations</title>
+                <programlisting>@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleDataFile {
+    @Nonbinding String value();
+}</programlisting>
+                <para>This annotation qualifies an injection point that represents a bundle data
+                    file.</para>
+                <para>It allows to specify the relative path of the file in the bundle, as a
+                    required value.</para>
+                <para>The file path is <emphasis role="bold">not</emphasis> actually qualifying the
+                    injection point, thus this annotation is for global bundle data file injection
+                    point with additional data. To discriminate the bundle use
+                        <code>OSGiBundle</code> or <code>BundleName</code> and
+                        <code>BundleVersion</code> annotations.</para>
+                <programlisting>@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleHeader {
+    @Nonbinding String value();
+}</programlisting>
+                <para>This annotation qualifies an injection point that represents a specific bundle
+                    header.</para>
+                <para>It allows to specify the name of the bundle header, as a required
+                    value.</para>
+                <para>The header name is <emphasis role="bold">not</emphasis> actually qualifying
+                    the injection point, thus this annotation is for global specific bundle header
+                    injection point with additional data. To discriminate the bundle use
+                        <code>OSGiBundle</code> or <code>BundleName</code> and
+                        <code>BundleVersion</code> annotations. To obtain all the bundle headers see
+                        <code>BundleHeaders</code> annotations.</para>
+                <programlisting>@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleHeaders {
+}</programlisting>
+                <para>This annotation qualifies an injection point that represents all headers of a
+                    bundle.</para>
+                <para>To discriminate the bundle use <code>OSGiBundle</code> or
+                        <code>BundleName</code> and <code>BundleVersion</code> annotations. To
+                    obtain a specific bundle header see <code>BundleHeader</code> annotation.</para>
             </section>
             <section>
                 <title>The <code>OSGiService</code> annotation</title>
@@ -736,20 +783,62 @@ public @interface BundleVersion {
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiService {
 }</programlisting>
-                <para>This annotation qualifies an injection point that represents a service in the
-                    OSGi service registry.</para>
+                <para>This annotation qualifies an injection point that represents a service from
+                    the OSGi service registry.</para>
+                <para>It may be use to obtain an injected OSGi service using <code>Service</code>
+                    interface or directly the service contract interface. The injected service might
+                    be filtered using regular <code>Qualifer</code> annotations or a LDAP filter
+                    with <code>Filter</code> annotation.</para>
             </section>
             <section>
-                <title>The <code>Publish</code> annotation</title>
+                <title>The <code>Publish</code> and <code>Property</code> annotations</title>
                 <programlisting>@Target({ TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Publish {
     public Class[] contracts() default {};
-    public String[] properties() default {};
-    public boolean useQualifiersAsProperties() default false;
+    public Property[] properties() default {};
+    public boolean useQualifiersAsProperties() default true;
 }</programlisting>
-                <para>This annotation notice that this type is an OSGi service that may be
-                    automatically published in the OSGi service registry.</para>
+                <para>This annotation notices that this type is an OSGi service implementation and
+                    should be automatically published in the OSGi service registry.</para>
+                <para>It allows to specify:<itemizedlist>
+                        <listitem>
+                            <para>The contract interfaces of implemented service, as an optional
+                                array of <code>Class</code>es,</para>
+                        </listitem>
+                        <listitem>
+                            <para>The properties of the published service implementation, as an
+                                optional array of <code>Property</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>If <code>Qualifier</code>s annotations are considered as
+                                properties or not, as an optional <code>Boolean</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>The published implementation might be discriminated using regular
+                        <code>Qualifer</code> annotations or a LDAP filter with <code>Filter</code>
+                    annotation.</para>
+                <para>
+                    <programlisting>@Retention(RetentionPolicy.RUNTIME)
+public @interface Property {
+    String name();
+    String value();
+}</programlisting>
+                </para>
+                <para>This annotation wraps an OSGi service property used for automatic OSGi service
+                    publishing.</para>
+                <para>It allows to specify:<itemizedlist>
+                        <listitem>
+                            <para>The name of the property, as a required
+                                <code>String</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>The value of the property, as a required
+                                <code>String</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used within the <code>Publish</code> annotation to provide the
+                    published service implementation properties.</para>
             </section>
             <section>
                 <title>The <code>Required</code> annotation</title>
@@ -759,6 +848,8 @@ public @interface Required {
 }</programlisting>
                 <para>This annotation qualifies an injection point that represents a required
                     service.</para>
+                <para>It may be coupled with the <code>OSGiService</code> annotation in order to
+                    qualify a service that must be available for the application to start.</para>
             </section>
             <section>
                 <title>The <code>Filter</code> annotation</title>
@@ -767,7 +858,15 @@ public @interface Required {
 public @interface Filter {
     String value();
 }</programlisting>
-                <para>This annotation qualifies an injection point with an LDAP filter.</para>
+                <para>This annotation qualifies an injection point that represents a LDAP filtered
+                    service.</para>
+                <para>It allows to specify the LDAP filter, as a required
+                    <code>String</code>.</para>
+                <para>It may be coupled with a <code>OSGiService</code> or a <code>Publish</code>
+                    annotation in order to filter the injected or plublished service
+                    implementations. The LDAP filtering is on the service properties,
+                        <code>Qualifier</code> or <code>Property</code> annotations or regular OSGi
+                    properties used in service publishing.</para>
             </section>
             <section>
                 <title>The <code>Specification</code> annotation</title>
@@ -777,8 +876,12 @@ public @interface Filter {
 public @interface Specification {
     Class value();
 }</programlisting>
-                <para>This annotation qualifies an injection point by specifying the expected
-                    specification class.</para>
+                <para>This annotation qualifies an injection point that represents events whose
+                    match one of the specifications.</para>
+                <para>It allows to specify the specification interfaces of the <code>Event</code>s
+                    parametrizing types, as a required <code>Class</code>.</para>
+                <para>It may be used in an <code>Observes</code> method to restrict the listened
+                    events.</para>
             </section>
             <section>
                 <title>The <code>Sent</code> annotation</title>
@@ -787,8 +890,11 @@ public @interface Specification {
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Sent {
 }</programlisting>
-                <para>This annotation qualifies an injection point that represents a incoming inter
-                    bundle communication.</para>
+                <para>This annotation qualifies an injection point that represents an
+                        <code>InterBundleEvent</code> from outside the current bundle.</para>
+                <para>It may be used in an <code>Observes</code> method to restrict the listened
+                        <code>InterBundleEvent</code>. It allows to ignore the
+                        <code>InterBundleEvent</code> from within the current bundle.</para>
             </section>
         </section>
     </section>
