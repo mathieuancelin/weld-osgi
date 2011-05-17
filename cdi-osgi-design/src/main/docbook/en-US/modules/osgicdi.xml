@@ -497,62 +497,32 @@
                     <programlisting>public class InterBundleEvent {
 
     private final Object event;
-
     private boolean sent = false;
-
     private Class&lt;?> type;
 
-    public InterBundleEvent(Object event) {
-        this.event = event;
-    }
+    public InterBundleEvent(Object event) {...}
+    public InterBundleEvent(Object event, Class&lt;?> type) {...}
 
-    public InterBundleEvent(Object event, Class&lt;?> type) {
-        this.event = event;
-        this.type = type;
-    }
-
-    public Class&lt;?> type() {
-        if (type != null) {
-            return type;
-        } else {
-            return event.getClass();
-        }
-    }
-
-    public boolean isTyped(Class&lt;?> type) {
-        if (this.type != null) {
-            return this.type.equals(type);
-        } else {
-            return type.isAssignableFrom(event.getClass());
-        }
-    }
-
-    public &lt;T> Provider&lt;T> typed(Class&lt;T> type) {
-        if (isTyped(type)) {
-            return new Provider&lt;T>() {
-                @Override
-                public T get() {
-                    return (T) event;
-                }
-            };
-        } else {
-            throw new RuntimeException("The event is not of type " + type.getName());
-        }
-    }
-
-    public Object get() {
-        return event;
-    }
-
-    public boolean isSent() {
-        return sent;
-    }
-
-    public void sent() {
-        this.sent = true;
-    }
+    public Class&lt;?> type() {...}
+    public boolean isTyped(Class&lt;?> type) {...}
+    public &lt;T> Provider&lt;T> typed(Class&lt;T> type) {...}
+    public Object get() {...}
+    public boolean isSent() {...}
+    public void sent() {...}
 }</programlisting>
                 </para>
+                <para>This class represents a communication event between bean bundles.</para>
+                <para>It allows to specify: <itemizedlist>
+                        <listitem>
+                            <para>The message as an <code>Object</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>The type of the message as a <code>Class</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>The origin of the message (within or outside the bundle),</para>
+                        </listitem>
+                    </itemizedlist></para>
             </section>
         </section>
         <section>
