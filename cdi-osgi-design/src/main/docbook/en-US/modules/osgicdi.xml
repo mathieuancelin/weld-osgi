@@ -1004,6 +1004,28 @@ END</programlisting>
         </section>
     </section>
     <section>
+        <title>The life of a bean bundle</title>
+        <para>This section presents the lifecycle of a bean bundle and how it impacts CDI and OSGi
+            regular behaviors. Mostly bean bundles follow the same lifecycle than a regular bundle.
+            There are only two new possible states and they do not modify the behavior from OSGi
+            side.</para>
+        <figure>
+            <title>The bean bundle lifecycle</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/Beanbundlestate.png" align="center" format="PNG"
+                        width="800" depth="600"/>
+                </imageobject>
+                <caption>This figure shows the two new states a bean bundle can be in. These states
+                    are triggered by two new events and address the CDI container dependency
+                    resolution (i.e. services annotated @Required).</caption>
+            </mediaobject>
+        </figure>
+        <para>The regular OSGi lifecycle is not modified by the new CDI-OSGi states as they have the
+            same meaning than the ACTIVE state from an OSGi point of view. They only add information
+            about the validation of required service availability.</para>
+    </section>
+    <section>
         <title>How to make a bundle or a bean archive a bean bundle</title>
         <para>There are very few things to do in order to obtain a bean bundle from a bean archive
             or a bundle. Mostly it is just adding the missing marker files and headers in the
