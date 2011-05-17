@@ -327,9 +327,47 @@
                 <para>It provides a way to listen all bundle events in a single method. Allows to
                     retrieve both original event type as a <code>BundleEventType</code> and the
                     firing bundle.</para>
-                <para>The possible event types: <programlisting/></para>
+                <para>The possible event types:
+                    <programlisting>public enum BundleEventType {
+
+    INSTALLED,
+    LAZY_ACTIVATION,
+    RESOLVED,
+    STARTED,
+    STARTING,
+    STOPPED,
+    STOPPING,
+    UNINSTALLED,
+    UNRESOLVED,
+    UPDATED,
+}</programlisting></para>
+                <para>This enumeration list all possible states of a bundle and the corresponding
+                    event types.</para>
                 <para>The implementation classes (in the global event class):
-                    <programlisting/></para>
+                    <programlisting>public class BundleEvents {
+
+    public static class BundleInstalled extends AbstractBundleEvent {
+
+        public BundleInstalled(Bundle bundle) {...}
+
+        @Override
+        public BundleEventType getType() {...}
+    }
+
+    public static class BundleLazyActivation extends AbstractBundleEvent {...}
+    public static class BundleResolved extends AbstractBundleEvent {...}
+    public static class BundleStarted extends AbstractBundleEvent {...}
+    public static class BundleStarting extends AbstractBundleEvent {...}
+    public static class BundleStopped extends AbstractBundleEvent {...}
+    public static class BundleStopping extends AbstractBundleEvent {...}
+    public static class BundleUninstalled extends AbstractBundleEvent {...}
+    public static class BundleUnresolved extends AbstractBundleEvent {...}
+    public static class BundleUpdated extends AbstractBundleEvent {...}
+}</programlisting></para>
+                <para>This class wraps all the bundle events as inner static classes. There is one
+                    event class by <code>BundleEventType</code>.</para>
+                <para>Each inner class represents a specific bundle event and follows the same
+                    behavior described in <code>AbstractBundleEvent</code>.</para>
             </section>
             <section>
                 <title>The service events</title>
@@ -372,9 +410,39 @@
                 <para>It provides a way to listen all service events in a single method. It allows
                     to retrieve both original event type as a <code>BundleEventType</code> and the
                     firing service informations.</para>
-                <para>The possible event types: <programlisting/></para>
+                <para>The possible event types:
+                    <programlisting>public enum ServiceEventType {
+
+    SERVICE_ARRIVAL,
+    SERVICE_DEPARTURE,
+    SERVICE_CHANGED
+}</programlisting></para>
+                <para>This enumeration list all possible states of a service and the corresponding
+                    event types.</para>
                 <para>The implementation classes (in the global event class):
-                    <programlisting/></para>
+                    <programlisting>public class ServiceEvents {
+
+    public static class ServiceArrival extends AbstractServiceEvent {
+
+        public ServiceArrival(
+                ServiceReference ref, BundleContext context) {
+            super(ref, context);
+        }
+
+        @Override
+        public ServiceEventType eventType() {
+            return ServiceEventType.SERVICE_ARRIVAL;
+        }
+    }
+
+    public static class ServiceChanged extends AbstractServiceEvent {...}
+    public static class ServiceDeparture extends AbstractServiceEvent {...}
+
+}</programlisting></para>
+                <para>This class wraps all the service events as inner static classes. There is one
+                    event class by <code>ServiceEventType</code>.</para>
+                <para>Each inner class represents a specific service event and follows the same
+                    behavior described in <code>AbstractServiceEvent</code>.</para>
             </section>
             <section>
                 <title>The bundle container events</title>
@@ -393,9 +461,35 @@
                 <para>It provides a way to listen all bundle container events in a single method. It
                     allows to retrieve both original event type as a
                         <code>BundleContainerEventType</code> and the firing bundle context.</para>
-                <para>The possible event types: <programlisting/></para>
+                <para>The possible event types:
+                    <programlisting>public enum BundleContainerEventType {
+
+    INITIALIZED,
+    SHUTDOWN
+}</programlisting></para>
+                <para>This enumeration list all possible states of a bundle container and the
+                    corresponding event types.</para>
                 <para>The implementation classes (in the global event class):
-                    <programlisting/></para>
+                    <programlisting>public class BundleContainerEvents {
+
+    public static class BundleContainerInitialized extends AbstractBundleContainerEvent {
+
+        public BundleContainerInitialized(BundleContext context) {
+            super(context);
+        }
+
+        @Override
+        public BundleContainerEventType getType() {
+            return BundleContainerEventType.INITIALIZED;
+        }
+    }
+
+    public static class BundleContainerShutdown extends AbstractBundleContainerEvent {...}
+}</programlisting></para>
+                <para>This class wraps all the bundle container events as inner static classes.
+                    There is one event class by <code>BundleContainerEventType</code>.</para>
+                <para>Each inner class represents a specific service event and follows the same
+                    behavior described in <code>AbstractServiceEvent</code>.</para>
             </section>
             <section>
                 <title>The <code>InterBundleEvent</code> event</title>
