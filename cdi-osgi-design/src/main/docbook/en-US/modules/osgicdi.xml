@@ -110,27 +110,6 @@
                 implementation in order to fulfill it. So this bundle might not be unique but exist
                 for each vendor specific CDI implementation (such as Weld).</para>
         </section>
-        <section>
-            <title>CDI-OSGi bundles organization diagram TODO</title>
-            <figure>
-                <title>CDI-OSGI bundles organization</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGicoreorganization.png"
-                            contentwidth="800" align="center"/>
-                    </imageobject>
-                    <caption>This diagram represents the internal organization of CDI-OSGi bundles.
-                        The coupling between the three bundles is represented as well as what is
-                        exposed to bean bundles.</caption>
-                </mediaobject>
-            </figure>
-            <para>The diagram above shows how CDI-OSGi bundles are linked together. The blue part is
-                the core of OSGi and is provided. The red part is a required but interchangeable
-                bundle.</para>
-            <para>All together these three bundle make CDI-OSGi. Then CDI-OSGi functionalities are
-                exposed to bean bundles and an OSGi extension is provided in order to manage these
-                bean bundles.</para>
-        </section>
     </section>
     <section>
         <title>An OSGi extension for CDI support: the extension API</title>
