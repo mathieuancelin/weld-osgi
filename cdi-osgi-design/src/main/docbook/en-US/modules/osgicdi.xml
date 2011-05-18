@@ -86,9 +86,9 @@
             <title>Extension bundle: the puppet master</title>
             <para>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any
                 application that requires CDI-OSGi. It may be just started at the begining of a
-                CDI-OSGi application. It requests the APIs bundle as a dependency.</para>
+                CDI-OSGi application. It requests the extension API bundle as a dependency.</para>
             <para>The extension bundle is the heart of CDI-OSGi application. Once it is started,
-                provided that it finds a started implementation bundle, it manages all the bean
+                provided that it finds a started integration bundle, it manages all the bean
                 bundles. It is in charge of service automatic publishings, service injections, CDI
                 event notifications and bundle communications.</para>
             <para>It runs in background, it just need to be started with the OSGi environment, then
@@ -101,15 +101,17 @@
                 simple.</para>
         </section>
         <section>
-            <title>Implementation bundle: choose a CDI compliant container</title>
-            <para>The implementation bundle is responsible for providing CDI compliant containers to
-                the extension bundle. It may be started with the extension bundle and publish the
-                right service. It request the APIs bundle as a dependency.</para>
-            <para>It is an implementation of the integration API, thus it may provide a CDI
-                container factory service.</para>
+            <title>Integration bundle: choose a CDI compliant container</title>
+            <para>The integration bundle is responsible for providing CDI compliant containers to
+                the extension bundle. It may be started with the extension bundle and publish a CDI
+                container factory service. It request the integration API bundle as a
+                dependency.</para>
+            <para>It is an implementation of the integration API but it can use any CDI
+                implementation in order to fulfill it. So this bundle might not be unique but exist
+                for each vendor specific CDI implementation (such as Weld).</para>
         </section>
         <section>
-            <title>CDI-OSGi bundles organization diagram</title>
+            <title>CDI-OSGi bundles organization diagram TODO</title>
             <figure>
                 <title>CDI-OSGI bundles organization</title>
                 <mediaobject>
@@ -132,12 +134,6 @@
     </section>
     <section>
         <title>An OSGi extension for CDI support: the extension API</title>
-        <section>
-            <title>The extender pattern</title>
-            <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
-                bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
-                CDI utilities are enabled for these bean bundles over OSGi environment.</para>
-        </section>
         <section>
             <title>CDI-OSGi features</title>
             <para>As an extension to OSGi, CDI-OSGi provides several features : <itemizedlist>
@@ -303,10 +299,23 @@
                 container management, service management, bundle management and bundle communication
                 management. They all use CDI event system.</para>
             <para>CDI container events, as well as service and bundle events, are regroupped using
-                three classes. Each category of event has an abstract class representing all the
-                events, an enumeration describing the list of possible event types and a list of
-                implementation class for type. The implementation classes are regroupped as static
-                inner classes of a global category event class.</para>
+                three classes. Thus each category of event has: <itemizedlist>
+                    <listitem>
+                        <para>An abstract class representing all the events of this category,
+                            defining the global comportment and allowing to handle all the lifecycle
+                            steps in one operation,</para>
+                    </listitem>
+                    <listitem>
+                        <para>An enumeration describing the list of possible event types, allowing
+                            to discriminate a particular lifecycle step of the category,</para>
+                    </listitem>
+                    <listitem>
+                        <para>A list of implementation class for each of the above type, allowing to
+                            handle a particular lifecycle step only. These implementation classes
+                            are regroupped as static inner classes of a global category event
+                            class.</para>
+                    </listitem>
+                </itemizedlist></para>
             <section>
                 <title>The bundle events</title>
                 <para>The representing abstract class:
@@ -324,9 +333,20 @@
 }</programlisting></para>
                 <para>This abstract class represents all the CDI-OSGi bundle events as a
                     superclass.</para>
-                <para>It provides a way to listen all bundle events in a single method. Allows to
-                    retrieve both original event type as a <code>BundleEventType</code> and the
-                    firing bundle.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent all bundle events,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retrieve the current event type as a
+                                <code>BundleEventType</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the firing bundle and its information.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen all bundle
+                    events.</para>
                 <para>The possible event types:
                     <programlisting>public enum BundleEventType {
 
@@ -341,7 +361,7 @@
     UNRESOLVED,
     UPDATED,
 }</programlisting></para>
-                <para>This enumeration list all possible states of a bundle and the corresponding
+                <para>This enumeration lists all possible states of a bundle and the corresponding
                     event types.</para>
                 <para>The implementation classes (in the global event class):
                     <programlisting>public class BundleEvents {
@@ -353,7 +373,7 @@
         @Override
         public BundleEventType getType() {...}
     }
-
+    //next classes follow the same template as above
     public static class BundleLazyActivation extends AbstractBundleEvent {...}
     public static class BundleResolved extends AbstractBundleEvent {...}
     public static class BundleStarted extends AbstractBundleEvent {...}
@@ -366,8 +386,17 @@
 }</programlisting></para>
                 <para>This class wraps all the bundle events as inner static classes. There is one
                     event class by <code>BundleEventType</code>.</para>
-                <para>Each inner class represents a specific bundle event and follows the same
-                    behavior described in <code>AbstractBundleEvent</code>.</para>
+                <para>Each inner class allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent a specific bundle event,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the same information as
+                                <code>AbstractBundleEvent</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>They may be used in <code>Observes</code> method in order to listen a specific
+                    bundle event.</para>
             </section>
             <section>
                 <title>The service events</title>
@@ -407,9 +436,28 @@
 }</programlisting></para>
                 <para>This abstract class represents all the CDI-OSGi service events as a
                     superclass.</para>
-                <para>It provides a way to listen all service events in a single method. It allows
-                    to retrieve both original event type as a <code>BundleEventType</code> and the
-                    firing service informations.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent all service events,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retrieve the current event type as a
+                                <code>ServiceEventType</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the affected <code>ServiceReference</code>, the
+                                corresponding information and registering
+                                <code>Bundle</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Manipulate the service,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the firing <code>BundleContext</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen all service
+                    events.</para>
                 <para>The possible event types:
                     <programlisting>public enum ServiceEventType {
 
@@ -417,7 +465,7 @@
     SERVICE_DEPARTURE,
     SERVICE_CHANGED
 }</programlisting></para>
-                <para>This enumeration list all possible states of a service and the corresponding
+                <para>This enumeration lists all possible states of a service and the corresponding
                     event types.</para>
                 <para>The implementation classes (in the global event class):
                     <programlisting>public class ServiceEvents {
@@ -434,15 +482,24 @@
             return ServiceEventType.SERVICE_ARRIVAL;
         }
     }
-
+    //next classes follow the same template as above
     public static class ServiceChanged extends AbstractServiceEvent {...}
     public static class ServiceDeparture extends AbstractServiceEvent {...}
 
 }</programlisting></para>
                 <para>This class wraps all the service events as inner static classes. There is one
                     event class by <code>ServiceEventType</code>.</para>
-                <para>Each inner class represents a specific service event and follows the same
-                    behavior described in <code>AbstractServiceEvent</code>.</para>
+                <para>Each inner class allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent a specific service event,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the same information as
+                                <code>ServiceBundleEvent</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>They may be used in <code>Observes</code> method in order to listen a specific
+                    service event.</para>
             </section>
             <section>
                 <title>The bundle container events</title>
@@ -458,9 +515,20 @@
 }</programlisting></para>
                 <para>This abstract class represents all the CDI-OSGi bundle container events as a
                     superclass.</para>
-                <para>It provides a way to listen all bundle container events in a single method. It
-                    allows to retrieve both original event type as a
-                        <code>BundleContainerEventType</code> and the firing bundle context.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent all bundle container events,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retrieve the current event type as a
+                                    <code>BundleContainerEventType</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the firing <code>BundleContext</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen all bundle
+                    container events.</para>
                 <para>The possible event types:
                     <programlisting>public enum BundleContainerEventType {
 
@@ -483,13 +551,22 @@
             return BundleContainerEventType.INITIALIZED;
         }
     }
-
+    //next class follows the same template as above
     public static class BundleContainerShutdown extends AbstractBundleContainerEvent {...}
 }</programlisting></para>
                 <para>This class wraps all the bundle container events as inner static classes.
                     There is one event class by <code>BundleContainerEventType</code>.</para>
-                <para>Each inner class represents a specific service event and follows the same
-                    behavior described in <code>AbstractServiceEvent</code>.</para>
+                <para>Each inner class allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent a specific bundle container event,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the same information as
+                                    <code>AbstractBundleContainerEvent</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>They may be used in <code>Observes</code> method in order to listen a specific
+                    bundle container event.</para>
             </section>
             <section>
                 <title>The <code>InterBundleEvent</code> event</title>
@@ -520,9 +597,11 @@
                             <para>The type of the message as a <code>Class</code>,</para>
                         </listitem>
                         <listitem>
-                            <para>The origin of the message (within or outside the bundle),</para>
+                            <para>The origin of the message (within or outside the bundle).</para>
                         </listitem>
                     </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen inter-bundle
+                    communications.</para>
             </section>
         </section>
         <section>
@@ -744,7 +823,7 @@ public @interface Sent {
         </section>
     </section>
     <section>
-        <title>A standard bootstrap for CDI container integration: the integration API</title>
+        <title>A standard bootstrap for CDI container integration: the integration API TODO</title>
         <section>
             <title>Why an integration API</title>
             <para>CDI-OSGi could have been carried out with an internal CDI compliant container and
@@ -809,8 +888,14 @@ public @interface Sent {
         </section>
     </section>
     <section>
-        <title>An orchestrator : the extension bundle</title>
+        <title>An orchestrator : the extension bundle TODO</title>
         <para> </para>
+        <section>
+            <title>The extender pattern</title>
+            <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
+                bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
+                CDI utilities are enabled for these bean bundles over OSGi environment.</para>
+        </section>
         <section>
             <title>The extension bundle works that way:</title>
             <para>
@@ -842,7 +927,7 @@ END</programlisting>
         </section>
     </section>
     <section>
-        <title>A interchangeable CDI container factory: the implementation bundle</title>
+        <title>A interchangeable CDI container factory: the implementation bundle TODO</title>
         <para>The implementation bundle is is necessary in a CDI-OSGi application. This section
             explains the part the implementation bundle plays but does not enter in specifics
             because it depends on the CDI vendor implementation used.</para>
