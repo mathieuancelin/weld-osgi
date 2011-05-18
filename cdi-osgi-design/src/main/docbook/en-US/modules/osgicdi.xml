@@ -296,8 +296,8 @@
         <section>
             <title>The events</title>
             <para>Extension API provides numerous events that notify about life-cycle steps for CDI
-                container management, service management, bundle management and bundle communication
-                management. They all use CDI event system.</para>
+                container management, service management, bundle management, bean bundle validation
+                and bundle communication management. They all use CDI event system.</para>
             <para>CDI container events, as well as service and bundle events, are regroupped using
                 three classes. Thus each category of event has: <itemizedlist>
                     <listitem>
@@ -567,6 +567,61 @@
                     </itemizedlist></para>
                 <para>They may be used in <code>Observes</code> method in order to listen a specific
                     bundle container event.</para>
+            </section>
+            <section>
+                <title>The bean bundle validation events</title>
+                <para>Two events notify about the validation of bean bundle. After it starts a bean
+                    bundle should validate its required service dependencies. The <code>Valid</code>
+                    and <code>Invalid</code> events occurs when such dependencies are fulfilled or
+                    unfulfilled.</para>
+                <para>
+                    <programlisting>public class Valid {
+
+    private final Bundle bundle;
+
+    public Valid(Bundle bundle) {...}
+
+    public long getBundleId() {...}
+    public String getSymbolicName() {...}
+    public Version getVersion() {...}
+    public Bundle getBundle() {...}
+}</programlisting>
+                </para>
+                <para>This class represents all bean bundle validation event.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent all bean bundle validation events,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the validated bean bundle and its information.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen all bean
+                    bundle validation events.</para>
+                <para>
+                    <programlisting>public class Invalid {
+
+    private final Bundle bundle;
+
+    public Invalid(Bundle bundle) {...}
+
+    public long getBundleId() {...}
+    public String getSymbolicName() {...}
+    public Version getVersion() {...}
+    public Bundle getBundle() {...}
+}</programlisting>
+                </para>
+                <para>This class represents all bean bundle invalidation event.</para>
+                <para>It allows to:<itemizedlist>
+                        <listitem>
+                            <para>Represent all bean bundle invalidation events,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Retreive the invalidated bean bundle and its information.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>It may be used in <code>Observes</code> method in order to listen all bean
+                    bundle invalidation events.</para>
             </section>
             <section>
                 <title>The <code>InterBundleEvent</code> event</title>
