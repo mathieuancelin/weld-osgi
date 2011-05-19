@@ -880,30 +880,19 @@ public @interface Sent {
                 what may provide the integraton bundle).</para>
             <section>
                 <title>The <code>CDIContainer</code> interface</title>
-                <programlisting>public interface CDIContainer {
+                <programlisting>public interface CDIContainer implements Iterable&lt;CDIContainer> {
 
     boolean initialize();
-
     boolean shutdown();
-
     boolean isStarted();
-
     void fire(InterBundleEvent event);
-
     Bundle getBundle();
-
     BeanManager getBeanManager();
-
     Event getEvent();
-
     Instance&lt;Object> getInstance();
-
     Collection&lt;String> getBeanClasses();
-
     Collection&lt;ServiceRegistration> getRegistrations();
-
     void setRegistrations(Collection&lt;ServiceRegistration> registrations);
-
 }</programlisting>
                 <para/>
             </section>

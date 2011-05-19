@@ -28,7 +28,7 @@
         <section>
             <title>Service, implementation, instance and registration</title>
             <para>First it is important to be clear about what are a service, its implementations,
-                its instances and its registration.</para>
+                its instances and its registrations.</para>
             <para>A service is mostly an interface. This interface defines the contract that
                 describes what the service may do. It might be several way to actually providing the
                 service, thus a service might have multiple implementations.</para>
@@ -57,7 +57,7 @@
 service.doSomething(); </programlisting></para>
                 <para>The behavior is similar with classic CDI injection. <code>@OSGiService</code>
                     is just a special qualifier that allows extension bundle to manage the injection
-                    instead of implementation bundle.</para>
+                    instead of CDI implementation.</para>
             </section>
             <section>
                 <title>Injection using programmatic lookup</title>
@@ -65,7 +65,7 @@ service.doSomething(); </programlisting></para>
                     service implementations and instanciate one at runtime. The interface
                         <code>Service&lt;T></code> works as a service instance producer: it
                     retreives all the coresponding (to the service parametrized type) service
-                    implementations and allows to get an instances for each.</para>
+                    implementations and allows to get an instance for each.</para>
                 <para>Service implementations and a corresponding instance can be obtained like
                     that:
                     <programlisting>@Inject Service&lt;MyService> services;
@@ -75,12 +75,12 @@ services.get().doSomething();</programlisting>All
 for (MyService service : services) {
     service.get().doSomething();
 }</programlisting>The
-                        <code>get()</code> method returns a contextual instance of the
-                    service.</para>
-                <para><code>Service&lt;T></code> extends CDI <code>Instance&lt;T></code> so the
-                    behavior is similar except that the injection process is managed by the
-                    extension bundle instead of implementation bundle. So the available
-                    implementations are searched dynanically into the service registry.</para>
+                        <code>get()</code> method returns an instance of the first available service
+                    implementation.</para>
+                <para><code>Service&lt;T></code> acts like CDI <code>Instance&lt;T></code> except
+                    that the injection process is managed by the extension bundle instead of  CDI
+                    implementation. So the available implementations are searched dynanically into
+                    the service registry.</para>
             </section>
         </section>
         <section>
@@ -98,15 +98,14 @@ public class MyServiceImpl implements MyService {
 }</programlisting>It
                 registers a service <code>MyService</code> with the implementation
                     <code>MyServiceImpl</code>.</para>
-            <para>The behavior is similar with classic CDI bean declaration, except that services
-                are not register into the bean manager but into the service registry like regular
-                service registry.</para>
+            <para>The behavior is similar with classic CDI bean registration, except that services
+                are not register into the bean manager but into the service registry.</para>
         </section>
         <section>
             <title>Clearly specify a service implementation</title>
             <para>There might be multiple implementations of the same service. It is possible to
-                qualify specifities of an implementation in CDI-OSGi. This qualification is
-                available both during publishing and consuming.</para>
+                provide properties to an implementation in CDI-OSGi. This qualification is available
+                both during publishing and consuming.</para>
             <para>There are two ways for qualifying: a CDI like and a OSGi like, both are presented
                 below.</para>
             <section>
@@ -146,7 +145,7 @@ public class MyServiceImpl implements MyService {
     }
 }
 
-@Inject Service&lt;MyService> @Lang(Languages.EN) @Country(Countries.US) service;</programlisting></para>
+@Inject @Lang(Languages.EN) @Country(Countries.US) Service&lt;MyService> service;</programlisting></para>
                 <para>The behavior is similar with classic CDI qualifiers. But there another
                     possibility in order to qualify a service.</para>
             </section>
@@ -244,8 +243,10 @@ public class MyServiceImpl implements MyService {
     }
 }                </programlisting>A
                 new instance is created for every request.</para>
-            <para>If no scope is provided <code>@Dependent</code> is assumed, a new instance will be
-                create for every injection.</para>
+            <para>If no scope is provided <code>Dependent</code> scope is assumed, a new instance
+                will be create for every injection. An instance obtained with regular OSGi
+                mechanisms assumes a <code>ApplicationScoped</code> scope in order to maintain
+                regular OSGi comportment.</para>
         </section>
         <section>
             <title>The registration</title>
@@ -288,27 +289,21 @@ public class MyServiceImpl implements MyService {
         <section>
             <title>Service registry</title>
             <para>CDI-OSGi offers another way to deal with services: the service registry. It can be
-                obtained in any bundle as a regular service, using OSGi or CDI-OSGi ways. The
-                service registry allows developers to dynamically register service implementation,
-                to obtain services and registrations.</para>
+                obtained in any bean bundle as a injected bean. The service registry allows
+                developers to dynamically register service implementation, to obtain services and
+                registrations.</para>
             <section>
                 <title>First get the service registry</title>
-                <para>TODO Is the service registry a bean or a service ? If it is a service it could
-                    use by regular bundle, couldn't it ?</para>
                 <para>First get the service registry:
-                    <programlisting>@Inject @OSGiService ServiceRegistry registry;</programlisting>Or
-                    in regular bundle:
-                    <programlisting>ServiceReference reference = bundleContext.getServiceReference(ServiceRegistry.class.getName());
-ServiceRegistry registry = (ServiceRegistry) bundleContext.getService(reference);</programlisting></para>
+                    <programlisting>@Inject ServiceRegistry registry;</programlisting></para>
             </section>
             <section>
                 <title>Register a service implementation</title>
                 <para>Register a service implementation:
                     <programlisting>registry.registerService(MyService.class,MyServiceImpl.class);</programlisting>
                     or
-                    <programlisting>@Inject MyServiceImpl implementation;
-registry.registerService(MyService.class,implementation);</programlisting>Here
-                    the scope of the service is ??? (Dependent ?)</para>
+                    <programlisting>MyServiceImpl implementation = new MyServiceImpl();
+registry.registerService(MyService.class,implementation);</programlisting></para>
                 <para>It is possible to collect the corresponding registration:
                     <programlisting>Registration&lt;MyService> registeredService = registry.registerService(MyService.class,MyServiceImpl.class);</programlisting></para>
             </section>
@@ -329,35 +324,17 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
             </section>
         </section>
         <section>
-            <title>Distinctions between CDI-OSGi service injection and CDI bean injection</title>
-            <para>All the way it is said that CDI-OSGi service injection is similar with classic CDI
-                bean injection. That is true, but there some important distinctions to make. CDI
-                users will quickly find their bearings in CDI-OSGi and that is the point because CDI
-                way is much simplier that OSGi mechanisms (so CDI-OSGi is also a good thing for
-                newcomers in both CDI and OSGi worlds! ).</para>
-            <para>The main difference is about the dynamism of OSGi services. While a bean injection
-                point should be satisfy at the start of the CDI container, service injection may be
-                satisfy only at runtime.</para>
-            <para>So what ? TODO Ambigous and unsatisfied dependency managment and other stuffs that
-                vary from classic CDI.</para>
-            <section>
-                <title>The <code>OSGiServiceUnavailableException</code> exception </title>
-                <para>Because OSGi service are dynamic they might be unavailable at the time they
-                    should be used. On a service call if the targeted service isn't available a
-                    specific runtime exception is raised:
-                    <programlisting>public class OSGiServiceUnavailableException extends RuntimeException {}</programlisting></para>
-            </section>
-            <section>
-                <title>And everything else ?</title>
-                <para>If it is not indicated otherwise assume that the comportment is the same as
-                    CDI or OSGi without CDI-OSGi.</para>
-            </section>
+            <title>The <code>OSGiServiceUnavailableException</code> exception</title>
+            <para>Because OSGi service are dynamic they might be unavailable at the time they should
+                be used. On a service call if the targeted service isn't available a specific
+                runtime exception is raised:
+                <programlisting>public class OSGiServiceUnavailableException extends RuntimeException {}</programlisting></para>
         </section>
     </section>
     <section>
         <title>CDI-OSGi events</title>
         <para>CDI-OSGi makes heavy usage of CDI events. These events allow CDI-OSGi to do its work.
-            Events are important for the running of CDI-OSGi itself but they can also be use by
+            Events are important for the running of CDI-OSGi itself but they can also be used by
             client bean bundles to perform some operations or overide some normal CDI-OSGi
             behavior.</para>
         <para>This section shows the numerous events provided by CDI-OSGi and the ways to use
@@ -416,125 +393,17 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
 }</programlisting></para>
             </section>
             <section>
-                <title>When a bundle is installed: <code>BundleInstalled</code> event</title>
-                <para>An event is fired every time a bundle is install in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
+                <title>Listen a specific bundle event</title>
+                <para>Rather than listen all bundle events and then filter the intended, it is
+                    possible to choose the listened bundle event.</para>
+                <para>Here the way to listen a specific bundle
                     event:<programlisting>public void bindBundle(@Observes BundleInstalled event) {
     Bundle bundle = event.getBundle();
     long id = event.getBundleId();
     String symbolicName = event.getSymbolicName();
     Version version = event.getVersion();
 }</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is uninstalled: <code>BundleUninstalled</code> event</title>
-                <para>An event is fired every time a bundle is uninstall from the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void unbindBundle(@Observes BundleUninstalled event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is lazy activated: <code>BundleLazyActivation</code>
-                    event</title>
-                <para>An event is fired every time a bundle is lazy activated in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void lazyInitBundle(@Observes BundleLazyActivation event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is resolved: <code>BundleResolved</code> event</title>
-                <para>An event is fired every time a bundle is resolved in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void resolveBundle(@Observes BundleResolved event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is unresolved: <code>BundleUnresolved</code> event</title>
-                <para>An event is fired every time a bundle is unresolved in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void unresolveBundle(@Observes BundleUnresolved event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is updated: <code>BundleUpdated</code> event</title>
-                <para>An event is fired every time a bundle is updated in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void updateBundle(@Observes BundleUpdated event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is started: <code>BundleStarted</code> event</title>
-                <para>An event is fired every time a bundle is started in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void startBundle(@Observes BundleStarted event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is starting: <code>BundleStrating</code> event</title>
-                <para>An event is fired every time a bundle is starting in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void startingBundle(@Observes BundleStarting event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is stopped: <code>BundleStopped</code> event</title>
-                <para>An event is fired every time a bundle is stopped in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void stopBundle(@Observes BundleStopped event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a bundle is stopping: <code>BundleStopping</code> event</title>
-                <para>An event is fired every time a bundle is stopping in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void stoppingBundle(@Observes BundleStopping event) {
-    Bunde bundle = event.getBundle();
-    long id = event.getBundleId();
-    String symbolicName = event.getSymbolicName();
-    Version version = event.getVersion();
-}</programlisting></para>
+                <para>All other bundle events could be listened the same way.</para>
             </section>
             <section>
                 <title>Filtering bundle events: <code>BundleName</code> and
@@ -577,33 +446,14 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
             </section>
             <section>
                 <title>When a service is published: <code>ServiceArrival</code> event</title>
-                <para>An event is fired every time a service is published in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void bindService(@Observes ServiceArrival event) {
+                <para>Rather than listen all service events and then filter the intended, it is
+                    possible to choose the listened service event.</para>
+                <para>Here the way to listen a specific service event:</para>
+                <para><programlisting>public void bindService(@Observes ServiceArrival event) {
     ServiceReference serviceReference = event.getRef();
     Bundle registeringBundle = event.getRegisteringBundle();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a service is unpublished: <code>ServiceDeparture</code> event</title>
-                <para>An event is fired every time a service is unpublished in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void unbindService(@Observes ServiceDeparture event) {
-    ServiceReference serviceReference = event.getRef();
-    Bundle registeringBundle = event.getRegisteringBundle();
-}</programlisting></para>
-            </section>
-            <section>
-                <title>When a service is changed: <code>ServiceChange</code> event</title>
-                <para>An event is fired every time a service is changed in the OSGi
-                    environment.</para>
-                <para>Here the way to listen this
-                    event:<programlisting>public void changeService(@Observes ServiceChange event) {
-    ServiceReference serviceReference = event.getRef();
-    Bundle registeringBundle = event.getRegisteringBundle();
-}</programlisting></para>
+}</programlisting>All
+                    other bundle events could be listened the same way.</para>
             </section>
             <section>
                 <title>Filtering service events: <code>Specification</code> and <code>Filter</code>
