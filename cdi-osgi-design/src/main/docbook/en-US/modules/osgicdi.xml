@@ -151,10 +151,9 @@
                 <title>The <code>Service</code> interface</title>
                 <programlisting>public interface Service&lt;T> extends Iterable&lt;T> {
 
-    T get();
+    T get();    
     Service&lt;T> select(Annotation... qualifiers);
-    &lt;U extends T> Service&lt;U> select(Class&lt;U> subtype, Annotation... qualifiers);
-    &lt;U extends T> Service&lt;U> select(TypeLiteral&lt;U> subtype, Annotation... qualifiers);
+    Service&lt;T> select(String filter);
     boolean isUnsatisfied();
     boolean isAmbiguous();
     int size();
@@ -179,7 +178,7 @@
                                 implementations,</para>
                         </listitem>
                         <listitem>
-                            <para>Obtain utility informations about the contained service
+                            <para>Obtain utility information about the contained service
                                 implementations.</para>
                         </listitem>
                     </itemizedlist></para>
@@ -197,9 +196,8 @@
 }
             </programlisting>
                 <para>This interface represents the registrations of an injectable service in the
-                    service resgistry. Its behavior is similar to <code>Service&lt;T></code>, thus
-                    it might represent the iterable set of all the registrations of a
-                    service.</para>
+                    service registry. Its behavior is similar to <code>Service&lt;T></code>, thus it
+                    might represent the iterable set of all the registrations of a service.</para>
                 <para>It allows to:<itemizedlist>
                         <listitem>
                             <para>Wrap a list of service registration (i.e. the bindings between a
@@ -208,7 +206,7 @@
                         </listitem>
                         <listitem>
                             <para>Select a subset of these registration filtered by
-                                    <code>Qualfier</code>s or LDAP filters,</para>
+                                    <code>Qualifier</code>s or LDAP filters,</para>
                         </listitem>
                         <listitem>
                             <para>Iterate through these service registrations,</para>
@@ -218,7 +216,7 @@
                                     <code>Service&lt;T></code>,</para>
                         </listitem>
                         <listitem>
-                            <para>Get the number of registration (i.e the number of registered
+                            <para>Get the number of registrations (i.e the number of registered
                                 service implementations).</para>
                         </listitem>
                     </itemizedlist></para>
@@ -321,7 +319,7 @@
                                 <code>BundleEventType</code>,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the firing bundle and its information.</para>
+                            <para>Retrieve the firing bundle and its information.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all bundle
@@ -370,7 +368,7 @@
                             <para>Represent a specific bundle event,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the same information as
+                            <para>Retrieve the same information as
                                 <code>AbstractBundleEvent</code>.</para>
                         </listitem>
                     </itemizedlist></para>
@@ -424,7 +422,7 @@
                                 <code>ServiceEventType</code>,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the affected <code>ServiceReference</code>, the
+                            <para>Retrieve the affected <code>ServiceReference</code>, the
                                 corresponding information and registering
                                 <code>Bundle</code>,</para>
                         </listitem>
@@ -473,8 +471,8 @@
                             <para>Represent a specific service event,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the same information as
-                                <code>ServiceBundleEvent</code>.</para>
+                            <para>Retrieve the same information as
+                                <code>AbstractServiceEvent</code>.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>They may be used in <code>Observes</code> method in order to listen a specific
@@ -503,7 +501,7 @@
                                     <code>BundleContainerEventType</code>,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the firing <code>BundleContext</code>.</para>
+                            <para>Retrieve the firing <code>BundleContext</code>.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all bundle
@@ -540,7 +538,7 @@
                             <para>Represent a specific bundle container event,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the same information as
+                            <para>Retrieve the same information as
                                     <code>AbstractBundleContainerEvent</code>.</para>
                         </listitem>
                     </itemizedlist></para>
@@ -573,7 +571,7 @@
                             <para>Represent all bean bundle validation events,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the validated bean bundle and its information.</para>
+                            <para>Retrieve the validated bean bundle and its information.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all bean
@@ -597,7 +595,7 @@
                             <para>Represent all bean bundle invalidation events,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the invalidated bean bundle and its information.</para>
+                            <para>Retrieve the invalidated bean bundle and its information.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all bean
@@ -607,9 +605,9 @@
 }</programlisting>
                 <para>This enumeration lists the two new states of a bean bundle.</para>
                 <para>A bean bundle is in <code>VALID</code> state if all its required service
-                    dependencies are validated otherwise is in <code>INVALID</code> state. Everytime
-                    a bean bundle goes from one state to another a corresponding <code>Valid</code>
-                    or <code>Invalid</code> event may be fired.</para>
+                    dependencies are validated otherwise is in <code>INVALID</code> state. Every
+                    time a bean bundle goes from one state to another a corresponding
+                        <code>Valid</code> or <code>Invalid</code> event may be fired.</para>
             </section>
             <section>
                 <title>The <code>InterBundleEvent</code> event</title>
