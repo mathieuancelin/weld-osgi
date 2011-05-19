@@ -552,7 +552,8 @@
                 <para>Two events notify about the validation of bean bundle. After it starts a bean
                     bundle should validate its required service dependencies. The <code>Valid</code>
                     and <code>Invalid</code> events occurs when such dependencies are fulfilled or
-                    unfulfilled.</para>
+                    unfulfilled. These two new states are described in an enumaration:
+                        <code>BundleState</code>.</para>
                 <para>
                     <programlisting>public class Valid {
 
@@ -601,6 +602,14 @@
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all bean
                     bundle invalidation events.</para>
+                <programlisting>public enum BundleState {
+    VALID, INVALID
+}</programlisting>
+                <para>This enumeration lists the two new states of a bean bundle.</para>
+                <para>A bean bundle is in <code>VALID</code> state if all its required service
+                    dependencies are validated otherwise is in <code>INVALID</code> state. Everytime
+                    a bean bundle goes from one state to another a corresponding <code>Valid</code>
+                    or <code>Invalid</code> event may be fired.</para>
             </section>
             <section>
                 <title>The <code>InterBundleEvent</code> event</title>
@@ -746,7 +755,8 @@ public @interface OSGiService {
                 <para>It may be use to obtain an injected OSGi service using <code>Service</code>
                     interface or directly the service contract interface. The injected service might
                     be filtered using regular <code>Qualifer</code> annotations or a LDAP filter
-                    with <code>Filter</code> annotation.</para>
+                    with <code>Filter</code> annotation. It also might be mark as required for
+                    bundle running using <code>Required</code> annotation.</para>
             </section>
             <section>
                 <title>The <code>Publish</code> and <code>Property</code> annotations</title>
@@ -769,7 +779,7 @@ public @interface Publish {
                                 optional array of <code>Property</code>,</para>
                         </listitem>
                         <listitem>
-                            <para>If <code>Qualifier</code>s annotations are considered as
+                            <para>If <code>Qualifier</code> annotations are considered as
                                 properties or not, as an optional <code>Boolean</code>.</para>
                         </listitem>
                     </itemizedlist></para>
@@ -821,10 +831,9 @@ public @interface Filter {
                 <para>It allows to specify the LDAP filter, as a required
                     <code>String</code>.</para>
                 <para>It may be coupled with a <code>OSGiService</code> or a <code>Publish</code>
-                    annotation in order to filter the injected or plublished service
-                    implementations. The LDAP filtering is on the service properties,
-                        <code>Qualifier</code> or <code>Property</code> annotations or regular OSGi
-                    properties used in service publishing.</para>
+                    annotation in order to filter the injected or published service implementations.
+                    The LDAP filtering acts on <code>Qualifier</code> or <code>Property</code>
+                    annotations or regular OSGi properties used in service publishing.</para>
             </section>
             <section>
                 <title>The <code>Specification</code> annotation</title>
@@ -849,7 +858,8 @@ public @interface Specification {
 public @interface Sent {
 }</programlisting>
                 <para>This annotation qualifies an injection point that represents an
-                        <code>InterBundleEvent</code> from outside the current bundle.</para>
+                        <code>InterBundleEvent</code> from outside the current
+                    <code>Bundle</code>.</para>
                 <para>It may be used in an <code>Observes</code> method to restrict the listened
                         <code>InterBundleEvent</code>. It allows to ignore the
                         <code>InterBundleEvent</code> from within the current bundle.</para>
@@ -857,7 +867,7 @@ public @interface Sent {
         </section>
     </section>
     <section>
-        <title>A standard bootstrap for CDI container integration: the integration API TODO</title>
+        <title>A standard bootstrap for CDI container integration: the integration API</title>
         <section>
             <title>Why an integration API</title>
             <para>CDI-OSGi could have been carried out with an internal CDI compliant container and
@@ -865,26 +875,39 @@ public @interface Sent {
                 no other specific utilities or CDI evolution could have been added without a
                 complete modification of CDI-OSGi.</para>
             <para>Then there is the integration API. With that, developers are able to provide their
-                own implementation bundle. Thus it is possible to use any CDI compliant container
-                with a CDI-OSGi application or mix up different CDI compliant containers for
-                different bundles.</para>
-            <para>Integration API describe what needs the extension bundle to work (and therefore
-                what may provide the implementation bundle) and what provides the extension bundle
-                (and therefore what should use the implementation bundle).</para>
+                own integration bundle. Thus it is possible to use any CDI compliant container with
+                a CDI-OSGi application or mix up different CDI compliant containers for different
+                bundles.</para>
+            <para>Integration API describes what needs the extension bundle to work (and therefore
+                what may provide the integraton bundle).</para>
             <section>
-                <title>The <code>BundleContainer</code> and <code>BundleContainers</code>
-                    interfaces</title>
-                <programlisting>public interface BundleContainer {
+                <title>The <code>CDIContainer</code> interface</title>
+                <programlisting>public interface CDIContainer {
+
+    boolean initialize();
+
+    boolean shutdown();
+
+    boolean isStarted();
+
     void fire(InterBundleEvent event);
+
+    Bundle getBundle();
+
+    BeanManager getBeanManager();
+
+    Event getEvent();
+
+    Instance&lt;Object> getInstance();
+
+    Collection&lt;String> getBeanClasses();
+
+    Collection&lt;ServiceRegistration> getRegistrations();
+
+    void setRegistrations(Collection&lt;ServiceRegistration> registrations);
+
 }</programlisting>
-                <programlisting>public interface BundleContainers {
-    Collection&lt;BundleContainer> getContainers();
-}</programlisting>
-                <para>These interfaces represent the CDI compliant containers used by bean bundle.
-                    Such container may be accessible in the OSGi application to provide an event
-                    notification system.</para>
-                <para>Multiple containers can be manipulated by the <code>BundleContainers</code>
-                    interface.</para>
+                <para/>
             </section>
             <section>
                 <title>The <code>BundleContainerFactory</code> interface</title>
