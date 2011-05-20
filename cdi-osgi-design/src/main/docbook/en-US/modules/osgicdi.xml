@@ -877,10 +877,17 @@ public @interface Sent {
                 a CDI-OSGi application or mix up different CDI compliant containers for different
                 bundles.</para>
             <para>Integration API describes what needs the extension bundle to work (and therefore
-                what may provide the integraton bundle).</para>
+                what may provide the integraton bundle): <itemizedlist>
+                    <listitem>
+                        <para>A CDI container with standard comportment and functionalities,</para>
+                    </listitem>
+                    <listitem>
+                        <para>A factory for such CDI containers initialized and ready to run.</para>
+                    </listitem>
+                </itemizedlist></para>
             <section>
                 <title>The <code>CDIContainer</code> interface</title>
-                <programlisting>public interface CDIContainer implements Iterable&lt;CDIContainer> {
+                <programlisting>public interface CDIContainer extends  Iterable&lt;CDIContainer> {
 
     boolean initialize();
     boolean shutdown();
@@ -893,27 +900,63 @@ public @interface Sent {
     Collection&lt;String> getBeanClasses();
     Collection&lt;ServiceRegistration> getRegistrations();
     void setRegistrations(Collection&lt;ServiceRegistration> registrations);
+    CDIContainer select(Bundle bundle);
+    CDIContainer select(String name, String version);
+    int size();
 }</programlisting>
-                <para/>
+                <para>This interface represents an iterable list of CDI containers used by
+                    CDI-OSGi.</para>
+                <para>It allows to: <itemizedlist>
+                        <listitem>
+                            <para>Navigate through the list of CDI containers as an
+                                    <code>Iterable</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the number of CDI containers,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Select a specific container by its bundle,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Start and stop the selected CDI container,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the state of the selected CDI container,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the corresponding <code>Bundle</code>,
+                                    <code>BeanManager</code>, <code>Event</code>, managed bean
+                                    <code>Class</code> and <code>Instance</code> and registred
+                                service as <code>ServiceRegistration</code>,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Fire <code>InterBundleEvent</code>.</para>
+                        </listitem>
+                    </itemizedlist></para>
             </section>
             <section>
-                <title>The <code>BundleContainerFactory</code> interface</title>
-                <programlisting>public interface BundleContainerFactory {
+                <title>The <code>CDIContainerFactory</code> interface</title>
+                <programlisting>public interface CDIContainerFactory {
 
-    Class&lt;? extends BundleContainerFactory> delegateClass();
     String getID();
-    Set&lt;String> getContractBlacklist()
-    BundleContainer container(Bundle bundle);
+    Set&lt;String> getContractBlacklist();
+    CDIContainer container(Bundle bundle);
 }</programlisting>
-                <para>This the how the extension bundle require a CDI compliant container from the
-                    implementation bundle. This latter should publish an OSGi service that complies
-                    with this interface.</para>
+                <para>This interface represents a CDI container factory used by CDI-OSGi in order to
+                    obtain <code>CDIContainer</code>.</para>
+                <para>It allows to: <itemizedlist>
+                        <listitem>
+                            <para>Obtain the CDI container of a specific bean <code>Bundle</code>
+                                (singleton for each bean bundle),</para>
+                        </listitem>
+                        <listitem>
+                            <para>Provide a interface black list for service publishing,</para>
+                        </listitem>
+                        <listitem>
+                            <para>Obtain the ID of the used CDI implementation.</para>
+                        </listitem>
+                    </itemizedlist></para>
             </section>
-        </section>
-        <section>
-            <title>Embedded mode</title>
-            <para>TODO How does it work ? Should we provide something ? Should business bundles use
-                the integration API ? A template activator ?</para>
         </section>
         <section>
             <title>Integration bundle discovery and CDI-OSGi start</title>
