@@ -4,8 +4,8 @@
         <title>API bundles, extension bundle and integration bundle</title>
         <para>CDI-OSGi is composed of five bundles: <itemizedlist>
                 <listitem>
-                    <para>The API bundles that provides the API used to define both utilities
-                        provided and hooking up system with implementation bundle,</para>
+                    <para>The three API bundles that provide the API used to define both utilities
+                        provided and hooking up system with integration bundle,</para>
                 </listitem>
                 <listitem>
                     <para>The extension bundle that provides CDI-OSGi features for bean bundles by
@@ -22,8 +22,8 @@
         <section>
             <title>Extension API, integration API and CDI API</title>
             <para>Three API bundles expose all packages that could be needed by developers; both for
-                client application using CDI-OSGi and for CDI compliant container integration. They
-                may be use as a dependency for bean bundles, extension bundle and implementation
+                client applications using CDI-OSGi and for CDI compliant container integration.
+                Their packages may be imported by bean bundles, extension bundle or implementation
                 bundle.</para>
             <para>These three distinct API are: <itemizedlist>
                     <listitem>
@@ -31,8 +31,8 @@
                             CDI-OSGi in the OSGi environment.</para>
                     </listitem>
                     <listitem>
-                        <para>The integration API that allows CDI compliant container to be used
-                            with CDI-OSGi.</para>
+                        <para>The integration API that describes how CDI compliant containers may be
+                            used by CDI-OSGi.</para>
                     </listitem>
                     <listitem>
                         <para>The CDI API that describes all the regular CDI features provided by
@@ -43,13 +43,13 @@
             <section>
                 <title>Extension API</title>
                 <para>The extension API defines all the features provided to OSGi environment using
-                    CDI specification. It exposes all the new utilities and defines the comportment
+                    CDI specifications. It exposes all the new utilities and defines the comportment
                     of the extension bundle.</para>
                 <para>It exposes all the interfaces, events and annotations usable by a developers
                     in order to develop its client bean bundles. It defines the programming model of
-                    CDI-OSGi client bundle. Mostly it is about publishing and consuming injectable
-                    services in a CDI way.</para>
-                <para>It also describes the object the extension bundle needs to orchestrate bean
+                    CDI-OSGi client bean bundles. Mostly it is about publishing and consuming
+                    injectable services in a CDI way.</para>
+                <para>It also describes what the extension bundle needs to orchestrate bean
                     bundles.</para>
                 <para>So this is where to search for new usages of OSGi.</para>
             </section>
@@ -58,19 +58,18 @@
                 <para>The integration API defines how a CDI container, such as Weld, should
                     bootstrap with the CDI OSGi extension. So any CDI environment implementation
                     could use the CDI OSGi extension transparently. The CDI compliant container may
-                    be provided using an implementation bundle.</para>
+                    be provided using an integration bundle.</para>
                 <para>This aims at providing the minimum integration in order to start a CDI
                     compliant container with every managed bean bundle. Then the extension bundle
-                    can get a CDI container to provide to every one of its manages bean
-                    bundle.</para>
-                <para>Moreover the integration API allows to mix CDI compliant container in the same
+                    can get a CDI container for each of its managed bean bundles.</para>
+                <para>Moreover the integration API allows to mix CDI implementations in the same
                     application by providing an embedded mode. In this mode a bean bundle is
                     decoupled from the extension bundle and is managed on its own. Thus various
-                    implementations of CDI container can be used or the behavior of a particular
+                    implementations of CDI container can be used and the behavior of a particular
                     bean bundle can be particularized.</para>
-                <para>All this bootstrapping mechanism works using the service layer of OSGi. A CDI
-                    compliant implementation bundle may provide a service that allows the extension
-                    bundle to obtain a new container for every bean bundle.</para>
+                <para>All this bootstrapping mechanism works using the service layer of OSGi. An
+                    integration bundle may provide a service that allows the extension bundle to
+                    obtain a new container for every bean bundle.</para>
                 <para>So this is where to search to make CDI-OSGi use a specific CDI compliant
                     container.</para>
             </section>
@@ -85,18 +84,17 @@
         <section>
             <title>Extension bundle: the puppet master</title>
             <para>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any
-                application that requires CDI-OSGi. It may be just started at the begining of a
-                CDI-OSGi application. It requests the extension API bundle as a dependency.</para>
+                application that requires CDI-OSGi. It may be just started with OSGi environment. It
+                requests the extension API bundle as a dependency.</para>
             <para>The extension bundle is the heart of CDI-OSGi application. Once it is started,
                 provided that it finds a started integration bundle, it manages all the bean
                 bundles. It is in charge of service automatic publishings, service injections, CDI
-                event notifications and bundle communications.</para>
-            <para>It runs in background, it just need to be started with the OSGi environment, then
-                everything is transparent to the user. Client bean bundles do not have to do
-                anything in order to use CDI-OSGi functionality.</para>
-            <para>In order to perform injections the extension bundle search for a CDI compliant
-                container service provider once it is started. Thus it can only work coupled with a
-                bundle providing such a service: an implementation bundle.</para>
+                event notifications and bundle communications. It runs in background, everything is
+                transparent to the user. Client bean bundles do not have to do anything in order to
+                use CDI-OSGi functionality.</para>
+            <para>In order to perform injections the extension bundle search for a CDI container
+                factory service once it is started. Thus it can only work coupled with a bundle
+                providing such a service: an integration bundle.</para>
             <para>So this is where the magic happens and where OSGi applications become much more
                 simple.</para>
         </section>
@@ -104,7 +102,7 @@
             <title>Integration bundle: choose a CDI compliant container</title>
             <para>The integration bundle is responsible for providing CDI compliant containers to
                 the extension bundle. It may be started with the extension bundle and publish a CDI
-                container factory service. It request the integration API bundle as a
+                container factory service. It requests the integration API bundle as a
                 dependency.</para>
             <para>It is an implementation of the integration API but it can use any CDI
                 implementation in order to fulfill it. So this bundle might not be unique but exist
@@ -275,7 +273,7 @@
             <para>Extension API provides numerous events that notify about life-cycle steps for CDI
                 container management, service management, bundle management, bean bundle validation
                 and bundle communication management. They all use CDI event system.</para>
-            <para>CDI container events, as well as service and bundle events, are regroupped using
+            <para>CDI container events, as well as service and bundle events, are regrouped using
                 three classes. Thus each category of event has: <itemizedlist>
                     <listitem>
                         <para>An abstract class representing all the events of this category,
@@ -289,7 +287,7 @@
                     <listitem>
                         <para>A list of implementation class for each of the above type, allowing to
                             handle a particular lifecycle step only. These implementation classes
-                            are regroupped as static inner classes of a global category event
+                            are regrouped as static inner classes of a global category event
                             class.</para>
                     </listitem>
                 </itemizedlist></para>
@@ -430,7 +428,7 @@
                             <para>Manipulate the service,</para>
                         </listitem>
                         <listitem>
-                            <para>Retreive the firing <code>BundleContext</code>.</para>
+                            <para>Retrieve the firing <code>BundleContext</code>.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>It may be used in <code>Observes</code> method in order to listen all service
@@ -487,8 +485,8 @@
 
     public AbstractBundleContainerEvent(final BundleContext context) {...}
 
-    public BundleContext getBundleContext() {...}
     public abstract BundleContainerEventType getType();
+    public BundleContext getBundleContext() {...}
 }</programlisting></para>
                 <para>This abstract class represents all the CDI-OSGi bundle container events as a
                     superclass.</para>
@@ -550,7 +548,7 @@
                 <para>Two events notify about the validation of bean bundle. After it starts a bean
                     bundle should validate its required service dependencies. The <code>Valid</code>
                     and <code>Invalid</code> events occurs when such dependencies are fulfilled or
-                    unfulfilled. These two new states are described in an enumaration:
+                    unfulfilled. These two new states are described in an enumeration:
                         <code>BundleState</code>.</para>
                 <para>
                     <programlisting>public class Valid {
@@ -752,7 +750,7 @@ public @interface OSGiService {
                     the OSGi service registry.</para>
                 <para>It may be use to obtain an injected OSGi service using <code>Service</code>
                     interface or directly the service contract interface. The injected service might
-                    be filtered using regular <code>Qualifer</code> annotations or a LDAP filter
+                    be filtered using regular <code>Qualifier</code> annotations or a LDAP filter
                     with <code>Filter</code> annotation. It also might be mark as required for
                     bundle running using <code>Required</code> annotation.</para>
             </section>
@@ -763,7 +761,6 @@ public @interface OSGiService {
 public @interface Publish {
     public Class[] contracts() default {};
     public Property[] properties() default {};
-    public boolean useQualifiersAsProperties() default true;
 }</programlisting>
                 <para>This annotation notices that this type is an OSGi service implementation and
                     should be automatically published in the OSGi service registry.</para>
@@ -774,15 +771,11 @@ public @interface Publish {
                         </listitem>
                         <listitem>
                             <para>The properties of the published service implementation, as an
-                                optional array of <code>Property</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>If <code>Qualifier</code> annotations are considered as
-                                properties or not, as an optional <code>Boolean</code>.</para>
+                                optional array of <code>Property</code>.</para>
                         </listitem>
                     </itemizedlist></para>
                 <para>The published implementation might be discriminated using regular
-                        <code>Qualifer</code> annotations or a LDAP filter with <code>Filter</code>
+                        <code>Qualifier</code> annotations or a LDAP filter with <code>Filter</code>
                     annotation.</para>
                 <para>
                     <programlisting>@Retention(RetentionPolicy.RUNTIME)
@@ -877,9 +870,9 @@ public @interface Sent {
                 a CDI-OSGi application or mix up different CDI compliant containers for different
                 bundles.</para>
             <para>Integration API describes what needs the extension bundle to work (and therefore
-                what may provide the integraton bundle): <itemizedlist>
+                what may provide the integration bundle): <itemizedlist>
                     <listitem>
-                        <para>A CDI container with standard comportment and functionalities,</para>
+                        <para>A CDI container with standard comportment and functionality,</para>
                     </listitem>
                     <listitem>
                         <para>A factory for such CDI containers initialized and ready to run.</para>
@@ -973,10 +966,13 @@ public @interface Sent {
                 </mediaobject>
             </figure>
         </section>
+        <section>
+            <title>Embedded mode</title>
+            <para>//TODO</para>
+        </section>
     </section>
     <section>
-        <title>An orchestrator : the extension bundle TODO</title>
-        <para> </para>
+        <title>An orchestrator: the extension bundle</title>
         <section>
             <title>The extender pattern</title>
             <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
@@ -1014,10 +1010,10 @@ END</programlisting>
         </section>
     </section>
     <section>
-        <title>A interchangeable CDI container factory: the implementation bundle TODO</title>
-        <para>The implementation bundle is is necessary in a CDI-OSGi application. This section
-            explains the part the implementation bundle plays but does not enter in specifics
-            because it depends on the CDI vendor implementation used.</para>
+        <title>A interchangeable CDI container factory: the integration bundle</title>
+        <para>The integration bundle is necessary in a CDI-OSGi application. This section explains
+            the part the integration bundle plays but does not enter in specifics because it depends
+            on the CDI implementation used.</para>
         <para>Weld-OSGi chapter presents how an implementation bundle can work.</para>
         <section>
             <title>A implementation bundle may work that way:</title>

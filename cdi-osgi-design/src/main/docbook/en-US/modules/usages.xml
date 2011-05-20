@@ -2,7 +2,7 @@
     <title id="usages">How to make OSGi easy peasy</title>
     <section>
         <title>CDI usage in bean bundles</title>
-        <para>Everything possible in CDI application is possible in bean bundle. They can take
+        <para>Everything possible in CDI applications is possible in bean bundle. They can take
             advantage of injection, producers, interceptors, decorators and alternative. But
             influence boundary of the CDI compliant container stay within the bean bundle for
             classic CDI usages. So external dependencies cannot be injected and interceptor,
@@ -62,9 +62,9 @@ service.doSomething(); </programlisting></para>
             <section>
                 <title>Injection using programmatic lookup</title>
                 <para>Instead of obtain directly a service instance it is possible to choose between
-                    service implementations and instanciate one at runtime. The interface
+                    service implementations and instantiate one at runtime. The interface
                         <code>Service&lt;T></code> works as a service instance producer: it
-                    retreives all the coresponding (to the service parametrized type) service
+                    retrieves all the corresponding (to the service parametrized type) service
                     implementations and allows to get an instance for each.</para>
                 <para>Service implementations and a corresponding instance can be obtained like
                     that:
@@ -79,7 +79,7 @@ for (MyService service : services) {
                     implementation.</para>
                 <para><code>Service&lt;T></code> acts like CDI <code>Instance&lt;T></code> except
                     that the injection process is managed by the extension bundle instead of  CDI
-                    implementation. So the available implementations are searched dynanically into
+                    implementation. So the available implementations are searched dynamically into
                     the service registry.</para>
             </section>
         </section>
@@ -100,6 +100,22 @@ public class MyServiceImpl implements MyService {
                     <code>MyServiceImpl</code>.</para>
             <para>The behavior is similar with classic CDI bean registration, except that services
                 are not register into the bean manager but into the service registry.</para>
+            <para>It is possible to specify the contracts interface that this specific
+                implementation fulfill using the <code>Publish</code> annotation.</para>
+            <para>
+                <programlisting>@Publish(contracts = {MyService.class, MyOtherService.class})
+public class MyServiceImpl {
+
+    public void doSomething() {
+    }
+}</programlisting>
+            </para>
+            <para>If no contract list are provided, the implementation will match each of its
+                interface types. Every CDI container of a bean bundle might have a blacklist that
+                excludes some interface from being register as a service type. See the specific
+                integration bundle doccumentation to obtain the used blacklist. This blacklist is
+                only used when no interface array is provided within the <code>Publish</code>
+                annotation.</para>
         </section>
         <section>
             <title>Clearly specify a service implementation</title>
@@ -135,8 +151,8 @@ qualifiedService.doSomething();</programlisting>or
 service.get().doSomething();</programlisting></para>
                 <para>The qualifiers should be seen as the service properties. Here another example:
                     <programlisting>@Publish
-@Lang(Languages.EN)
-@Country(Countries.US)
+@Lang(EN)
+@Country(US)
 @ApplicationScoped
 public class MyServiceImpl implements MyService {
 
@@ -145,7 +161,7 @@ public class MyServiceImpl implements MyService {
     }
 }
 
-@Inject @Lang(Languages.EN) @Country(Countries.US) Service&lt;MyService> service;</programlisting></para>
+@Inject @Lang(EN) @Country(US) Service&lt;MyService> service;</programlisting></para>
                 <para>The behavior is similar with classic CDI qualifiers. But there another
                     possibility in order to qualify a service.</para>
             </section>
@@ -176,37 +192,49 @@ public class MyServiceImpl implements MyService {
             </section>
             <section>
                 <title>Links between qualifier annotations and LDAP filtering</title>
-                <para>TODO Is @AnyQualifier similar with @Property(name="anyqualifier", value="") ?
-                    And is @Property(name="anyqualifier", value="anyValue") similar with
-                    @AnyQualifier("anyValue") ? To any qualifier correspond a generated filter
-                    ?</para>
-                <para>Consider this code, will it work ? (it'll be cool!
-                    )<programlisting>@Publish
-@Lang(Languages.EN)
-@Country(Countries.US)
+                <para>A service implementation has properties. These properties can be added by both
+                        <code>Qualifier</code> annotations and <code>Property</code> annotations of
+                    a <code>Filter</code> annotation. Therefore there is a link between
+                        <code>Qualifier</code> and LDAP filter used in <code>Filter</code>
+                    annotation as <code>Property</code>.</para>
+                <para>A property is a couple of <code>String</code>, the first entry is the name of
+                    the property, the second the value. This scheme is clear in the
+                        <code>Property</code> annotation. For <code>Qualifier</code> the property
+                    name is the decapitalized <code>Qualifier</code> class name and the property
+                    value is the <code>value</code> of the <code>Qualifier</code> (empty
+                        <code>String</code> is assumed if <code>value</code> does not exist).</para>
+                <para>
+                    <programlisting>@Publish
+@Lang(EN)
+@Country(US)
 @ApplicationScoped
 public class MyServiceImpl implements MyService {
-
-    @Override
-    public void doSomething() {
-    }
 }
 
-@Inject @Filter("(&amp;(lang=*)(country=US))") Service&lt;MyService> service;</programlisting></para>
-                <para>And this
-                    ?<programlisting>@Publish({
+@Inject @Filter("(&amp;(lang=EN)(country=US))") Service&lt;MyService> service;</programlisting>
+                </para>
+                <para>
+                    <programlisting>@Publish({
     @Property(name="lang", value="EN"),
     @Property(name="country", value="US")
 })
 @ApplicationScoped
 public class MyServiceImpl implements MyService {
-
-    @Override
-    public void doSomething() {
-    }
 }
 
-@Inject @Lang(Languages.EN) @Country(Countries.US) Service&lt;MyService> service;</programlisting></para>
+@Inject @Lang(EN) @Country(US) Service&lt;MyService> service;</programlisting>
+                </para>
+                <para>It is even possible to mix up <code>Qualifier</code> and
+                    <code>Property</code>:
+                    <programlisting>@Publish({
+    @Property(name="lang", value="EN"),
+})
+@Country(US)
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+}
+
+@Inject @Filter("lang=EN") @Country(US) Service&lt;MyService> service;</programlisting></para>
             </section>
             <section>
                 <title>Filtering after injection</title>
@@ -253,7 +281,7 @@ public class MyServiceImpl implements MyService {
             <para>A registration object represent all the bindings between a service contract class
                 and its OSGi <code>ServiceRegistration</code>s. With this object it is possible to
                 navigate through multiple implementations of the same service, obtain the
-                coresponding <code>Service&lt;T></code> or unregister these implementations.</para>
+                corresponding <code>Service&lt;T></code> or unregister these implementations.</para>
             <section>
                 <title>registration injection</title>
                 <para>A registration is obtained like
@@ -282,7 +310,7 @@ public class MyServiceImpl implements MyService {
                 <title>Registration usages</title>
                 <para>A registration allows to obtain service
                     implementations:<programlisting>Service&lt;T> myServiceImplementations = registrations.getServiceReference();</programlisting>And
-                    it allows to enregister service
+                    it allows to unregister service
                     implementations:<programlisting>registrations.unregister();</programlisting></para>
             </section>
         </section>
@@ -335,7 +363,7 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
         <title>CDI-OSGi events</title>
         <para>CDI-OSGi makes heavy usage of CDI events. These events allow CDI-OSGi to do its work.
             Events are important for the running of CDI-OSGi itself but they can also be used by
-            client bean bundles to perform some operations or overide some normal CDI-OSGi
+            client bean bundles to perform some operations or override some normal CDI-OSGi
             behavior.</para>
         <para>This section shows the numerous events provided by CDI-OSGi and the ways to use
             them.</para>
@@ -427,9 +455,9 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
             <para>Three events might be fired during a service lifecycle. They represent the
                 possible states of a service and monitor the changes occurred in service lifecycles.
                 These events carry the <code>BundleContext</code> object from where the event comes
-                and the <code>ServiceReference</code> object corespondign to the service so
+                and the <code>ServiceReference</code> object corresponding to the service so
                 developers can retrieve useful information (such as the registering bundle) and
-                acces useful actions (such as register or enregister services).</para>
+                acces useful actions (such as register or unregister services).</para>
             <section>
                 <title>Listen all service events: <code>AbstractServiceEvent</code> event</title>
                 <para>CDI-OSGi provides a way to listen all service events in a single method: the
@@ -459,7 +487,7 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
                 <title>Filtering service events: <code>Specification</code> and <code>Filter</code>
                     annotations</title>
                 <para>It is possible to filter the listened events depending on the services that
-                    are concerned. This filter might cover the service specificaton class or it
+                    are concerned. This filter might cover the service specification class or it
                     might be a LDAP filter.</para>
                 <para>Here the way to filter service events on the specification
                     class:<programlisting>public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {
@@ -477,7 +505,7 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
             <para>Some bean bundle might declare required dependencies on services (using the
                     <code>Required</code> annotation). CDI-OSGi fired events when these required
                 dependencies are all validated or when at least one is invalidated. It allows
-                application to be automatically started or stoped.</para>
+                application to be automatically started or stopped.</para>
             <section>
                 <title>When all dependencies are validated: <code>Valid</code> event</title>
                 <para>An event is fired every time all the required dependencies are
@@ -504,7 +532,7 @@ Registration&lt;MyService> myFrenchRegistrations = registry.getRegistrations(MyS
                 <title>Firing a bundle communication event: <code>InterBundleEvent</code>
                     event</title>
                 <para>An <code>InterBundleEvent</code> is a message containing a object and
-                    transmited using CDI event.</para>
+                    transmitted using CDI event.</para>
                 <para>Here the way to fire such an
                     event:<programlisting>@Inject Event&lt;InterBundleEvent> event;
 MyMessage myMessage = new MyMessage();
@@ -570,34 +598,63 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
             <title>Getting service references and instances</title>
             <para>How to obtain a service available implementations list ?</para>
             <para>In
-                CDI-OSGI:<programlisting>@Inject Service&lt;MyService> references;</programlisting>versus
+                CDI-OSGI:<programlisting><emphasis role="bold">@Inject</emphasis> Service&lt;MyService> references;</programlisting>versus
                 in classic OSGi:
-                <programlisting>ServiceReference references = bundleContext.getServiceReferences(MyService.class.getName());</programlisting></para>
+                <programlisting>ServiceReference references = <emphasis role="bold">bundleContext.getServiceReferences(MyService.class.getName());</emphasis>
+//Current BundleContext must be known</programlisting></para>
             <para>How to obtain a service instance ?</para>
             <para>In
-                CDI-OSGi:<programlisting>@Inject @OSGiService MyService service;</programlisting>versus
+                CDI-OSGi:<programlisting><emphasis role="bold">@Inject @OSGiService</emphasis> MyService service;</programlisting>versus
                 in classic
-                OSGi:<programlisting>ServiceReference reference = bundleContext.getServiceReference(MyService.class.getName());
-MyService service = (MyService) bundleContext.getService(reference);</programlisting></para>
+                OSGi:<programlisting><emphasis role="bold">ServiceReference reference = bundleContext.getServiceReference(MyService.class.getName());</emphasis>
+MyService service = <emphasis role="bold">(MyService) bundleContext.getService(reference);</emphasis>
+//Current BundleContext must be known</programlisting></para>
         </section>
         <section>
-            <title>Obtaining the current bundle context and bundle</title>
-            <para>How to obtain the current bundle context ?</para>
+            <title>Publishing a service implementation</title>
+            <para>How to publish a new service implementation ?</para>
+            <para>In CDI-OSGi:
+                <programlisting><emphasis role="bold">@Publish</emphasis>
+public class MyServiceImpl implements MyService {
+
+    @Override
+    void doSomething() {...}
+}</programlisting>versus
+                in classic OSGi:
+                <programlisting>public class MyServiceImpl implements MyService {
+
+    @Override
+    void doSomething() {...}
+}
+
+<emphasis role="bold">{ //in another class
+    ServiceRegistration registration = bundleContext.registerService(MyService.class, new MyServiceImpl(), null);
+}</emphasis>
+//Current BundleContext must be known</programlisting></para>
+        </section>
+        <section>
+            <title>Obtaining the <code>Bundle</code>s and <code>BundleContext</code>s</title>
+            <para>How to obtain the current <code>Bundle</code> ?</para>
             <para>In
-                CDI-OSGi:<programlisting>@Inject BundleContext bundleContext;</programlisting>versus
+                CDI-OSGi:<programlisting><emphasis role="bold">@Inject</emphasis> Bundle currentBundle;</programlisting>versus
                 in classic
-                OSGi:<programlisting>//the bundle context mush have been saved in the activator class. Impossible to get for a bundle with no activator ???</programlisting></para>
-            <para>How to obtain the current bundle ?</para>
-            <para>In CDI-OSGi:<programlisting>@Inject Bundle currentBundle;</programlisting>versus
+                OSGi:<programlisting>Bundle currentBundle = <emphasis role="bold">FrameworkUtil.getBundle(this.getClass());</emphasis></programlisting></para>
+            <para>How to obtain the current <code>BundleContext</code> ?</para>
+            <para>In
+                CDI-OSGi:<programlisting><emphasis role="bold">@Inject</emphasis> BundleContext bundleContext;</programlisting>versus
                 in classic
-                OSGi:<programlisting>//assuming that the bundleContext is known, impossible if not ???
-ServiceReference reference = bundleContext.getServiceReference(PackageAdmin.class.getName());
-PackageAdmin packageAdmin = bundleContext.getService(reference);
-Bundle currentBundle = packageAdmin.getBundle(this);</programlisting></para>
-        </section>
-        <section>
-            <title>TODO other example</title>
-            <para>TODO</para>
+                OSGi:<programlisting>BundleContext bundleContext = <emphasis role="bold">FrameworkUtil.getBundle(this.getClass()).getBundleContext();</emphasis></programlisting></para>
+            <para>How to obtain a specified <code>Bundle</code> and <code>BundleContext</code>
+                ?</para>
+            <para>In CDI-OSGi:
+                <programlisting><emphasis role="bold">@Inject @BundleNamer("symbolicName") @BundleVersion("version")</emphasis> Bundle specifiedBundle;
+<emphasis role="bold">@Inject @BundleNamer("symbolicName") @BundleVersion("version")</emphasis> BundleContext specifiedBundleContext;</programlisting>versus
+                in classic
+                OSGi:<programlisting><emphasis role="bold">ServiceReference reference = bundleContext.getServiceReference(PackageAdmin.class.getName());
+PackageAdmin packageAdmin = bundleContext.getService(reference);</emphasis>
+Bundle specifiedBundle = <emphasis role="bold">packageAdmin.getBundles("symbolicName","version")[0];</emphasis>
+BundleContext specifiedBundleContext = <emphasis role="bold">specifiedBundle.getBundleContext();</emphasis>
+//Current BundleContext must be known</programlisting></para>
         </section>
     </section>
 </chapter>
