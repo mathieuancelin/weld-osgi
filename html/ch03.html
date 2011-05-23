@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 3. How to make OSGi easy peasy</title><link rel="stylesheet" href="css/seamframework.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="CDI OSGi integration"/><link rel="up" href="index.html" title="CDI OSGi integration"/><link rel="prev" href="ch02.html" title="Chapter 2. Organization of CDI-OSGi"/><link rel="next" href="ch04.html" title="Chapter 4. Weld-OSGi implementation"/></head><body><p id="title"><a href="http://www.seamframework.org" class="site_href"><strong>SeamFramework.org</strong></a><a href="http://www.seamframework.org/Documentation" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="ch02.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="ch04.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e757"/>Chapter 3. How to make OSGi easy peasy</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="ch03.html#d0e760">3.1. CDI usage in bean bundles</a></span></dt><dt><span class="section"><a href="ch03.html#d0e767">3.2. Injecting easiness in OSGi world</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#d0e780">3.2.1. Service, implementation, instance and registration</a></span></dt><dt><span class="section"><a href="ch03.html#d0e793">3.2.2. OSGi services injection</a></span></dt><dt><span class="section"><a href="ch03.html#d0e844">3.2.3. OSGi service automatic publishing with @Publish annotation </a></span></dt><dt><span class="section"><a href="ch03.html#d0e865">3.2.4. Clearly specify a service implementation</a></span></dt><dt><span class="section"><a href="ch03.html#d0e967">3.2.5. Contextual services</a></span></dt><dt><span class="section"><a href="ch03.html#d0e985">3.2.6. The registration</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1037">3.2.7. Service registry</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1083">3.2.8. Distinctions between CDI-OSGi service injection and CDI bean injection</a></span></dt></dl></dd><dt><span class="section"><a href="ch03.html#d0e1107">3.3. CDI-OSGi events</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#d0e1114">3.3.1. CDI container lifecycle events</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1160">3.3.2. Bundle lifecycle events</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1330">3.3.3. Service lifecyle events</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1419">3.3.4. Application dependency validation events</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1451">3.3.5. Intra and inter bundles communication events</a></span></dt></dl></dd><dt><span class="section"><a href="ch03.html#d0e1506">3.4. OSGi utilities</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#d0e1511">3.4.1. From the current bundle</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1533">3.4.2. From external bundle</a></span></dt></dl></dd><dt><span class="section"><a href="ch03.html#d0e1550">3.5. CDI-OSGi, what else ?</a></span></dt><dd><dl><dt><span class="section"><a href="ch03.html#d0e1555">3.5.1. Getting service references and instances</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1576">3.5.2. Obtaining the current bundle context and bundle</a></span></dt><dt><span class="section"><a href="ch03.html#d0e1597">3.5.3. TODO other example</a></span></dt></dl></dd></dl></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e760"/>3.1. CDI usage in bean bundles</h2></div></div></div><p>Everything possible in CDI application is possible in bean bundle. They can take
+            advantage of injection, producers, interceptors, decorators and alternative. But
+            influence boundary of the CDI compliant container stay within the bean bundle for
+            classic CDI usages. So external dependencies cannot be injected and interceptor,
+            decorator or alternative of another bean bundle cannot be used (yet interceptors,
+            decorators and alternatives still need to be declares in the bean bundle bean.xml file). </p><p>That is all we will say about classic CDI usages, please report to CDI documentation
+            for more information.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e767"/>3.2. Injecting easiness in OSGi world</h2></div></div></div><p>CDI-OSGi provides more functionality using CDI in a OSGi environment.</p><p>It mainly focuses on the OSGi service layer. It addresses the difficulties in
+            publishing and consuming services. CDI-OSGi allows developers to publish and consume
+            OSGi services as CDI beans. However, since OSGi services are dynamic there are some
+            differences with classic bean injection. This section presents how OSGi services can be
+            published and consumed using CDI-OSGi.</p><p>CDI-OSGi also provides utilities for event notification and communication in and
+            between bundles as well as some general OSGi utilities.</p><p>Examples use this very sophisticated service interface:
+            </p><pre class="programlisting">public interface MyService {
+    void doSomething();
+}</pre><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e780"/>3.2.1. Service, implementation, instance and registration</h3></div></div></div><p>First it is important to be clear about what are a service, its implementations,
+                its instances and its registration.</p><p>A service is mostly an interface. This interface defines the contract that
+                describes what the service may do. It might be several way to actually providing the
+                service, thus a service might have multiple implementations.</p><p>A service implementation is a class that implements this service. It is what is
+                available to other components that use the service. To use the service the component
+                obtain an instance of the implementation.</p><p>A service instance is an instance of one of the service implementations. It is
+                what the user manipulates to perform the service.</p><p>A registration is the object that represents a service registered with a
+                particular implementation. Then this implementation can be searched and its
+                instances can be obtained. Every time a service implementation his register a
+                corresponding registration object is created.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e793"/>3.2.2. OSGi services injection</h3></div></div></div><p> There are two ways to obtain a service instances using CDI-OSGi: direct injection
+                and programmatic lookup.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e798"/>3.2.2.1. Direct injection using <code class="code">@OSGiService</code> annotation </h4></div></div></div><p>The main way to perform an OSGi injection is to use the <code class="code">@Inject
+                        @OSGiService</code> annotation combination. It acts like a common injection
+                    except that CDI-OSGi will search for injectable instances in the service
+                    registry.</p><p>That is how it looks like:
+                    </p><pre class="programlisting">@Inject @OSGiService MyService service;
+service.doSomething(); </pre><p>The behavior is similar with classic CDI injection. <code class="code">@OSGiService</code>
+                    is just a special qualifier that allows extension bundle to manage the injection
+                    instead of implementation bundle.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e818"/>3.2.2.2. Injection using programmatic lookup</h4></div></div></div><p>Instead of obtain directly a service instance it is possible to choose between
+                    service implementations and instanciate one at runtime. The interface
+                        <code class="code">Service&lt;T&gt;</code> works as a service instance producer: it
+                    retreives all the coresponding (to the service parametrized type) service
+                    implementations and allows to get an instances for each.</p><p>Service implementations and a corresponding instance can be obtained like
+                    that:
+                    </p><pre class="programlisting">@Inject Service&lt;MyService&gt; services;
+services.get().doSomething();</pre><p>All
+                    implementations can also be iterated like that:
+                    </p><pre class="programlisting">@Inject Service&lt;MyService&gt; services;
+for (MyService service : services) {
+    service.get().doSomething();
+}</pre><p>The
+                        <code class="code">get()</code> method returns a contextual instance of the
+                    service.</p><p><code class="code">Service&lt;T&gt;</code> extends CDI <code class="code">Instance&lt;T&gt;</code> so the
+                    behavior is similar except that the injection process is managed by the
+                    extension bundle instead of implementation bundle. So the available
+                    implementations are searched dynanically into the service registry.</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e844"/>3.2.3. OSGi service automatic publishing with <code class="code">@Publish</code> annotation </h3></div></div></div><p>CDI-OSGi allows developers to automatically publish service implementation. There
+                is nothing to do, just put the annotation. OSGi framework is completely hidden. Then
+                the service is accessible through CDI-OSGi service injection and OSGi classic
+                mechanisms.</p><p>Automatically publish a new service implementation:
+                </p><pre class="programlisting">@Publish
+public class MyServiceImpl implements MyService {
+    @Override
+    public void doSomething() {
+    }
+}</pre><p>It
+                registers a service <code class="code">MyService</code> with the implementation
+                    <code class="code">MyServiceImpl</code>.</p><p>The behavior is similar with classic CDI bean declaration, except that services
+                are not register into the bean manager but into the service registry like regular
+                service registry.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e865"/>3.2.4. Clearly specify a service implementation</h3></div></div></div><p>There might be multiple implementations of the same service. It is possible to
+                qualify specifities of an implementation in CDI-OSGi. This qualification is
+                available both during publishing and consuming.</p><p>There are two ways for qualifying: a CDI like and a OSGi like, both are presented
+                below.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e872"/>3.2.4.1. Using <code class="code">@Qualifier</code> annotations</h4></div></div></div><p>Qualifiers are used like in classic CDI applications. An implementation can be
+                    qualified by as many qualifiers as needed. An injection point can be also
+                    qualified in order to restraint the potential injected implementations. It is
+                    finally possible to select the instance produced when using the
+                        <code class="code">Service&lt;T&gt;</code> interface.</p><p>Qualified service publishing:
+                    </p><pre class="programlisting">
+@Publish
+@AnyQualifier
+public class MyServiceQualifiedImpl implements MyService {
+
+    @Override
+    public void doSomething() {
+    }
+}                </pre><p>Qualified
+                    injection point:
+                    </p><pre class="programlisting">
+@Inject @OSGiService @AnyQualifier MyService qualifiedService; 
+qualifiedService.doSomething();</pre><p>or
+                    with <code class="code">Service&lt;T&gt;</code>
+                    </p><pre class="programlisting">
+@Inject @AnyQualifier Service&lt;MyService&gt; service;
+service.get().doSomething();</pre><p>The qualifiers should be seen as the service properties. Here another example:
+                    </p><pre class="programlisting">@Publish
+@Lang(Languages.EN)
+@Country(Countries.US)
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+
+    @Override
+    public void doSomething() {
+    }
+}
+
+@Inject Service&lt;MyService&gt; @Lang(Languages.EN) @Country(Countries.US) service;</pre><p>The behavior is similar with classic CDI qualifiers. But there another
+                    possibility in order to qualify a service.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e902"/>3.2.4.2. Filtering services</h4></div></div></div><p>Since CDI-OSGi services stay OSGi services they can be filtered through LDAP
+                    filter. Properties might be added at publishing using the <code class="code">Publish</code>
+                    annotation values. Then an LDAP filter can be use at injection point using the
+                        <code class="code">Filter</code> annotation. </p><p>An example is worth a thousand words:
+                    </p><pre class="programlisting">@Publish({
+    @Property(name="lang", value="EN"),
+    @Property(name="country", value="US")
+})
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+
+    @Override
+    public void doSomething() {
+    }
+}</pre><p>As
+                    many <code class="code">@Property</code> annotation as wanted can be added, they are
+                    registered with the service implementation.</p><p>Then it is possible to filter an injection point with the <code class="code">Filter</code>
+                    annotation like a regular LDAP filter:
+                    </p><pre class="programlisting">@Inject @Filter("(&amp;(lang=*)(country=US))") Service&lt;MyService&gt; service;</pre><p>or</p><pre class="programlisting">@Inject @Filter("(&amp;(lang=*)(country=US))") MyService service;</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e931"/>3.2.4.3. Links between qualifier annotations and LDAP filtering</h4></div></div></div><p>TODO Is @AnyQualifier similar with @Property(name="anyqualifier", value="") ?
+                    And is @Property(name="anyqualifier", value="anyValue") similar with
+                    @AnyQualifier("anyValue") ? To any qualifier correspond a generated filter
+                    ?</p><p>Consider this code, will it work ? (it'll be cool!
+                    )</p><pre class="programlisting">@Publish
+@Lang(Languages.EN)
+@Country(Countries.US)
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+
+    @Override
+    public void doSomething() {
+    }
+}
+
+@Inject @Filter("(&amp;(lang=*)(country=US))") Service&lt;MyService&gt; service;</pre><p>And this
+                    ?</p><pre class="programlisting">@Publish({
+    @Property(name="lang", value="EN"),
+    @Property(name="country", value="US")
+})
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+
+    @Override
+    public void doSomething() {
+    }
+}
+
+@Inject @Lang(Languages.EN) @Country(Countries.US) Service&lt;MyService&gt; service;</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e944"/>3.2.4.4. Filtering after injection</h4></div></div></div><p>It is possible to do a programmatic filtering after injection using
+                        <code class="code">Service&lt;T&gt;</code> like with
+                    <code class="code">Instance&lt;T&gt;</code>:</p><pre class="programlisting">@Inject Service&lt;MyService&gt; services;
+services.select(new AnnotationLiteral&lt;AnyQualifier&gt;() {}).get().deSomething();</pre><p>or</p><pre class="programlisting">@Inject Service&lt;MyService&gt; services;
+services.select("(&amp;(lang=*)(country=US))").get().deSomething();</pre><p>However OSGi service may not be subtyped, thus it is not possible to use
+                        <code class="code">select()</code> methods with a specified subclass like with
+                        <code class="code">Instance&lt;T&gt;</code></p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e967"/>3.2.5. Contextual services</h3></div></div></div><p>Like for bean instances, service instances are contextual. Every implementation is
+                bounded to a particular scope. Provided that an satisfactory implementation is
+                available, a service injection will return a contextual instance of the
+                implementation.</p><p>All CDI scopes are available for CDI-OSGi services and their use is the same:
+                </p><pre class="programlisting">@Publish
+@ApplicationScoped
+public class MyServiceImpl implements MyService {
+    @Override
+    public void doSomething() {
+    }
+}</pre><p>A
+                instance will be shared by the entire
+                application.</p><pre class="programlisting">@Publish
+@RequestScoped
+public class MyServiceImpl implements MyService {
+    @Override
+    public void doSomething() {
+    }
+}                </pre><p>A
+                new instance is created for every request.</p><p>If no scope is provided <code class="code">@Dependent</code> is assumed, a new instance will be
+                create for every injection.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e985"/>3.2.6. The registration</h3></div></div></div><p>A registration object represent all the bindings between a service contract class
+                and its OSGi <code class="code">ServiceRegistration</code>s. With this object it is possible to
+                navigate through multiple implementations of the same service, obtain the
+                coresponding <code class="code">Service&lt;T&gt;</code> or unregister these implementations.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e996"/>3.2.6.1. registration injection</h4></div></div></div><p>A registration is obtained like
+                    that:</p><pre class="programlisting">@Inject Registration&lt;MyService&gt; registrations;</pre><p>The
+                    injection point can be filtered using
+                    qualifiers:</p><pre class="programlisting">@Inject @AnyQualifier Registration&lt;MyService&gt; qualifiedRegistrations;</pre><p>or
+                    using LDAP
+                    filter:</p><pre class="programlisting">@Inject @Filter("(&amp;(lang=EN)(country=US))") Registration&lt;MyService&gt; qualifiedRegistrations;</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1009"/>3.2.6.2. Navigate into registrations and filter them</h4></div></div></div><p>It is possible to iterate through
+                    registration:</p><pre class="programlisting">if(registrations.size() &gt; 0) {
+    for(Registration&lt;T&gt; registration : registrations) {
+    }
+}</pre><p>It is also possible to request a subset of the service implementations using
+                    qualifiers:</p><pre class="programlisting">Registration&lt;T&gt; filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier&gt;() {});</pre><p>or
+                    a LDAP
+                    filter:</p><pre class="programlisting">Registration&lt;T&gt; filteredRegistrations = registrations.select("(&amp;(lang=EN)(country=US))");</pre><p>or
+                    both:</p><pre class="programlisting">Registration&lt;T&gt; filteredRegistrations = registrations.select(new AnnotationLiteral&lt;AnyQualifier&gt;() {}).select("(&amp;(lang=EN)(country=US))");</pre><p>Link
+                    between qualifier and LDAP filter as well as subtyped service selection are
+                    explain above in service injection section.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1027"/>3.2.6.3. Registration usages</h4></div></div></div><p>A registration allows to obtain service
+                    implementations:</p><pre class="programlisting">Service&lt;T&gt; myServiceImplementations = registrations.getServiceReference();</pre><p>And
+                    it allows to enregister service
+                    implementations:</p><pre class="programlisting">registrations.unregister();</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1037"/>3.2.7. Service registry</h3></div></div></div><p>CDI-OSGi offers another way to deal with services: the service registry. It can be
+                obtained in any bundle as a regular service, using OSGi or CDI-OSGi ways. The
+                service registry allows developers to dynamically register service implementation,
+                to obtain services and registrations.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1042"/>3.2.7.1. First get the service registry</h4></div></div></div><p>TODO Is the service registry a bean or a service ? If it is a service it could
+                    use by regular bundle, couldn't it ?</p><p>First get the service registry:
+                    </p><pre class="programlisting">@Inject @OSGiService ServiceRegistry registry;</pre><p>Or
+                    in regular bundle:
+                    </p><pre class="programlisting">ServiceReference reference = bundleContext.getServiceReference(ServiceRegistry.class.getName());
+ServiceRegistry registry = (ServiceRegistry) bundleContext.getService(reference);</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1054"/>3.2.7.2. Register a service implementation</h4></div></div></div><p>Register a service implementation:
+                    </p><pre class="programlisting">registry.registerService(MyService.class,MyServiceImpl.class);</pre><p>
+                    or
+                    </p><pre class="programlisting">@Inject MyServiceImpl implementation;
+registry.registerService(MyService.class,implementation);</pre><p>Here
+                    the scope of the service is ??? (Dependent ?)</p><p>It is possible to collect the corresponding registration:
+                    </p><pre class="programlisting">Registration&lt;MyService&gt; registeredService = registry.registerService(MyService.class,MyServiceImpl.class);</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1069"/>3.2.7.3. Obtain a service implementations</h4></div></div></div><p>Obtain a service implementations:
+                    </p><pre class="programlisting">Service&lt;MyService&gt; services = registry.getServiceReference(MyService.class);
+for (MyService service : services) {
+    service.doSomething();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1076"/>3.2.7.4. Obtain registrations</h4></div></div></div><p>Obtain all registrations of a filtered or not filtered specified service:
+                    </p><pre class="programlisting">Registration&lt;?&gt; registrations = registry.getRegistrations();
+Registration&lt;MyService&gt; myRegistrations = registry.getRegistrations(MyService.class);
+Registration&lt;MyService&gt; myFrenchRegistrations = registry.getRegistrations(MyService.class,"(lang=FR)");     </pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1083"/>3.2.8. Distinctions between CDI-OSGi service injection and CDI bean injection</h3></div></div></div><p>All the way it is said that CDI-OSGi service injection is similar with classic CDI
+                bean injection. That is true, but there some important distinctions to make. CDI
+                users will quickly find their bearings in CDI-OSGi and that is the point because CDI
+                way is much simplier that OSGi mechanisms (so CDI-OSGi is also a good thing for
+                newcomers in both CDI and OSGi worlds! ).</p><p>The main difference is about the dynamism of OSGi services. While a bean injection
+                point should be satisfy at the start of the CDI container, service injection may be
+                satisfy only at runtime.</p><p>So what ? TODO Ambigous and unsatisfied dependency managment and other stuffs that
+                vary from classic CDI.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1092"/>3.2.8.1. The <code class="code">OSGiServiceUnavailableException</code> exception </h4></div></div></div><p>Because OSGi service are dynamic they might be unavailable at the time they
+                    should be used. On a service call if the targeted service isn't available a
+                    specific runtime exception is raised:
+                    </p><pre class="programlisting">public class OSGiServiceUnavailableException extends RuntimeException {}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1102"/>3.2.8.2. And everything else ?</h4></div></div></div><p>If it is not indicated otherwise assume that the comportment is the same as
+                    CDI or OSGi without CDI-OSGi.</p></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e1107"/>3.3. CDI-OSGi events</h2></div></div></div><p>CDI-OSGi makes heavy usage of CDI events. These events allow CDI-OSGi to do its work.
+            Events are important for the running of CDI-OSGi itself but they can also be use by
+            client bean bundles to perform some operations or overide some normal CDI-OSGi
+            behavior.</p><p>This section shows the numerous events provided by CDI-OSGi and the ways to use
+            them.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1114"/>3.3.1. CDI container lifecycle events</h3></div></div></div><p>Two events inform about the state of the CDI container of every bean bundle:
+                    <code class="code">BundleContainerInitialized</code> and <code class="code">BundleContainerShutdown</code>
+                events.</p><p>The <code class="code">BundleContext</code> from where the event comes is sent with these
+                events so developers can retrieve useful information (such as the bundle owning the
+                CDI container).</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1130"/>3.3.1.1. When the container is started: <code class="code">BundleContainerInitialized</code>
+                    event</h4></div></div></div><p>The <code class="code">BundleContainerInitialized</code> event is fired every time a CDI
+                    container is initialized in a bean bundle. It point out that the CDI container
+                    is ready to manage the bean bundle with the CDI-OSGi features.</p><p>Here the way to listen this event:
+                    </p><pre class="programlisting">public void onStartup(@Observes BundleContainerInitialized event) {
+    BundleContext bundleContext = event.getBundleContext();
+    Bundle firingBundle = bundleContext.getBundle();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1145"/>3.3.1.2. When the container is stopped: <code class="code">BundleContainerShutdown</code>
+                    event</h4></div></div></div><p>The <code class="code">BundleContainerShutdown</code> event is fired every time a CDI
+                    container is stopped in a bean bundle. It point out that the CDI container wil
+                    not manage the bean bundle with CDI-OSGi anymore.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void onShutdown(@Observes BundleContainerShutdown event) {
+    BundleContext bundleContext = event.getBundleContext();
+    Bundle firingBundle = bundleContext.getBundle();
+}</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1160"/>3.3.2. Bundle lifecycle events</h3></div></div></div><p>Ten events might be fired during a bundle lifecycle. They represent the possible
+                states of a bundle and monitor the changes occurred in bundle lifecycles. These
+                events carry the <code class="code">Bundle</code> object from where the event comes so developers
+                can retrieve useful information (such as the bundle id).</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1168"/>3.3.2.1. Listen all bundle events: <code class="code">AbstractBundleEvent</code> event</h4></div></div></div><p>CDI-OSGi provides a way to listen all bundle events in a single method: the
+                        <code class="code">AbstractBundleEvent</code> abstract class. Every bundle lifecycle
+                    event is an <code class="code">AbstractBundleEvent</code> and a method allows to retrieve the
+                    actual fired bundle event. All bundle states are listed in the
+                        <code class="code">BundleEventType</code> enumeration. Then this event can be used as the
+                    corresponding bundle event.</p><p>Here the way to listen all bundle events and to retrieve the corresponding
+                    bundle
+                    state:</p><pre class="programlisting">public void bundleChanged(@Observes AbstractBundleEvent event) {
+    BundleEventType event.getType();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1189"/>3.3.2.2. When a bundle is installed: <code class="code">BundleInstalled</code> event</h4></div></div></div><p>An event is fired every time a bundle is install in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void bindBundle(@Observes BundleInstalled event) {
+    Bundle bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1201"/>3.3.2.3. When a bundle is uninstalled: <code class="code">BundleUninstalled</code> event</h4></div></div></div><p>An event is fired every time a bundle is uninstall from the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void unbindBundle(@Observes BundleUninstalled event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1213"/>3.3.2.4. When a bundle is lazy activated: <code class="code">BundleLazyActivation</code>
+                    event</h4></div></div></div><p>An event is fired every time a bundle is lazy activated in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void lazyInitBundle(@Observes BundleLazyActivation event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1225"/>3.3.2.5. When a bundle is resolved: <code class="code">BundleResolved</code> event</h4></div></div></div><p>An event is fired every time a bundle is resolved in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void resolveBundle(@Observes BundleResolved event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1237"/>3.3.2.6. When a bundle is unresolved: <code class="code">BundleUnresolved</code> event</h4></div></div></div><p>An event is fired every time a bundle is unresolved in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void unresolveBundle(@Observes BundleUnresolved event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1249"/>3.3.2.7. When a bundle is updated: <code class="code">BundleUpdated</code> event</h4></div></div></div><p>An event is fired every time a bundle is updated in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void updateBundle(@Observes BundleUpdated event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1261"/>3.3.2.8. When a bundle is started: <code class="code">BundleStarted</code> event</h4></div></div></div><p>An event is fired every time a bundle is started in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void startBundle(@Observes BundleStarted event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1273"/>3.3.2.9. When a bundle is starting: <code class="code">BundleStrating</code> event</h4></div></div></div><p>An event is fired every time a bundle is starting in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void startingBundle(@Observes BundleStarting event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1285"/>3.3.2.10. When a bundle is stopped: <code class="code">BundleStopped</code> event</h4></div></div></div><p>An event is fired every time a bundle is stopped in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void stopBundle(@Observes BundleStopped event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1297"/>3.3.2.11. When a bundle is stopping: <code class="code">BundleStopping</code> event</h4></div></div></div><p>An event is fired every time a bundle is stopping in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void stoppingBundle(@Observes BundleStopping event) {
+    Bunde bundle = event.getBundle();
+    long id = event.getBundleId();
+    String symbolicName = event.getSymbolicName();
+    Version version = event.getVersion();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1309"/>3.3.2.12. Filtering bundle events: <code class="code">BundleName</code> and
+                        <code class="code">BundleVersion</code> annotations</h4></div></div></div><p>It is possible to filter the listened events depending on the bundles that are
+                    concerned. This filter might cover the name or the version of the
+                    bundles.</p><p>Here the way to filter bundle events on the bundle
+                    names:</p><pre class="programlisting">public void bindBundle(@Observes @BundleName("com.sample.gui") BundleInstalled event) {
+}</pre><p>or
+                    on the bundle
+                    versions:</p><pre class="programlisting">public void bindBundle(@Observes @BundleVersion("4.2.1") BundleInstalled event) {
+}</pre><p>or
+                    on both bundle names and
+                    versions:</p><pre class="programlisting">public void bindBundle(@Observes @BundleName("com.sample.gui") @BundleVersion("4.2.1") BundleInstalled event) {
+}</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1330"/>3.3.3. Service lifecyle events</h3></div></div></div><p>Three events might be fired during a service lifecycle. They represent the
+                possible states of a service and monitor the changes occurred in service lifecycles.
+                These events carry the <code class="code">BundleContext</code> object from where the event comes
+                and the <code class="code">ServiceReference</code> object corespondign to the service so
+                developers can retrieve useful information (such as the registering bundle) and
+                acces useful actions (such as register or enregister services).</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1341"/>3.3.3.1. Listen all service events: <code class="code">AbstractServiceEvent</code> event</h4></div></div></div><p>CDI-OSGi provides a way to listen all service events in a single method: the
+                        <code class="code">AbstractServiceEvent</code> abstract class. Every service lifecycle
+                    event is an <code class="code">AbstractServiceEvent</code> and a method allows to retrieve
+                    the actual fired service event. All service states are listed in the
+                        <code class="code">ServiceEventType</code> enumeration. Then this event can be used as
+                    the corresponding service event.</p><p>Here the way to listen all service events and to retrieve the corresponding
+                    service
+                    state:</p><pre class="programlisting">public void serviceEvent(@Observes AbstractServiceEvent event) {
+    ServiceEventType event.getType();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1362"/>3.3.3.2. When a service is published: <code class="code">ServiceArrival</code> event</h4></div></div></div><p>An event is fired every time a service is published in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void bindService(@Observes ServiceArrival event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1374"/>3.3.3.3. When a service is unpublished: <code class="code">ServiceDeparture</code> event</h4></div></div></div><p>An event is fired every time a service is unpublished in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void unbindService(@Observes ServiceDeparture event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1386"/>3.3.3.4. When a service is changed: <code class="code">ServiceChange</code> event</h4></div></div></div><p>An event is fired every time a service is changed in the OSGi
+                    environment.</p><p>Here the way to listen this
+                    event:</p><pre class="programlisting">public void changeService(@Observes ServiceChange event) {
+    ServiceReference serviceReference = event.getRef();
+    Bundle registeringBundle = event.getRegisteringBundle();
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1398"/>3.3.3.5. Filtering service events: <code class="code">Specification</code> and <code class="code">Filter</code>
+                    annotations</h4></div></div></div><p>It is possible to filter the listened events depending on the services that
+                    are concerned. This filter might cover the service specificaton class or it
+                    might be a LDAP filter.</p><p>Here the way to filter service events on the specification
+                    class:</p><pre class="programlisting">public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {
+}</pre><p>or
+                    using a LDAP
+                    filter:</p><pre class="programlisting">public void bindService(@Observes @Specification(MyService.class) ServiceArrival event) {
+}</pre><p>or
+                    on both specification class and LDAP
+                    filter:</p><pre class="programlisting">public void bindService(@Observes @Specification(MyService.class) @Filter("(&amp;(lang=EN)(country=US))") ServiceArrival event) {
+}</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1419"/>3.3.4. Application dependency validation events</h3></div></div></div><p>Some bean bundle might declare required dependencies on services (using the
+                    <code class="code">Required</code> annotation). CDI-OSGi fired events when these required
+                dependencies are all validated or when at least one is invalidated. It allows
+                application to be automatically started or stoped.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1427"/>3.3.4.1. When all dependencies are validated: <code class="code">Valid</code> event</h4></div></div></div><p>An event is fired every time all the required dependencies are
+                    validated.</p><p>Here the way to listen this event:
+                    </p><pre class="programlisting">public void validate(@Observes Valid event) {
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1439"/>3.3.4.2. When at least one dependency is invalidated: <code class="code">Invalid</code>
+                    event</h4></div></div></div><p>An event is fired every time at least one of the required dependencies is
+                    invalidated.</p><p>Here the way to listen this event:
+                    </p><pre class="programlisting">public void invalidate(@Observes Invalid event) {
+}</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1451"/>3.3.5. Intra and inter bundles communication events</h3></div></div></div><p>CDI-OSGi provides a way to communicate within and between bean bundles. This
+                communication occurs in a totally decoupled manner using CDI events.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1456"/>3.3.5.1. Firing a bundle communication event: <code class="code">InterBundleEvent</code>
+                    event</h4></div></div></div><p>An <code class="code">InterBundleEvent</code> is a message containing a object and
+                    transmited using CDI event.</p><p>Here the way to fire such an
+                    event:</p><pre class="programlisting">@Inject Event&lt;InterBundleEvent&gt; event;
+MyMessage myMessage = new MyMessage();
+event.fire(new InterBundleEvent(myMessage));</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1471"/>3.3.5.2. When a bundle communication is received: <code class="code">InterBundleEvent</code>
+                    event</h4></div></div></div><p>When an <code class="code">InterBundleEvent</code> is fired it might be catch either within
+                    the bundle or in other bundles or both.</p><p>Here the way to receive a communication event from within the
+                    bundle:</p><pre class="programlisting">public void listenAllEvents(@Observes InterBundleEvent event) {
+}</pre><p>Here the way to receive a communication event from another
+                    bundles:</p><pre class="programlisting">public void listenAllEventsFromOtherBundles(@Observes @Sent InterBundleEvent event) {
+}</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1490"/>3.3.5.3. Filtering communication events: <code class="code">Specification</code> annotation</h4></div></div></div><p>It is possible to filter the listened events depending on the message type.
+                    This filter may specify the type of message that is listened.</p><p>Here the way to filter communication events specifying a message type:
+                    </p><pre class="programlisting">public void listenStringEventsFromOtherBundles(@Observes @Sent @Specification(MyMessage.class) InterBundleEventevent) {
+}</pre><p>Only
+                    the message with type <code class="code">MyMessage</code> will be received.</p></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e1506"/>3.4. OSGi utilities</h2></div></div></div><p>CDI-OSGi provide some facilities for OSGi usage. It allows to obtain, by injection,
+            some of the useful objects of the OSGi environment.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1511"/>3.4.1. From the current bundle</h3></div></div></div><p>Here a way to obtain the current
+                bundle:</p><pre class="programlisting">@Inject Bundle bundle;</pre><p>Here a way to obtain the current bundle
+                context:</p><pre class="programlisting">@Inject BundleContext bundleContext;</pre><p>Here a way to obtain all the current bundle
+                headers:</p><pre class="programlisting">@Inject @BundleHeaders Map&lt;String,String&gt;metadata;</pre><p>or
+                a particular
+                header</p><pre class="programlisting">@Inject @BundleHeader("Bundle-SymbolicName") String symbolicName;</pre><p>Here a way to obtain a resource file from the current
+                bundle:</p><pre class="programlisting">@Injec @BundleDataFile("test.txt") File file;</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1533"/>3.4.2. From external bundle</h3></div></div></div><p>Here a way to obtain a specified bundle from its name and
+                version:</p><pre class="programlisting">@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;</pre><p>or
+                just from its
+                name:</p><pre class="programlisting">@Inject @BundleName("com.sample.gui") bundle;</pre><p>Here a way to obtain all the specified bundle
+                headers:</p><pre class="programlisting">@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String&gt;metadata;</pre><p>or
+                a particular
+                header:</p><pre class="programlisting">@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e1550"/>3.5. CDI-OSGi, what else ?</h2></div></div></div><p>Here there are some examples that concretely show what CDI-OSGi is avoiding to the
+            developer:</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1555"/>3.5.1. Getting service references and instances</h3></div></div></div><p>How to obtain a service available implementations list ?</p><p>In
+                CDI-OSGI:</p><pre class="programlisting">@Inject Service&lt;MyService&gt; references;</pre><p>versus
+                in classic OSGi:
+                </p><pre class="programlisting">ServiceReference references = bundleContext.getServiceReferences(MyService.class.getName());</pre><p>How to obtain a service instance ?</p><p>In
+                CDI-OSGi:</p><pre class="programlisting">@Inject @OSGiService MyService service;</pre><p>versus
+                in classic
+                OSGi:</p><pre class="programlisting">ServiceReference reference = bundleContext.getServiceReference(MyService.class.getName());
+MyService service = (MyService) bundleContext.getService(reference);</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1576"/>3.5.2. Obtaining the current bundle context and bundle</h3></div></div></div><p>How to obtain the current bundle context ?</p><p>In
+                CDI-OSGi:</p><pre class="programlisting">@Inject BundleContext bundleContext;</pre><p>versus
+                in classic
+                OSGi:</p><pre class="programlisting">//the bundle context mush have been saved in the activator class. Impossible to get for a bundle with no activator ???</pre><p>How to obtain the current bundle ?</p><p>In CDI-OSGi:</p><pre class="programlisting">@Inject Bundle currentBundle;</pre><p>versus
+                in classic
+                OSGi:</p><pre class="programlisting">//assuming that the bundleContext is known, impossible if not ???
+ServiceReference reference = bundleContext.getServiceReference(PackageAdmin.class.getName());
+PackageAdmin packageAdmin = bundleContext.getService(reference);
+Bundle currentBundle = packageAdmin.getBundle(this);</pre></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e1597"/>3.5.3. TODO other example</h3></div></div></div><p>TODO</p></div></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="ch02.html"><strong>Prev</strong>Chapter 2. Organization of CDI-OSGi</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="ch04.html"><strong>Next</strong>Chapter 4. Weld-OSGi implementation</a></li></ul></body></html>
