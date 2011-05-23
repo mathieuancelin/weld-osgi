@@ -30,9 +30,5 @@
                 href="modules/usages.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
                 href="modules/weldosgi.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-                href="modules/scenario.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-                href="modules/samples.xml"/>
 
 </book>
