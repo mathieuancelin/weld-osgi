@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
 
-<groupId>org.jboss.weld.osgi</groupId>
+<groupId>org.osgi.cdi</groupId>
 <artifactId>weld-osgi-application-archetype</artifactId>
 <version>1.0-SNAPSHOT</version>
 <packaging>maven-archetype</packaging>
@@ -13,7 +13,7 @@
 <url>http://www.serli.com/</url>
 
 <parent>
-    <groupId>org.jboss.weld.osgi</groupId>
+    <groupId>org.osgi.cdi</groupId>
     <artifactId>cdi-osgi-maven-archetype</artifactId>
     <version>1.0-SNAPSHOT</version>
 </parent>
@@ -45,4 +45,3 @@
 </build>
 
 </project>
->>>>>>> ee501eb0f19eef6660ae7b1cb5cebf806ec985ea

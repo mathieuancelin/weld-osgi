@@ -353,8 +353,5 @@ main() {
     link
 }
 
-<<<<<<< HEAD
 main
-=======
-main
->>>>>>> ee501eb0f19eef6660ae7b1cb5cebf806ec985ea
+
