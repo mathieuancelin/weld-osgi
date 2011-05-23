@@ -122,7 +122,7 @@ validateAppArtifactId() {
 
 validateAppVersion() {
     if [[ $appVersion == "" ]]
-    then 
+    then
         appVersion="1.0-SNAPSHOT"
         echo $appVersion
     elif [[ $appVersion =~ $versionRegex ]]
@@ -136,7 +136,7 @@ validateAppVersion() {
 
 validateContainerGroupId() {
     if [[ $containerGroupId == "" ]]
-    then 
+    then
         containerGroupId=$appGroupId
         echo $containerGroupId
     elif [[ $containerGroupId =~ $groupIdRegex ]]
@@ -150,7 +150,7 @@ validateContainerGroupId() {
 
 validateContainerArtifactId() {
     if [[ $containerArtifactId == "" ]]
-    then 
+    then
         containerArtifactId=$appArtifactId"-container"
         echo $containerArtifactId
     elif [[ $containerArtifactId =~ $artifactIdRegex ]]
@@ -164,7 +164,7 @@ validateContainerArtifactId() {
 
 validateContainerVersion() {
     if [[ $containerVersion == "" ]]
-    then 
+    then
         containerVersion=$appVersion
         echo $containerVersion
     elif [[ $containerVersion =~ $versionRegex ]]
@@ -200,7 +200,7 @@ validateBundleGroupId() {
         echo ${bundleGroupId[$i]}
     else
         bundleGroupId[$i]=$appGroupId
-        echo "Malformed group ID ! Assume: "${bundleGroupId[$i]} 
+        echo "Malformed group ID ! Assume: "${bundleGroupId[$i]}
     fi
 }
 
@@ -214,7 +214,7 @@ validateBundleArtifactId() {
         echo ${bundleArtifactId[$i]}
     else
         bundleArtifactId[$i]=$appArtifactId"-bundle"$i
-        echo "Malformed artifact ID ! Assume: "${bundleArtifactId[$i]} 
+        echo "Malformed artifact ID ! Assume: "${bundleArtifactId[$i]}
     fi
 }
 
@@ -228,7 +228,7 @@ validateBundleVersion() {
         echo ${bundleVersion[$i]}
     else
         bundleVersion[$i]=$appVersion
-        echo "Malformed version ! Assume: "${bundleVersion[$i]} 
+        echo "Malformed version ! Assume: "${bundleVersion[$i]}
     fi
 }
 
@@ -242,7 +242,7 @@ validateBundlePackage() {
         echo ${bundlePackage[$i]}
     else
         bundlePackage[$i]=${bundleGroupId[$i]}
-        echo "Malformed package ! Assume: "${bundlePackage[$i]} 
+        echo "Malformed package ! Assume: "${bundlePackage[$i]}
     fi
 }
 
@@ -353,4 +353,8 @@ main() {
     link
 }
 
+<<<<<<< HEAD
 main
+=======
+main
+>>>>>>> ee501eb0f19eef6660ae7b1cb5cebf806ec985ea
