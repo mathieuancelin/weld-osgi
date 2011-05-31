@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.osgi.cdi</groupId>
-    <artifactId>cdi-osgi-bundle-archetype</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>maven-archetype</packaging>
-
-    <name>CDI-OSGi bundle Maven archetype</name>
-    <description>CDI-OSGi bundle Maven archetype, provide CDI-OSGi bundle</description>
-    <url>http://www.serli.com/</url>
 
     <parent>
         <groupId>org.osgi.cdi</groupId>
@@ -18,20 +10,17 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.osgi.cdi</groupId>
+    <artifactId>cdi-osgi-bundle-archetype</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>maven-archetype</packaging>
+    <name>CDI-OSGi :: Maven archetypes :: CDI-OSGi bundle</name>
+    
     <properties>
         <archetype-packaging.version>2.0</archetype-packaging.version>
         <maven-archetype-plugin.version>2.0</maven-archetype-plugin.version>
     </properties>
 
-    <!-- Repositories -->
-    <repositories>
-    </repositories>
-
-    <!-- Dependencies -->
-    <dependencies>
-    </dependencies>
-
-    <!-- Build -->
     <build>
 
         <extensions>
@@ -52,5 +41,4 @@
         </pluginManagement>
 
     </build>
-
 </project>
