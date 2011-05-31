@@ -123,4 +123,5 @@ public class Weld {
     public Collection<String> getBeanClasses() {
         return beanClasses;
     }
+
 }

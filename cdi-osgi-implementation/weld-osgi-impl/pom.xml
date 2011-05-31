@@ -1,18 +1,47 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>org.jboss.weld.osgi</groupId>
-        <artifactId>osgi-cdi</artifactId>
+        <groupId>org.osgi.cdi</groupId>
+        <artifactId>cdi-osgi-implementation</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.jboss.weld.osgi</groupId>
     <artifactId>weld-osgi-impl</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>CDI OSGi :: Weld Integration</name>
+    <name>CDI OSGi :: Implementation :: Weld Integration</name>
 
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-snapshots</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.jboss.weld</groupId>
@@ -32,7 +61,7 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.0-SP3</version>
+            <version>1.0-SP4</version>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
@@ -132,4 +161,5 @@
             </plugin>
         </plugins>
     </build>
+    
 </project>

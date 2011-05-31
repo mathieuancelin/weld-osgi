@@ -11,6 +11,7 @@ import org.osgi.framework.ServiceRegistration;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -20,7 +21,7 @@ public class WeldCDIContainer implements CDIContainer {
 
     private final Bundle bundle;
     private Weld container;
-    private Collection<ServiceRegistration> registrations;
+    private Collection<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
 
     public WeldCDIContainer(Bundle bundle) {
         this.bundle = bundle;
@@ -89,5 +90,37 @@ public class WeldCDIContainer implements CDIContainer {
     @Override
     public Collection<String> getBeanClasses() {
         return container.getBeanClasses();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof WeldCDIContainer)) {
+            return false;
+        }
+
+        WeldCDIContainer that = (WeldCDIContainer) o;
+
+        if (bundle != null ? !bundle.equals(that.bundle) : that.bundle != null) {
+            return false;
+        }
+        if (container != null ? !container.equals(that.container) : that.container != null) {
+            return false;
+        }
+        if (registrations != null ? !registrations.equals(that.registrations) : that.registrations != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = bundle != null ? bundle.hashCode() : 0;
+        result = 31 * result + (container != null ? container.hashCode() : 0);
+        result = 31 * result + (registrations != null ? registrations.hashCode() : 0);
+        return result;
     }
 }

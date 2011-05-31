@@ -1,25 +1,22 @@
 package org.apache.openwebbeans.environment.osgi.integration;
 
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.spi.ContainerLifecycle;
+import org.osgi.cdi.impl.extension.CDIOSGiExtension;
+import org.osgi.framework.Bundle;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.enterprise.context.spi.CreationalContext;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.spi.ContainerLifecycle;
-
-import org.osgi.cdi.api.integration.CDIContainer;
-import org.osgi.cdi.api.integration.CDIContainers;
-import org.osgi.cdi.impl.extension.CDIOSGiExtension;
-import org.osgi.framework.Bundle;
 
 /**
  *

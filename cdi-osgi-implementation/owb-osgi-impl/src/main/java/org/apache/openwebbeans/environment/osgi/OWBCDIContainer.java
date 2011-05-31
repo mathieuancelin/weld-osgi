@@ -1,18 +1,19 @@
 package org.apache.openwebbeans.environment.osgi;
 
-import java.util.Collection;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
 import org.apache.openwebbeans.environment.osgi.integration.OWB;
 import org.osgi.cdi.api.extension.events.InterBundleEvent;
 import org.osgi.cdi.api.integration.CDIContainer;
-import org.osgi.cdi.api.integration.CDIContainers;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.impl.extension.ExtensionActivator.SentAnnotation;
 import org.osgi.cdi.impl.extension.ExtensionActivator.SpecificationAnnotation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.BeanManager;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  *
@@ -32,6 +33,21 @@ public class OWBCDIContainer implements CDIContainer {
     @Override
     public void setRegistrations(Collection<ServiceRegistration> registrations) {
         this.registrations = registrations;
+    }
+
+    @Override
+    public CDIContainer select(Bundle bundle) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public CDIContainer select(String s, String s1) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public int size() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -91,5 +107,10 @@ public class OWBCDIContainer implements CDIContainer {
     @Override
     public Collection<String> getBeanClasses() {
         return container.getBeanClasses();
+    }
+
+    @Override
+    public Iterator<CDIContainer> iterator() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
