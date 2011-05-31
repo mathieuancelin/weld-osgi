@@ -7,7 +7,7 @@
             <para>A bean archive is a java archive, such as a jar or a Java EE module, that contains
                 a special marker file:<code>META-INF/bean.xml</code>.</para>
             <para>A bean archive may be deployed in a CDI environment. It enables all CDI features
-                for that bean archive.</para>
+                in that bean archive.</para>
         </section>
         <section>
             <title>OSGi bundle</title>
@@ -22,7 +22,7 @@
                     <code>META-INF/bean.xml</code> and special OSGi marker headers in
                     its<code>META-INF/Manifest.MF</code>.</para>
             <para>A bean bundle may be deployed in an OSGi environment with CDI-OSGi and then be
-                managed by the CDI-OSGi. It enables both OSGi and CDI features for that bean
+                managed by the CDI-OSGi. It enables both OSGi and CDI features for that
                 bundle.</para>
         </section>
         <section>
@@ -37,12 +37,12 @@
         <section>
             <title>CDI-OSGi</title>
             <para>CDI-OSGi aims at simplifying application development in an OSGi environment by
-                providing a more modern, more user-friendly and more simple way to interact with the
-                OSGi Framework.</para>
+                providing a more modern, more user-friendly and faster way to interact with the OSGi
+                Framework.</para>
             <para>It addresses the OSGi complexity about services management using CDI specification
                 (JSR-299). Thus it provides a CDI OSGi extension with injection utilities for the
-                OSGi environment. An integration of any CDI implementation, such as Weld, is used.
-                This integration is possible through a well-defined bootstrapping API.</para>
+                OSGi environment. An integration of any CDI implementation, such as Weld, it is
+                used. This integration is possible through a well-defined bootstrapping API.</para>
             <para>CDI-OSGi is a framework that may be used in an OSGi environment and composed by
                 five bundles.</para>
         </section>
@@ -83,20 +83,21 @@
                     to run CDI features in OSGi environment and the integration bundle is the
                     implementation of these requirements using a vendor specific CDI implementation
                     (such as Weld).</para>
-                <para>Weld-OSGi is one of the possible extension bundles. So the extension bundle is
-                    commutable to support various CDI implementations.</para>
+                <para>Weld-OSGi is one of the possible extension bundle. So the extension bundle is
+                    commutable to support various CDI implementation.</para>
             </section>
             <section>
                 <title>CDI API bundle</title>
-                <para>The fifth bundle is the CDI API. It exposes regular CDI features for all client
+                <para>The fith bundle is the CDI API. It exposes regular CDI features for all client
                     bundles and exempts the user to load CDI API by himself. It is a third-party API
                     provided for convenience to the user.</para>
             </section>
             <section>
                 <title>Interaction between bundles</title>
-                <para>User client bean bundles should only know about the extension API bundle and
-                    the CDI API bundle because they may import their packages in order to use
-                    CDI-OSGi features. They do not need to know the other three bundles.</para>
+                <para>User client bean bundles should only know about the extension API bundle of
+                    CDI-OSGi and the CDI API bundle because they may import their packages in order
+                    to use CDI-OSGi features. They do not need to know the other three
+                    bundles.</para>
                 <para>The extension bundle manages bean bundles transparently. It also implements
                     the extension API and uses the container factory service from the integration
                     bundle.</para>
@@ -109,10 +110,13 @@
     </section>
     <section>
         <title>What about other frameworks</title>
-        <para>CDI-OSGi stays compliant with CDI specifications and uses only standard OSGi
-            mechanisms. Every things it does (or nothing from it) CDI or OGSi can do.</para>
+        <para>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
+            mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</para>
         <para>Thereby it is compatible with most of the current frameworks dealing with OSGi service
             management.</para>
+        <para>Weld-OSGi has the same compatibility since it is an implementation of CDI-OSGi. But as
+            it provides some additional features it may be impossible to use all its possibilities
+            coupling with other frameworks.</para>
     </section>
     <section>
         <title>Organization of this document</title>
