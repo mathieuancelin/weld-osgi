@@ -14,7 +14,6 @@
         <module>cdi-osgi-core</module>
 		<module>cdi-osgi-documentation</module>
 		<module>cdi-osgi-implementation</module>
-		<module>cdi-osgi-distribution</module>
 		<module>cdi-osgi-sample</module>
 		<module>cdi-osgi-tests</module>
 		<module>cdi-osgi-maven-archetype</module>

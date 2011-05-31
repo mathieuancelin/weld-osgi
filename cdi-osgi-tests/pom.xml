@@ -21,7 +21,6 @@
         <module>cdi-osgi-tests-bundle1</module>
         <module>cdi-osgi-tests-bundle2</module>
         <module>cdi-osgi-tests-bundle3</module>
-        <module>arquillian</module>
     </modules>
     
 </project>
