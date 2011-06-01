@@ -41,7 +41,6 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     @Override
     public void stop(BundleContext context) throws Exception {
         stopCDIOSGi();
-
     }
 
     public void startCDIOSGi() throws Exception {
@@ -81,8 +80,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         CDIContainer holder = factory().container(bundle);
-        factory().removeContainer(bundle);
         if (holder != null) {
+            factory().removeContainer(bundle);
             Collection<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
                 try {

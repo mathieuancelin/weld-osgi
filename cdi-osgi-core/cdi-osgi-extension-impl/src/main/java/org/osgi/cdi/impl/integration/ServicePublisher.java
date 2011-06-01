@@ -45,23 +45,18 @@ public class ServicePublisher {
             }
             if (clazz != null) {
                 boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                boolean instatiation = publishable;
                 Annotation[] annotations = null;
                 Object service = null;
                 InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
-                if (instatiation) {
+                if (publishable) {
                     List<Annotation> qualifiers = getQualifiers(clazz);
                     try {
                         annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
                         service = instanceHolder.select(clazz, annotations).get();
-                        System.out.println(clazz + " " + qualifiers + " " + service.getClass());
                     } catch (Throwable e) {
-                        System.out.println("# " + clazz + " " + qualifiers);
                         e.printStackTrace();
                     }
-                    if (publishable) {
-                        publish(clazz, service, qualifiers);
-                    }
+                    publish(clazz, service, qualifiers);
                 }
             }
         }

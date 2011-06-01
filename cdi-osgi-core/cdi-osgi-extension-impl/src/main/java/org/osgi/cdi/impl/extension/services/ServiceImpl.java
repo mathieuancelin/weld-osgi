@@ -108,7 +108,7 @@ public class ServiceImpl<T> implements Service<T> {
 
     @Override
     public Service<T> select(String filter) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this;
     }
 
     @Override

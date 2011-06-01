@@ -1,12 +1,14 @@
 package org.osgi.cdi.test;
 
 import com.sample.osgi.bundle1.api.*;
+import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.integration.CDIContainer;
 import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.test.util.Environment;
@@ -35,7 +37,7 @@ public class UsageTest {
         );
     }
 
-    @Test
+//    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -113,7 +115,7 @@ public class UsageTest {
 
     }
 
-    @Test
+//    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -123,7 +125,6 @@ public class UsageTest {
         CDIContainerFactory factory = (CDIContainerFactory) context.getService(factoryReference);
 
         for(Bundle b : context.getBundles()) {
-            b.start();
             Assert.assertEquals("Bundle " + b.getSymbolicName() + " is not ACTIVE but " + Environment.state(b.getState()), Bundle.ACTIVE, b.getState());
             if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle1")) {
                 bundle1=b;
@@ -225,5 +226,38 @@ public class UsageTest {
         Assert.assertEquals("The property service 1 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl1",propertyService1.whoAmI());
         Assert.assertEquals("The property service 2 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",propertyService2.whoAmI());
         Assert.assertEquals("The property service 3 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",propertyService3.whoAmI());
+    }
+
+    @Test
+    public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
+        Environment.waitForEnvironment(context);
+
+        ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
+        Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
+        Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
+        ServiceProvider serviceProvider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
+        Assert.assertNotNull("The service provider was null",serviceProvider);
+
+        PropertyService service = serviceProvider.getService();
+        Assert.assertNotNull("The service was null", service);
+        Assert.assertEquals("The service method result was wrong",String.class,service.whoAmI().getClass());
+
+        Service<PropertyService> services = serviceProvider.getServices();
+        Assert.assertNotNull("The services were null", services);
+        Assert.assertEquals("The number of services was wrong",3,services.size());
+        Assert.assertTrue("The services were not ambiguous",services.isAmbiguous());
+        Assert.assertFalse("The services were not satisfied",services.isUnsatisfied());
+        PropertyService serviceGet = services.get();
+        Assert.assertNotNull("The got service was null", serviceGet);
+        Assert.assertEquals("The got service method result was wrong",String.class,serviceGet.whoAmI().getClass());
+//        Service<PropertyService> servicesFilter = services.select("name = 1");
+//        Assert.assertNotNull("The filtered services were null", servicesFilter);
+//        Assert.assertEquals("The number of filtered services was wrong",1,servicesFilter.size());
+//        Assert.assertFalse("The filtered services were ambiguous",servicesFilter.isAmbiguous());
+//        Assert.assertFalse("The filtered services were not satisfied",servicesFilter.isUnsatisfied());
+//        PropertyService serviceFilter = servicesFilter.get();
+//        Assert.assertNotNull("The filtered service was null", serviceFilter);
+//        Assert.assertEquals("The filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",serviceFilter.whoAmI());
+
     }
 }

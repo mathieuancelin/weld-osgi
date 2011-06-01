@@ -29,11 +29,9 @@ public class CDIOSGiExtension implements Extension {
     public static ThreadLocal<Long> currentBundle =
             new ThreadLocal<Long>();
 
-    private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected
-                            = new HashMap<Type, Set<InjectionPoint>>();
+    private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
 
-    private HashMap<Type, Set<InjectionPoint>> filteredServiceToBeInjected
-                            = new HashMap<Type, Set<InjectionPoint>>();
+    private HashMap<Type, Set<InjectionPoint>> filteredServiceToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
 
     private List<Annotation> observers = new ArrayList<Annotation>();
 

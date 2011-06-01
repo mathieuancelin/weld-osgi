@@ -1,11 +1,7 @@
 package org.osgi.cdi.test;
 
 import junit.framework.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.cdi.api.integration.CDIContainer;
 import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.test.util.Environment;
@@ -16,17 +12,17 @@ import java.util.Collection;
 
 import static org.ops4j.pax.exam.CoreOptions.options;
 
-@RunWith(JUnit4TestRunner.class)
+//@RunWith(JUnit4TestRunner.class)
 public class InfrastrutureTest {
 
-    @Configuration
+//    @Configuration
     public static Option[] configure() {
         return options(
                 Environment.CDIOSGiEnvironment()
         );
     }
 
-    @Test
+//    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -63,7 +59,7 @@ public class InfrastrutureTest {
 
     }
 
-    @Test
+//    @Test
     public void CDIContainerFactoryTest(BundleContext context) throws InterruptedException {
         Environment.waitForEnvironment(context);
 
@@ -97,7 +93,7 @@ public class InfrastrutureTest {
 
     }
 
-    @Test
+//    @Test
     public void CDIContainerTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
