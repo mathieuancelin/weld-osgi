@@ -37,7 +37,7 @@ public class UsageTest {
         );
     }
 
-//    @Test
+    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -115,7 +115,7 @@ public class UsageTest {
 
     }
 
-//    @Test
+    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -210,13 +210,13 @@ public class UsageTest {
         Assert.assertNotNull("The property service reference array was null",propertyServiceReferences);
         Assert.assertEquals("The number of property service implementations was wrong", 3,propertyServiceReferences.length);
         for(ServiceReference ref : propertyServiceReferences) {
-            if(ref.getProperty("name") == null) {
+            if(ref.getProperty("Name.value") == null) {
                 propertyService1 = (PropertyService)context.getService(ref);
             }
-            else if(ref.getProperty("name").equals("1")) {
+            else if(ref.getProperty("Name.value").equals("1")) {
                 propertyService2 = (PropertyService)context.getService(ref);
             }
-            else if(ref.getProperty("name").equals("2")) {
+            else if(ref.getProperty("Name.value").equals("2")) {
                 propertyService3 = (PropertyService)context.getService(ref);
             }
         }

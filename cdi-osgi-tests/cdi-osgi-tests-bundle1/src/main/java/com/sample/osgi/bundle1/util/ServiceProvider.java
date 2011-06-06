@@ -17,8 +17,9 @@ public class ServiceProvider {
     @Inject
     private Service<PropertyService> services;
 
-//    @Inject @OSGiService
-//    @Filter("name = 1")
+//    @Inject
+//    @OSGiService
+//    @Filter("Name.value=1")
 //    private PropertyService filteredService;
 //
 //    @Inject @OSGiService @Name("2")

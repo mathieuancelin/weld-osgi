@@ -2,8 +2,8 @@ package org.osgi.cdi.impl.extension.services;
 
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.impl.extension.FilterGenerator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 import java.lang.annotation.Annotation;
@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class ServiceImpl<T> implements Service<T> {
@@ -23,14 +23,16 @@ public class ServiceImpl<T> implements Service<T> {
     private final Class serviceClass;
     private final BundleContext registry;
     private final String serviceName;
+
     private List<T> services = new ArrayList<T>();
-    private T service;
+    private T service = null;
     private Filter filter;
 
     public ServiceImpl(Type t, BundleContext registry) {
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         this.registry = registry;
+        filter = FilterGenerator.makeFilter();
     }
 
     public ServiceImpl(Type t, BundleContext registry, Filter filter) {
@@ -42,30 +44,14 @@ public class ServiceImpl<T> implements Service<T> {
 
     @Override
     public T get() {
-        if (service == null) {
+        if(service == null) {
             try {
-                populateService();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                populateServices();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return service;
-    }
-
-    private void populateService() throws Exception {
-        ServiceReference ref = registry.getServiceReference(serviceName);
-        if (ref != null) {
-            if (!serviceClass.isInterface()) {
-                service = (T) registry.getService(ref);
-            } else {
-                service = (T) Proxy.newProxyInstance(
-                        getClass().getClassLoader(),
-                        new Class[]{(Class) serviceClass},
-                        new DynamicServiceHandler(registry.getBundle(), serviceName, filter));
-            }
-        } else {
-            throw new IllegalStateException("Can't load service from OSGi registry : " + serviceName);
-        }
     }
 
     private void populateServices() throws Exception {
@@ -87,27 +73,20 @@ public class ServiceImpl<T> implements Service<T> {
                 }
             }
         }
+        service = services.size() > 0 ? services.get(0) : null;
     }
 
     @Override
     public Service<T> select(Annotation... qualifiers) {
-        if (qualifiers == null) {
-            throw new IllegalArgumentException("You can't pass null array of qualifiers");
-        }
-        if (qualifiers.length > 1) {
-            throw new IllegalArgumentException("You can only one OSGi Filter");
-        }
-        for (Annotation qualifier : qualifiers) {
-            if (!qualifier.annotationType().equals(Filter.class)) {
-                throw new IllegalArgumentException("You can only use instances of Filter on OSGi Service<T>");
-            }
-        }
-        this.filter = (Filter) qualifiers[0];
+        service = null;
+        filter = FilterGenerator.makeFilter(filter,qualifiers);
         return this;
     }
 
     @Override
     public Service<T> select(String filter) {
+        service = null;
+        this.filter = FilterGenerator.makeFilter(this.filter,filter);
         return this;
     }
 
@@ -122,6 +101,19 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     @Override
+    public int size() {
+        if(service == null) {
+            try {
+                populateServices();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return -1;
+            }
+        }
+        return services.size();
+    }
+
+    @Override
     public Iterator<T> iterator() {
         try {
             populateServices();
@@ -130,19 +122,5 @@ public class ServiceImpl<T> implements Service<T> {
             services = Collections.emptyList();
         }
         return services.iterator();
-    }
-
-    @Override
-    public int size() {
-        try {
-            ServiceReference[] refs = registry.getServiceReferences(serviceName, null);
-            if (refs == null) {
-                return 0;
-            } else {
-                return refs.length;
-            }
-        } catch (InvalidSyntaxException ex) {
-            return -1;
-        }
     }
 }

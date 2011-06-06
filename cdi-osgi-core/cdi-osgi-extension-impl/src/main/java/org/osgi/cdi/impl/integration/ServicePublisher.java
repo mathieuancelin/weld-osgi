@@ -8,6 +8,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -102,36 +103,36 @@ public class ServicePublisher {
         Properties properties = null;
         if (!qualifiers.isEmpty()) {
             properties = new Properties();
-            Method m = null;
+//            Method m = null;
             for (Annotation qualif : qualifiers) {
-//                for (Method m : qualif.annotationType().getDeclaredMethods()) {
-//                    if (!m.isAnnotationPresent(Nonbinding.class)) {
-//                        try {
-//                            String key = qualif.annotationType().getName() + "." + m.getName();
-//                            Object value = m.invoke(qualif);
-//                            if (value == null) {
-//                                value = m.getDefaultValue();
-//                            }
-//                            properties.setProperty(key, value.toString());
-//                        } catch (Throwable t) {
-//                            // ignore
-//                        }
-//                    }
-//                }
-                try {
-                    m = qualif.annotationType().getDeclaredMethod("value", null);
-                } catch (NoSuchMethodException e) {
-                    continue;
-                }
-                try {
-                    Object value = m.invoke(qualif);
-                    if (value == null) {
-                        value = m.getDefaultValue();
+                for (Method m : qualif.annotationType().getDeclaredMethods()) {
+                    if (!m.isAnnotationPresent(Nonbinding.class)) {
+                        try {
+                            String key = qualif.annotationType().getSimpleName() + "." + m.getName();
+                            Object value = m.invoke(qualif);
+                            if (value == null) {
+                                value = m.getDefaultValue();
+                            }
+                            properties.setProperty(key, value.toString());
+                        } catch (Throwable t) {
+                            // ignore
+                        }
                     }
-                    properties.setProperty(qualif.annotationType().getSimpleName().toLowerCase(),value.toString());
-                } catch (Exception e) {
-                    continue;
                 }
+//                try {
+//                    m = qualif.annotationType().getDeclaredMethod("value", null);
+//                } catch (NoSuchMethodException e) {
+//                    continue;
+//                }
+//                try {
+//                    Object value = m.invoke(qualif);
+//                    if (value == null) {
+//                        value = m.getDefaultValue();
+//                    }
+//                    properties.setProperty(qualif.annotationType().getSimpleName().toLowerCase(),value.toString());
+//                } catch (Exception e) {
+//                    continue;
+//                }
             }
         }
         if (publish.properties().length > 0) {
