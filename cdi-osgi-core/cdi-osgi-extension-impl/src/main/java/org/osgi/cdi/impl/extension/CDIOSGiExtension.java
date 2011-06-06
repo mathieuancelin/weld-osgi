@@ -31,7 +31,7 @@ public class CDIOSGiExtension implements Extension {
 
     private HashMap<Type, Set<InjectionPoint>> servicesToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
 
-    private HashMap<Type, Set<InjectionPoint>> filteredServiceToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
+    private HashMap<Type, Set<InjectionPoint>> serviceProducerToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
 
     private List<Annotation> observers = new ArrayList<Annotation>();
 
@@ -46,30 +46,18 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(InstanceHolder.class));
         event.addQualifier(OSGiService.class);
     }
-    
-    public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
-        for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();
-                                                iterator.hasNext();) {
-            Type type =  iterator.next();
-            if (!(type instanceof Class)) {
-                //XXX: need to handle Instance<Class>. This fails currently
-                System.out.println("Unknown type:" + type);
-                event.addDefinitionError(
-                    new UnsupportedOperationException(
-                        "Injection target type " + type + "not supported"));
-                break; 
-            }
-            addBean(event, type, this.servicesToBeInjected.get(type));
-        }
 
-        for (Iterator<Type> iterator = this.filteredServiceToBeInjected.keySet().iterator();
-                                                iterator.hasNext();) {
-            Type type =  iterator.next();
-            addFilteredService(event, type, this.filteredServiceToBeInjected.get(type));
-        }
+    public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
+        Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
+        discoverServiceInjectionPoints(injectionPoints);
     }
 
-    public void registerObservers(@Observes ProcessObserverMethod event) {
+    public void afterProcessBean(@Observes ProcessBean<?> event){
+        Set<InjectionPoint> injectionPoints = event.getBean().getInjectionPoints();
+        discoverServiceInjectionPoints(injectionPoints);
+    }
+
+    public void registerObservers(@Observes ProcessObserverMethod<?,?> event) {
         Set<Annotation> qualifiers = event.getObserverMethod().getObservedQualifiers();
         for (Annotation qualifier : qualifiers) {
             if (qualifier.annotationType().equals(Filter.class)) {
@@ -77,55 +65,57 @@ public class CDIOSGiExtension implements Extension {
             }
         }
     }
+    
+    public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
+        for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();iterator.hasNext();) {
+            Type type =  iterator.next();
+            if (!(type instanceof Class)) {
+                //TODO: need to handle Instance<Class>. This fails currently
+                System.out.println("Unknown type:" + type);
+                event.addDefinitionError(
+                    new UnsupportedOperationException(
+                        "Injection target type " + type + "not supported"));
+                break; 
+            }
+            addService(event, type, this.servicesToBeInjected.get(type));
+        }
 
-    public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
-        Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
-        discoverServiceInjectionPoints(injectionPoints);
-    }
-
-    public void afterProcessBean(@Observes ProcessBean event){
-        Set<InjectionPoint> injectionPoints = event.getBean().getInjectionPoints();
-        discoverServiceInjectionPoints(injectionPoints);
+        for (Iterator<Type> iterator = this.serviceProducerToBeInjected.keySet().iterator(); iterator.hasNext();) {
+            Type type =  iterator.next();
+            addServiceProducer(event, type, this.serviceProducerToBeInjected.get(type));
+        }
     }
 
     private void discoverServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
-        for (Iterator<InjectionPoint> iterator 
-                = injectionPoints.iterator(); iterator.hasNext();) {
+        for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
+
             boolean service = false;
             try {
-                if (((ParameterizedType)injectionPoint.getType())
-                        .getRawType().equals(Service.class)) {
+                if (((ParameterizedType) injectionPoint.getType()).getRawType().equals(Service.class)) {
                     service = true;
                 }
-            } catch (Exception e) {}
-            
-            Set<Annotation> qualifs = injectionPoint.getQualifiers();
-            for (Iterator<Annotation> qualifIter = qualifs.iterator();
-                                                    qualifIter.hasNext();) {
-                Annotation annotation = qualifIter.next();
-                if (annotation.annotationType().equals(OSGiService.class)){
-                    if (contains(injectionPoint.getQualifiers(), Required.class)) {
-                        requiredOsgiServiceDependencies.add((Class) injectionPoint.getType());
-                    }
-                    addServiceInjectionInfo(injectionPoint);
+            } catch (Exception e) {//Not a ParameterizedType, skip
+            }
 
+            Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+            if (service) {
+                addServiceProducerInjectionInfo(injectionPoint);
+            } else if (contains(qualifiers, OSGiService.class)) {
+                if (contains(qualifiers, Required.class)) {
+                    requiredOsgiServiceDependencies.add((Class) injectionPoint.getType());
                 }
-                if (annotation.annotationType().equals(Filter.class)){
-                    if (service) {
-                        addFilteredServiceInjectionInfo(injectionPoint);
-                    }
-                }
+                addServiceInjectionInfo(injectionPoint);
             }
         }
     }
 
-    private void addFilteredServiceInjectionInfo(InjectionPoint injectionPoint) {
+    private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
         Type key = injectionPoint.getType();
-        if (!filteredServiceToBeInjected.containsKey(key)){
-            filteredServiceToBeInjected.put(key, new HashSet<InjectionPoint>());
+        if (!serviceProducerToBeInjected.containsKey(key)){
+            serviceProducerToBeInjected.put(key, new HashSet<InjectionPoint>());
         }
-        filteredServiceToBeInjected.get(key).add(injectionPoint);
+        serviceProducerToBeInjected.get(key).add(injectionPoint);
     }
 
     private void addServiceInjectionInfo(InjectionPoint injectionPoint) {
@@ -136,35 +126,23 @@ public class CDIOSGiExtension implements Extension {
         servicesToBeInjected.get(key).add(injectionPoint);
     }
     
-    private void addBean(
-            AfterBeanDiscovery event,
-            final Type type,
-            final Set<InjectionPoint> injectionPoints) {
-        
-        for (Iterator<InjectionPoint> iterator 
-                = injectionPoints.iterator(); iterator.hasNext();) {
-            
+    private void addService(AfterBeanDiscovery event, final Type type, final Set<InjectionPoint> injectionPoints) {
+        for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
             event.addBean(new OSGiServiceBean(injectionPoint));
         }
     }
 
-    private void addFilteredService(
-            AfterBeanDiscovery event,
-            final Type type,
-            final Set<InjectionPoint> injectionPoints) {
-
-        for (Iterator<InjectionPoint> iterator
-                = injectionPoints.iterator(); iterator.hasNext();) {
-
+    private void addServiceProducer(AfterBeanDiscovery event, final Type type, final Set<InjectionPoint> injectionPoints) {
+        for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
-            event.addBean(new FilteredServiceBean(injectionPoint));
+            event.addBean(new ServiceProducerBean(injectionPoint));
         }
     }
 
     private boolean contains(Set<Annotation> qualifiers, Class<? extends Annotation> qualifier) {
-        for (Annotation annotation : qualifiers) {
-            if (annotation.annotationType().equals(qualifier)) {
+        for (Iterator<Annotation> iterator = qualifiers.iterator();iterator.hasNext();) {
+            if(iterator.next().annotationType().equals(qualifier)) {
                 return true;
             }
         }

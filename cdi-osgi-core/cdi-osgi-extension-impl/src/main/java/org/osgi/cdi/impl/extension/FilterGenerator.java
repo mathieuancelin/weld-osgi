@@ -24,7 +24,16 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(Filter old, String filter) {
-        String f = "(&(" + old.value() + ")(" + filter + "))";
+        String f = "";
+        if(old.value() != null && !old.value().equals("")) {
+            if(filter != null && !filter.equals("")) {
+                f = "(&(" + old.value() + ")(" + filter + "))";
+            } else {
+                f = old.value();
+            }
+        } else if(filter != null) {
+            f = filter;
+        }
         return new OSGiFilterQualifierType(f);
     }
 
@@ -34,29 +43,42 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(Filter old, Annotation... qualifiers) {
-        String f = "(&(" + old.value() + ")(" + getFilter(qualifiers) + "))";
+        String f = "";
+        String filter = getFilter(qualifiers);
+        if(old.value() != null && !old.value().equals("")) {
+            if(filter != null && !filter.equals("")) {
+                f = "(&(" + old.value() + ")(" + filter + "))";
+            } else {
+                f = old.value();
+            }
+        } else if(filter != null) {
+            f = filter;
+        }
         return new OSGiFilterQualifierType(f);
     }
 
     private static String getFilter(Annotation... qualifiers) {
-        String filter = "(&";
-        for(Annotation qualifier: qualifiers) {
-            for (Method m : qualifier.annotationType().getDeclaredMethods()) {
+        String filter = "";
+        for (Annotation qualifier : qualifiers) {
+            if (!qualifier.annotationType().equals(Filter.class)) {
+                for (Method m : qualifier.annotationType().getDeclaredMethods()) {
                     if (!m.isAnnotationPresent(Nonbinding.class)) {
                         try {
-                            filter += "(" + qualifier.annotationType().getName() + "." + m.getName();
                             Object value = m.invoke(qualifier);
                             if (value == null) {
                                 value = m.getDefaultValue();
                             }
-                            filter += "=" + value == null ? "" : value.toString() + ")";
+                            filter += "(" + qualifier.annotationType().getSimpleName() + "." + m.getName() + "=" + value + ")";
                         } catch (Throwable t) {
                             // ignore
                         }
                     }
                 }
+            }
         }
-        filter += ")";
+        if (filter != null && !filter.equals("")) {
+            filter = "(&" + filter + ")";
+        }
         return filter;
     }
 }

@@ -1,7 +1,8 @@
 package org.osgi.cdi.impl.extension;
 
-import org.osgi.cdi.impl.extension.services.ServiceImpl;
 import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.impl.extension.services.ServiceImpl;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 import javax.enterprise.context.Dependent;
@@ -22,15 +23,17 @@ import java.util.Set;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class FilteredServiceBean<Service> implements Bean<Service> {
+public class ServiceProducerBean<Service> implements Bean<Service> {
 
     private final Type type;
     private final InjectionPoint injectionPoint;
     private Filter filter;
 
-    protected FilteredServiceBean(InjectionPoint injectionPoint) {
+    protected ServiceProducerBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
-        this.type = this.injectionPoint.getType();
+        type = injectionPoint.getType();
+        filter = new OSGiFilterQualifierType("");
+
         Set<Annotation> qualifiers = injectionPoint.getQualifiers();
         for (Annotation qualifier : qualifiers) {
             if (qualifier.annotationType().equals(Filter.class)) {
@@ -38,6 +41,10 @@ public class FilteredServiceBean<Service> implements Bean<Service> {
                 break;
             }
         }
+
+        filter = FilterGenerator.makeFilter(filter,qualifiers.toArray(new Annotation[qualifiers.size()]));
+
+        System.out.println("## New registered service producer bean: " + toString());
     }
 
     @Override
@@ -51,11 +58,13 @@ public class FilteredServiceBean<Service> implements Bean<Service> {
     @Override
     public Set<Annotation> getQualifiers() {
         Set<Annotation> s = new HashSet<Annotation>();
-        s.add(new AnnotationLiteral<Default>() {
-        });
         s.add(new AnnotationLiteral<Any>() {
         });
-        s.add(new OSGiFilterQualifierType(filter.value()));
+        if(!filter.value().equals("")) {
+            s.add(filter);
+        } else {
+            s.add(new AnnotationLiteral<Default>() {});
+        }
         return s;
     }
 
@@ -96,12 +105,29 @@ public class FilteredServiceBean<Service> implements Bean<Service> {
 
     @Override
     public Service create(CreationalContext creationalContext) {
-        return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], FrameworkUtil.getBundle(
-                injectionPoint.getMember().getDeclaringClass()).getBundleContext(), filter);
+        BundleContext registry = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass()).getBundleContext();
+        return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], registry, filter);
     }
 
     @Override
     public void destroy(Service instance, CreationalContext<Service> creationalContext) {
         // Nothing to do, services are unget after each call.
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceProducerBean{" +
+                "type=" + "Service<" + ((Class)((ParameterizedType) type).getActualTypeArguments()[0]).getSimpleName() + ">" +
+                ", filter=" + filter.value() +
+                ", qualifiers=" + printQualifiers() +
+                '}';
+    }
+
+    public String printQualifiers() {
+        String result = "|";
+        for(Annotation qualifier : getQualifiers()) {
+            result += qualifier.annotationType().getSimpleName() + "|";
+        }
+        return result;
     }
 }

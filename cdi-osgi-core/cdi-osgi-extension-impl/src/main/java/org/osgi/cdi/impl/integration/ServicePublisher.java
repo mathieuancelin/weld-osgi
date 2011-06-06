@@ -103,7 +103,6 @@ public class ServicePublisher {
         Properties properties = null;
         if (!qualifiers.isEmpty()) {
             properties = new Properties();
-//            Method m = null;
             for (Annotation qualif : qualifiers) {
                 for (Method m : qualif.annotationType().getDeclaredMethods()) {
                     if (!m.isAnnotationPresent(Nonbinding.class)) {
@@ -119,20 +118,6 @@ public class ServicePublisher {
                         }
                     }
                 }
-//                try {
-//                    m = qualif.annotationType().getDeclaredMethod("value", null);
-//                } catch (NoSuchMethodException e) {
-//                    continue;
-//                }
-//                try {
-//                    Object value = m.invoke(qualif);
-//                    if (value == null) {
-//                        value = m.getDefaultValue();
-//                    }
-//                    properties.setProperty(qualif.annotationType().getSimpleName().toLowerCase(),value.toString());
-//                } catch (Exception e) {
-//                    continue;
-//                }
             }
         }
         if (publish.properties().length > 0) {
