@@ -49,12 +49,26 @@ public class CDIOSGiExtension implements Extension {
 
     public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
         Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
-        discoverServiceInjectionPoints(injectionPoints);
+        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
+
+        InjectionTarget injectionTarget = event.getInjectionTarget();
+        injectionTarget.getInjectionPoints().removeAll(injectionPoints);
+        injectionTarget.getInjectionPoints().addAll(injectionPoints);
+        event.setInjectionTarget(injectionTarget);
+    }
+
+    public void afterProcessProducer(@Observes ProcessProducer<?,?> event) {
+        Set<InjectionPoint> injectionPoints = event.getProducer().getInjectionPoints();
+        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
+
+        Producer producer = event.getProducer();
+        producer.getInjectionPoints().removeAll(injectionPoints);
+        producer.getInjectionPoints().addAll(injectionPoints);
+        event.setProducer(producer);
     }
 
     public void afterProcessBean(@Observes ProcessBean<?> event){
-        Set<InjectionPoint> injectionPoints = event.getBean().getInjectionPoints();
-        discoverServiceInjectionPoints(injectionPoints);
+        //ProcessInjectionTarget and ProcessProducer take care of all relevant injection points.
     }
 
     public void registerObservers(@Observes ProcessObserverMethod<?,?> event) {
@@ -86,7 +100,7 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
-    private void discoverServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
+    private Set<InjectionPoint> discoverAndProcessServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
 
@@ -108,6 +122,7 @@ public class CDIOSGiExtension implements Extension {
                 addServiceInjectionInfo(injectionPoint);
             }
         }
+        return injectionPoints;
     }
 
     private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
