@@ -8,6 +8,7 @@
         <groupId>org.osgi.cdi</groupId>
         <artifactId>cdi-osgi-implementation</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.openwebbeans.osgi</groupId>
@@ -15,32 +16,6 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>CDI OSGi :: Implementation :: OWB Integration</name>
-
-    <repositories>
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jboss-snapshots</id>
-            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -135,14 +110,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.1.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <unpackBundle>true</unpackBundle>
-                    <instructions>
-                        <_include>-target/classes/META-INF/${project.artifactId}.bnd</_include>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>

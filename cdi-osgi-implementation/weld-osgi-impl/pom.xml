@@ -8,6 +8,7 @@
         <groupId>org.osgi.cdi</groupId>
         <artifactId>cdi-osgi-implementation</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.jboss.weld.osgi</groupId>
@@ -150,14 +151,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.1.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <unpackBundle>true</unpackBundle>
-                    <instructions>
-                        <_include>-target/classes/META-INF/${project.artifactId}.bnd</_include>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
