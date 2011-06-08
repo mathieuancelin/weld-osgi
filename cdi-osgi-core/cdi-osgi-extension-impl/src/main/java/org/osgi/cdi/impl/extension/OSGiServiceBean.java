@@ -47,8 +47,7 @@ public class OSGiServiceBean implements Bean {
                 required = true;
             }
         }
-
-        System.out.println("## New registered service bean: " + toString());
+//        System.out.println("## New registered service bean: " + toString());
     }
 
     @Override
@@ -111,7 +110,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Object create(CreationalContext ctx) {
-        System.out.println("## Creation of a new OSGiServiceBean: " + toString());
+//        System.out.println("## Creation of a new OSGiServiceBean: " + toString());
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             return Proxy.newProxyInstance(

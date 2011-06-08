@@ -50,11 +50,11 @@ public class ServicePublisher {
                     InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                     List<Annotation> qualifiers = getQualifiers(clazz);
                     try {
-                        System.out.println(qualifiers);
-                        System.out.println(clazz.getName());
-                        for(Object o : instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]))) {
-                            System.out.println("Toto " + o);
-                        }
+//                        System.out.println(qualifiers);
+//                        System.out.println(clazz.getName());
+//                        for(Object o : instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]))) {
+//                            System.out.println("Toto " + o);
+//                        }
                         service = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()])).get();
                     } catch (Throwable e) {
                         e.printStackTrace();
