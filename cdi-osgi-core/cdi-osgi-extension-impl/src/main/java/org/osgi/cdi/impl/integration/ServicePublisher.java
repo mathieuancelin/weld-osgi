@@ -45,15 +45,17 @@ public class ServicePublisher {
                 //e.printStackTrace(); // silently ignore :-)
             }
             if (clazz != null) {
-                boolean publishable = clazz.isAnnotationPresent(Publish.class);
-                Annotation[] annotations = null;
-                Object service = null;
-                InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
-                if (publishable) {
+                if (clazz.isAnnotationPresent(Publish.class)) {
+                    Object service = null;
+                    InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                     List<Annotation> qualifiers = getQualifiers(clazz);
                     try {
-                        annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
-                        service = instanceHolder.select(clazz, annotations).get();
+                        System.out.println(qualifiers);
+                        System.out.println(clazz.getName());
+                        for(Object o : instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]))) {
+                            System.out.println("Toto " + o);
+                        }
+                        service = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()])).get();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }

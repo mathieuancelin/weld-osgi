@@ -1,6 +1,8 @@
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.api.extension.annotation.Property;
+import org.osgi.cdi.api.extension.annotation.Publish;
 
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
@@ -21,6 +23,24 @@ public class FilterGenerator {
         return new OSGiFilterQualifierType("");
     }
 
+    public static Filter makeFilter(Publish publish) {
+        List<String> properties = new ArrayList<String>();
+        String result = "";
+        for(Property property : publish.properties()) {
+            properties.add(property.name() + "=" + property.value());
+        }
+        if(properties.size() > 1) {
+            result = "(&";
+            for(String filter : properties) {
+                result += "(" + filter + ")";
+            }
+            result += ")";
+        } else if(properties.size() == 1) {
+            result = properties.get(0);
+        }
+        return new OSGiFilterQualifierType(result);
+    }
+
     public static Filter makeFilter(String filter) {
         return new OSGiFilterQualifierType(filter);
     }
@@ -29,7 +49,7 @@ public class FilterGenerator {
         String f = "";
         if(old.value() != null && !old.value().equals("")) {
             if(filter != null && !filter.equals("")) {
-                f = "(&(" + old.value() + ")(" + filter + "))";
+                f = "(&(" + parse(old.value()) + ")(" + filter + "))";
             } else {
                 f = old.value();
             }
@@ -60,7 +80,7 @@ public class FilterGenerator {
         if(old.value() != null && !old.value().equals("")) {
             if(filters.size() >= 1) {
                 result = "(&";
-                result += "(" + old.value() + ")";
+                result += "(" + parse(old.value()) + ")";
                 for(String filter : filters) {
                     result += "(" + filter + ")";
                 }
@@ -78,6 +98,11 @@ public class FilterGenerator {
             result = filters.get(0);
         }
         return new OSGiFilterQualifierType(result);
+    }
+
+    private static String parse(String value) {
+        //TODO parse the value in order to remove potential (& )
+        return value;
     }
 
     private static List<String> getFilter(Annotation... qualifiers) {

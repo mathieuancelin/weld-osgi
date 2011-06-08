@@ -1,7 +1,6 @@
 package org.osgi.cdi.test;
 
 import com.sample.osgi.bundle1.api.*;
-import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -231,15 +230,21 @@ public class UsageTest {
     public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
-        ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
-        Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
-        Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
-//        ServiceProvider serviceProvider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
-//        Assert.assertNotNull("The service provider was null",serviceProvider);
+//        ServiceReference[] beanProviderReferences = context.getServiceReferences(BeanProvider.class.getName(),null);
+//        Assert.assertNotNull("The service provider reference array was null",beanProviderReferences);
+//        Assert.assertEquals("The number of service provider implementations was wrong", 1,beanProviderReferences.length);
+//        BeanProvider beanProvider = (BeanProvider)context.getService(beanProviderReferences[0]);
+//        Assert.assertNotNull("The service provider was null",beanProvider);
 //
-//        PropertyService service = serviceProvider.getService();
+//        ServiceProviderBean serviceProviderBean = beanProvider.getServiceProviderBean();
+//        Assert.assertNotNull("The service provider bean was null", serviceProviderBean);
+//
+//        PropertyService service = serviceProviderBean.getService();
 //        Assert.assertNotNull("The service was null", service);
 //        Assert.assertEquals("The service method result was wrong",String.class,service.whoAmI().getClass());
+//        PropertyService filteredService = serviceProviderBean.getFilteredService();
+//        Assert.assertNotNull("The filtered service was null", service);
+//        Assert.assertEquals("The filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",filteredService.whoAmI());
 //
 //        Service<PropertyService> services = serviceProvider.getServices();
 //        Assert.assertNotNull("The services were null", services);

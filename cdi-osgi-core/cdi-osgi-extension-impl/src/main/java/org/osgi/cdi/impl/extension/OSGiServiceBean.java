@@ -111,6 +111,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Object create(CreationalContext ctx) {
+        System.out.println("## Creation of a new OSGiServiceBean: " + toString());
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             return Proxy.newProxyInstance(

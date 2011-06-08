@@ -68,7 +68,7 @@ public class ServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public String getName() {
-        return type.toString();
+        return type.toString() + "." + filter.value();
     }
 
     @Override
@@ -98,6 +98,7 @@ public class ServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Service create(CreationalContext creationalContext) {
+        System.out.println("## Creation of a new ServiceProducerBean: " + toString());
         BundleContext registry = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass()).getBundleContext();
         return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], registry, filter);
     }
@@ -119,7 +120,7 @@ public class ServiceProducerBean<Service> implements Bean<Service> {
     public String printQualifiers() {
         String result = "|";
         for(Annotation qualifier : getQualifiers()) {
-            result += qualifier.annotationType().getSimpleName() + "|";
+            result += "@" + qualifier.annotationType().getSimpleName() + "|";
         }
         return result;
     }
