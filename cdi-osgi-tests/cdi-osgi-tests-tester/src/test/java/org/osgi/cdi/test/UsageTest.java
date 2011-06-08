@@ -36,7 +36,7 @@ public class UsageTest {
         );
     }
 
-    @Test
+//    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -114,7 +114,7 @@ public class UsageTest {
 
     }
 
-    @Test
+//    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -234,9 +234,9 @@ public class UsageTest {
         ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
         Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
         Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
-        ServiceProvider serviceProvider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
-        Assert.assertNotNull("The service provider was null",serviceProvider);
-
+//        ServiceProvider serviceProvider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
+//        Assert.assertNotNull("The service provider was null",serviceProvider);
+//
 //        PropertyService service = serviceProvider.getService();
 //        Assert.assertNotNull("The service was null", service);
 //        Assert.assertEquals("The service method result was wrong",String.class,service.whoAmI().getClass());

@@ -8,7 +8,6 @@ import org.osgi.framework.FrameworkUtil;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
@@ -42,8 +41,6 @@ public class ServiceProducerBean<Service> implements Bean<Service> {
             }
         }
 
-        filter = FilterGenerator.makeFilter(filter,qualifiers.toArray(new Annotation[qualifiers.size()]));
-
         System.out.println("## New registered service producer bean: " + toString());
     }
 
@@ -60,11 +57,7 @@ public class ServiceProducerBean<Service> implements Bean<Service> {
         Set<Annotation> s = new HashSet<Annotation>();
         s.add(new AnnotationLiteral<Any>() {
         });
-        if(!filter.value().equals("")) {
-            s.add(filter);
-        } else {
-            s.add(new AnnotationLiteral<Default>() {});
-        }
+        s.add(filter);
         return s;
     }
 

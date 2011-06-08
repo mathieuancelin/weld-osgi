@@ -11,7 +11,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.CreationException;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
@@ -49,8 +48,6 @@ public class OSGiServiceBean implements Bean {
             }
         }
 
-        filter = FilterGenerator.makeFilter(filter,qualifiers.toArray(new Annotation[qualifiers.size()]));
-
         System.out.println("## New registered service bean: " + toString());
     }
 
@@ -69,11 +66,7 @@ public class OSGiServiceBean implements Bean {
         });
         s.add(new AnnotationLiteral<OSGiService>() {
         });
-        if(!filter.value().equals("")) {
-            s.add(filter);
-        } else {
-            s.add(new AnnotationLiteral<Default>() {});
-        }
+        s.add(filter);
         if (required) {
             s.add(new AnnotationLiteral<Required>() {
             });
@@ -88,7 +81,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public String getName() {
-        return type.toString();
+        return type.toString() + "." + filter.value();
     }
 
     @Override
@@ -147,7 +140,7 @@ public class OSGiServiceBean implements Bean {
     public String printQualifiers() {
         String result = "|";
         for(Annotation qualifier : getQualifiers()) {
-            result += qualifier.annotationType().getSimpleName() + "|";
+            result += "@" + qualifier.annotationType().getSimpleName() + "|";
         }
         return result;
     }

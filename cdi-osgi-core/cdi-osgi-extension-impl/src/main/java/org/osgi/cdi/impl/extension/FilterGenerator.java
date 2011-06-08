@@ -5,6 +5,8 @@ import org.osgi.cdi.api.extension.annotation.Filter;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,26 +40,48 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(Annotation... qualifiers) {
-        String f = getFilter(qualifiers);
-        return new OSGiFilterQualifierType(f);
+        List<String> filters = getFilter(qualifiers);
+        String result = "";
+        if(filters.size() > 1) {
+            result = "(&";
+            for(String filter : filters) {
+                result += "(" + filter + ")";
+            }
+            result += ")";
+        } else if(filters.size() == 1) {
+            result = filters.get(0);
+        }
+        return new OSGiFilterQualifierType(result);
     }
 
     public static Filter makeFilter(Filter old, Annotation... qualifiers) {
-        String f = "";
-        String filter = getFilter(qualifiers);
+        List<String> filters = getFilter(qualifiers);
+        String result = "";
         if(old.value() != null && !old.value().equals("")) {
-            if(filter != null && !filter.equals("")) {
-                f = "(&(" + old.value() + ")(" + filter + "))";
+            if(filters.size() >= 1) {
+                result = "(&";
+                result += "(" + old.value() + ")";
+                for(String filter : filters) {
+                    result += "(" + filter + ")";
+                }
+                result += ")";
             } else {
-                f = old.value();
+                result = old.value();
             }
-        } else if(filter != null) {
-            f = filter;
+        } else if(filters.size() > 1) {
+            result = "(&";
+            for(String filter : filters) {
+                result += "(" + filter + ")";
+            }
+            result += ")";
+        } else if(filters.size() == 1) {
+            result = filters.get(0);
         }
-        return new OSGiFilterQualifierType(f);
+        return new OSGiFilterQualifierType(result);
     }
 
-    private static String getFilter(Annotation... qualifiers) {
+    private static List<String> getFilter(Annotation... qualifiers) {
+        List<String> result = new ArrayList<String>();
         String filter = "";
         for (Annotation qualifier : qualifiers) {
             if (!qualifier.annotationType().equals(Filter.class)) {
@@ -68,7 +92,8 @@ public class FilterGenerator {
                             if (value == null) {
                                 value = m.getDefaultValue();
                             }
-                            filter += "(" + qualifier.annotationType().getSimpleName() + "." + m.getName() + "=" + value + ")";
+                            filter = qualifier.annotationType().getSimpleName() + "." + m.getName() + "=" + value;
+                            result.add(filter);
                         } catch (Throwable t) {
                             // ignore
                         }
@@ -76,9 +101,6 @@ public class FilterGenerator {
                 }
             }
         }
-        if (filter != null && !filter.equals("")) {
-            filter = "(&" + filter + ")";
-        }
-        return filter;
+        return result;
     }
 }

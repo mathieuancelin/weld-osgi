@@ -9,8 +9,11 @@ import org.osgi.cdi.impl.integration.InstanceHolder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.*;
+import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -48,21 +51,21 @@ public class CDIOSGiExtension implements Extension {
     }
 
     public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
-        Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
-        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
-
         InjectionTarget injectionTarget = event.getInjectionTarget();
-        injectionTarget.getInjectionPoints().removeAll(injectionPoints);
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        injectionPoints.addAll(injectionTarget.getInjectionPoints());
+        injectionTarget.getInjectionPoints().removeAll(injectionTarget.getInjectionPoints());
+        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
         injectionTarget.getInjectionPoints().addAll(injectionPoints);
         event.setInjectionTarget(injectionTarget);
     }
 
     public void afterProcessProducer(@Observes ProcessProducer<?,?> event) {
-        Set<InjectionPoint> injectionPoints = event.getProducer().getInjectionPoints();
-        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
-
         Producer producer = event.getProducer();
-        producer.getInjectionPoints().removeAll(injectionPoints);
+        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+        injectionPoints.addAll(producer.getInjectionPoints());
+        producer.getInjectionPoints().removeAll(producer.getInjectionPoints());
+        injectionPoints = discoverAndProcessServiceInjectionPoints(injectionPoints);
         producer.getInjectionPoints().addAll(injectionPoints);
         event.setProducer(producer);
     }
@@ -101,6 +104,7 @@ public class CDIOSGiExtension implements Extension {
     }
 
     private Set<InjectionPoint> discoverAndProcessServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
+        Set<InjectionPoint> result = new HashSet<InjectionPoint>();
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
 
@@ -112,17 +116,116 @@ public class CDIOSGiExtension implements Extension {
             } catch (Exception e) {//Not a ParameterizedType, skip
             }
 
-            Set<Annotation> qualifiers = injectionPoint.getQualifiers();
             if (service) {
+                injectionPoint = processQualifiers(injectionPoint);
                 addServiceProducerInjectionInfo(injectionPoint);
-            } else if (contains(qualifiers, OSGiService.class)) {
-                if (contains(qualifiers, Required.class)) {
+            } else if (contains(injectionPoint.getQualifiers(), OSGiService.class)) {
+                injectionPoint = processQualifiers(injectionPoint);
+                if (contains(injectionPoint.getQualifiers(), Required.class)) {
                     requiredOsgiServiceDependencies.add((Class) injectionPoint.getType());
                 }
                 addServiceInjectionInfo(injectionPoint);
             }
+            result.add(injectionPoint);
         }
-        return injectionPoints;
+        return result;
+    }
+
+    public InjectionPoint processQualifiers(final InjectionPoint injectionPoint) {
+        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+        Filter filter = new OSGiFilterQualifierType("");
+        boolean osgiService = false, required = false;
+        for(Iterator<Annotation> iterator = qualifiers.iterator(); iterator.hasNext();) {
+            Annotation qualifier = iterator.next();
+            if(qualifier.annotationType().equals(Filter.class)) {
+                filter = (Filter)qualifier;
+            } else if(qualifier.annotationType().equals(OSGiService.class)) {
+                osgiService = true;
+            } else if(qualifier.annotationType().equals(Required.class)) {
+                required = false;
+            }
+        }
+        final Filter finalFilter = FilterGenerator.makeFilter(filter,qualifiers.toArray(new Annotation[qualifiers.size()]));
+        final Boolean finalRequired = required;
+        final Set<Annotation> finalQualifiers = new HashSet<Annotation>();
+        finalQualifiers.add(finalFilter);
+        if(osgiService) {
+            finalQualifiers.add(new AnnotationLiteral<OSGiService>() {});
+        }
+        if(required) {
+            finalQualifiers.add(new AnnotationLiteral<Required>() {});
+        }
+        finalQualifiers.add(new AnnotationLiteral<Any>() {
+        });
+        return new InjectionPoint() {
+
+            private Filter filter = finalFilter;
+            private Boolean required = finalRequired;
+
+            @Override
+            public Type getType() {
+                return injectionPoint.getType();
+            }
+
+            @Override
+            public Set<Annotation> getQualifiers() {
+                return finalQualifiers;
+            }
+
+            @Override
+            public Bean<?> getBean() {
+                return injectionPoint.getBean();
+            }
+
+            @Override
+            public Member getMember() {
+                return injectionPoint.getMember();
+            }
+
+            @Override
+            public Annotated getAnnotated() {
+                return injectionPoint.getAnnotated();
+            }
+
+            @Override
+            public boolean isDelegate() {
+                return injectionPoint.isDelegate();
+            }
+
+            @Override
+            public boolean isTransient() {
+                return injectionPoint.isTransient();
+            }
+
+            @Override
+            public int hashCode() {
+                return getType().hashCode() + filter.hashCode() + required.hashCode();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof InjectionPoint)) return false;
+
+                InjectionPoint that = (InjectionPoint) o;
+                return hashCode() == that.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return getMember().getName() +
+                        " with qualifiers: " +
+                        printQualifiers();
+            }
+
+            public String printQualifiers() {
+                String result = "|";
+                for(Annotation qualifier : getQualifiers()) {
+                    result += "@" + qualifier.annotationType().getSimpleName() + "|";
+                }
+                return result;
+            }
+        };
     }
 
     private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
