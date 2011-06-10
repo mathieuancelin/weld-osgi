@@ -8,12 +8,12 @@ public class ServiceProvider {
 //    @Inject
 //    @OSGiService
 //    private PropertyService service;
-//
+
 //    @Inject
 //    @OSGiService
 //    @Filter("Name.value=1")
 //    private PropertyService filteredService;
-//
+
 //    @Inject
 //    @OSGiService
 //    @Name("2")

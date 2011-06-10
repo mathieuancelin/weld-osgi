@@ -1,19 +1,15 @@
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
-import org.osgi.cdi.api.extension.annotation.OSGiService;
-import org.osgi.cdi.api.extension.annotation.Required;
 import org.osgi.cdi.impl.extension.services.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -29,6 +25,7 @@ public class OSGiServiceBean implements Bean {
 
     private final Type type;
     private final InjectionPoint injectionPoint;
+    private  Set<Annotation> qualifiers;
     private Filter filter;
     private boolean required = false;
 
@@ -36,18 +33,16 @@ public class OSGiServiceBean implements Bean {
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
         required = false;
-        filter = new OSGiFilterQualifierType("");
-
-        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
-        for (Annotation qualifier : qualifiers) {
-            if (qualifier.annotationType().equals(Filter.class)) {
-                filter = (Filter) qualifier;
-            }
-            if (qualifier.annotationType().equals(Required.class)) {
-                required = true;
+        qualifiers = injectionPoint.getQualifiers();
+        for(Annotation qualifier: qualifiers) {
+            if(qualifier.annotationType().equals(Filter.class)) {
+                filter = (Filter)qualifier;
+                break;
             }
         }
-//        System.out.println("## New registered service bean: " + toString());
+        filter = FilterGenerator.makeFilter(filter, qualifiers.toArray(new Annotation[qualifiers.size()]));
+
+        System.out.println("## Registration of a new OSGiServiceBean: " + toString());
     }
 
     @Override
@@ -60,17 +55,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Set<Annotation> getQualifiers() {
-        Set<Annotation> s = new HashSet<Annotation>();
-        s.add(new AnnotationLiteral<Any>() {
-        });
-        s.add(new AnnotationLiteral<OSGiService>() {
-        });
-        s.add(filter);
-        if (required) {
-            s.add(new AnnotationLiteral<Required>() {
-            });
-        }
-        return s;
+        return qualifiers;
     }
 
     @Override
@@ -80,7 +65,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public String getName() {
-        return type.toString() + "." + filter.value();
+        return null;
     }
 
     @Override
@@ -110,7 +95,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Object create(CreationalContext ctx) {
-//        System.out.println("## Creation of a new OSGiServiceBean: " + toString());
+        System.out.println("## Creation of a new OSGiServiceBean: " + toString());
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             return Proxy.newProxyInstance(
@@ -134,7 +119,7 @@ public class OSGiServiceBean implements Bean {
                 ", filter=" + filter.value() +
                 ", required=" + required +
                 ", qualifiers=" + printQualifiers() +
-                '}';
+                "}";
     }
 
     public String printQualifiers() {

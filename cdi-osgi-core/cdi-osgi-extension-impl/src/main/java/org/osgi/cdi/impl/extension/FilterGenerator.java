@@ -42,10 +42,16 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(String filter) {
+        if(filter == null) {
+            return new OSGiFilterQualifierType("");
+        }
         return new OSGiFilterQualifierType(filter);
     }
 
     public static Filter makeFilter(Filter old, String filter) {
+        if(old == null) {
+            return makeFilter(filter);
+        }
         String f = "";
         if(old.value() != null && !old.value().equals("")) {
             if(filter != null && !filter.equals("")) {
@@ -60,6 +66,9 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(Annotation... qualifiers) {
+        if(qualifiers == null || qualifiers.length == 0) {
+            return new OSGiFilterQualifierType("");
+        }
         List<String> filters = getFilter(qualifiers);
         String result = "";
         if(filters.size() > 1) {
@@ -75,6 +84,9 @@ public class FilterGenerator {
     }
 
     public static Filter makeFilter(Filter old, Annotation... qualifiers) {
+        if(old == null) {
+            return makeFilter(qualifiers);
+        }
         List<String> filters = getFilter(qualifiers);
         String result = "";
         if(old.value() != null && !old.value().equals("")) {
