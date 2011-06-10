@@ -37,7 +37,7 @@ import static java.lang.annotation.ElementType.*;
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
 @Qualifier
-@Target({TYPE, METHOD, PARAMETER, FIELD})
+@Target({METHOD, PARAMETER, FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiService {
 }

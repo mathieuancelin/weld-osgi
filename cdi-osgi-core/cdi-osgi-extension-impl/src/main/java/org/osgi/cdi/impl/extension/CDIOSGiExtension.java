@@ -1,3 +1,15 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.Service;
@@ -9,9 +21,7 @@ import org.osgi.cdi.impl.integration.InstanceHolder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.*;
-import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -21,8 +31,9 @@ import java.util.*;
  * Weld OSGi extension.
  *
  * Contains copy/paste parts from the GlasFish OSGI-CDI extension.
- * 
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 @ApplicationScoped
 public class CDIOSGiExtension implements Extension {
@@ -38,7 +49,7 @@ public class CDIOSGiExtension implements Extension {
 
     private Set<Class<?>> requiredOsgiServiceDependencies = new HashSet<Class<?>>();
 
-    public void registerWeldOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
+    public void registerCDIOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(CDIOSGiProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(BundleHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolderImpl.class));
@@ -48,7 +59,7 @@ public class CDIOSGiExtension implements Extension {
         event.addQualifier(OSGiService.class);
     }
 
-    public void afterProcessInjectionTarget(@Observes ProcessInjectionTarget<?> event){
+    public void discoverCDIOSGiServices(@Observes ProcessInjectionTarget<?> event){
         Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
         discoverServiceInjectionPoints(injectionPoints);
     }
@@ -72,15 +83,14 @@ public class CDIOSGiExtension implements Extension {
         }
     }
     
-    public void registerWeldOSGiContexts(@Observes AfterBeanDiscovery event) {
+    public void registerCDIOSGiServices(@Observes AfterBeanDiscovery event) {
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();iterator.hasNext();) {
             Type type =  iterator.next();
             if (!(type instanceof Class)) {
                 //TODO: need to handle Instance<Class>. This fails currently
                 System.out.println("Unknown type:" + type);
                 event.addDefinitionError(
-                    new UnsupportedOperationException(
-                        "Injection target type " + type + "not supported"));
+                    new UnsupportedOperationException("Injection target type " + type + "not supported"));
                 break; 
             }
             addService(event, type, this.servicesToBeInjected.get(type));
@@ -115,63 +125,6 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
-//    private Set<InjectionPoint> discoverAndProcessServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
-//        Set<InjectionPoint> result = new HashSet<InjectionPoint>();
-//        for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
-//            InjectionPoint injectionPoint = iterator.next();
-//
-//            boolean service = false;
-//            try {
-//                if (((ParameterizedType) injectionPoint.getType()).getRawType().equals(Service.class)) {
-//                    service = true;
-//                }
-//            } catch (Exception e) {//Not a ParameterizedType, skip
-//            }
-//
-//            if (service) {
-//                injectionPoint = processQualifiers(injectionPoint);
-//                addServiceProducerInjectionInfo(injectionPoint);
-//            } else if (contains(injectionPoint.getQualifiers(), OSGiService.class)) {
-//                injectionPoint = processQualifiers(injectionPoint);
-//                if (contains(injectionPoint.getQualifiers(), Required.class)) {
-//                    requiredOsgiServiceDependencies.add((Class) injectionPoint.getType());
-//                }
-//                addServiceInjectionInfo(injectionPoint);
-//            }
-//            result.add(injectionPoint);
-//        }
-//        return result;
-//    }
-
-    public InjectionPoint processQualifiers(InjectionPoint injectionPoint) {
-        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
-        Filter filter = new OSGiFilterQualifierType("");
-        boolean osgiService = false, required = false;
-        for(Iterator<Annotation> iterator = qualifiers.iterator(); iterator.hasNext();) {
-            Annotation qualifier = iterator.next();
-            if(qualifier.annotationType().equals(Filter.class)) {
-                filter = (Filter)qualifier;
-            } else if(qualifier.annotationType().equals(OSGiService.class)) {
-                osgiService = true;
-            } else if(qualifier.annotationType().equals(Required.class)) {
-                required = false;
-            }
-        }
-        filter = FilterGenerator.makeFilter(filter,qualifiers.toArray(new Annotation[qualifiers.size()]));
-        Set<Annotation> newQualifiers = new HashSet<Annotation>();
-        newQualifiers.add(filter);
-        if(osgiService) {
-            newQualifiers.add(new AnnotationLiteral<OSGiService>() {});
-        }
-        if(required) {
-            newQualifiers.add(new AnnotationLiteral<Required>() {});
-        }
-        newQualifiers.add(new AnnotationLiteral<Any>() {
-        });
-        InjectionPoint result = new CDIOSGiInjectionPoint(injectionPoint, newQualifiers, filter, required);
-        return result;
-    }
-
     private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
         Type key = injectionPoint.getType();
         if (!serviceProducerToBeInjected.containsKey(key)){
@@ -198,7 +151,7 @@ public class CDIOSGiExtension implements Extension {
     private void addServiceProducer(AfterBeanDiscovery event, final Type type, final Set<InjectionPoint> injectionPoints) {
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
-            event.addBean(new ServiceProducerBean(injectionPoint));
+            event.addBean(new OSGiServiceProducerBean(injectionPoint));
         }
     }
 

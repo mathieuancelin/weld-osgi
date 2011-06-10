@@ -1,3 +1,15 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.osgi.cdi.impl.integration;
 
 import org.osgi.cdi.api.extension.annotation.Property;
@@ -17,8 +29,9 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
- * 
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class ServicePublisher {
 
@@ -41,10 +54,10 @@ public class ServicePublisher {
             Class<?> clazz = null;
             try {
                 clazz = bundle.loadClass(className);
-            } catch (Exception e) {
-                //e.printStackTrace(); // silently ignore :-)
+            } catch (Exception e) {//inaccessible class, silently ignore :-)
             }
             if (clazz != null) {
+                //is an auto-publishable class?
                 if (clazz.isAnnotationPresent(Publish.class)) {
                     Object service = null;
                     InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
@@ -53,7 +66,7 @@ public class ServicePublisher {
                         Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                         service = instance.get();
                     } catch (Throwable e) {
-                        e.printStackTrace();
+                        throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
                     }
                     publish(clazz, service, qualifiers);
                 }
@@ -69,20 +82,20 @@ public class ServicePublisher {
             Publish publish = clazz.getAnnotation(Publish.class);
             Class[] contracts = publish.contracts();
             Properties properties = getServiceProperties(publish, qualifiers);
+            //if contracts are precised
             if (contracts.length != 0) {
                 for (Class contract : contracts) {
                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                     registration = bundle.getBundleContext().registerService(
                             contract.getName(), getProxy(contract, clazz, annotations, bundle), properties);
                 }
-            } else {
-                // registering interfaces
+            } else { //else use service interfaces or type
                 if (service.getClass().getInterfaces().length > 0) {
-                    for (Class interf : service.getClass().getInterfaces()) {
-                        if (!blackList.contains(interf.getName())) {
-                            System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
+                    for (Class interfaces : service.getClass().getInterfaces()) {
+                        if (!blackList.contains(interfaces.getName())) {
+                            System.out.println("Registering OSGi service " + clazz.getName() + " as " + interfaces.getName());
                             registration = bundle.getBundleContext().registerService(
-                                    interf.getName(), getProxy(interf, clazz, annotations, bundle), properties);
+                                    interfaces.getName(), getProxy(interfaces, clazz, annotations, bundle), properties);
                         }
                     }
                 } else {
