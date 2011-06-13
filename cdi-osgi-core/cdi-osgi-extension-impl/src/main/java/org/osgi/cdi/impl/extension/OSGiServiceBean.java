@@ -19,9 +19,11 @@ import org.osgi.framework.FrameworkUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -69,7 +71,10 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return qualifiers;
+        Set<Annotation> result = new HashSet<Annotation>();
+        result.addAll(qualifiers);
+        result.add(new AnnotationLiteral<Any>() {});
+        return result;
     }
 
     @Override

@@ -14,8 +14,12 @@ package org.osgi.cdi.api.extension.annotation;
 
 
 import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.*;
 
 /**
  * <p>This annotation qualifies an injection point that represents a required
@@ -30,7 +34,9 @@ import java.lang.annotation.RetentionPolicy;
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
-@Qualifier
+@Target({ METHOD, PARAMETER, FIELD })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Qualifier
 public @interface Required {
 }

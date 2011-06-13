@@ -8,7 +8,7 @@ import org.osgi.cdi.api.extension.annotation.Publish;
         @Property(name = "Name.value",value = "1")
 })
 public class PropertyServiceImpl2 implements PropertyService {
-    
+
     @Override
     public String whoAmI() {
         return getClass().getName();

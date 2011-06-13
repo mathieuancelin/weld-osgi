@@ -56,7 +56,6 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ContainerObserver.class));
         event.addAnnotatedType(manager.createAnnotatedType(InstanceHolder.class));
-        event.addQualifier(OSGiService.class);
     }
 
     public void discoverCDIOSGiServices(@Observes ProcessInjectionTarget<?> event){
