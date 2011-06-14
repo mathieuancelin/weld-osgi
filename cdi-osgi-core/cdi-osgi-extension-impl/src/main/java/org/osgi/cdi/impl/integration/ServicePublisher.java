@@ -82,8 +82,7 @@ public class ServicePublisher {
             Publish publish = clazz.getAnnotation(Publish.class);
             Class[] contracts = publish.contracts();
             Properties properties = getServiceProperties(publish, qualifiers);
-            //if contracts are precised
-            if (contracts.length != 0) {
+            if (contracts.length != 0) {//if contracts are precised
                 for (Class contract : contracts) {
                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                     registration = bundle.getBundleContext().registerService(
@@ -98,10 +97,11 @@ public class ServicePublisher {
                                     interfaces.getName(), getProxy(interfaces, clazz, annotations, bundle), properties);
                         }
                     }
-                } else {
-                    System.out.println("Registering OSGi service " + clazz.getName() + " as " + clazz.getName());
-                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 }
+            }
+            if(registration == null) {
+                System.out.println("Registering OSGi service " + clazz.getName() + " as " + clazz.getName());
+                registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
             }
         }
         if (registration != null) {
