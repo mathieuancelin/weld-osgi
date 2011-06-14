@@ -129,6 +129,6 @@ public class InfrastrutureTest {
         container.setRegistrations(registrations);
         Assert.assertNotNull("The registration collection was null",container.getRegistrations());
         Assert.assertEquals("The registration collection was not empty",0,container.getRegistrations().size());
-        
+
     }
 }

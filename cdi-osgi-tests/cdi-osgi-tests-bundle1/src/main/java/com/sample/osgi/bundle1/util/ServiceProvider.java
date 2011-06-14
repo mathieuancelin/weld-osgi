@@ -1,6 +1,5 @@
 package com.sample.osgi.bundle1.util;
 
-import com.sample.osgi.bundle1.api.Name;
 import com.sample.osgi.bundle1.api.PropertyService;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.api.extension.annotation.Publish;
@@ -19,10 +18,10 @@ public class ServiceProvider {
 //    @Filter("Name.value=1")
 //    private PropertyService filteredService;
 
-    @Inject
-    @OSGiService
-    @Name("2")
-    private PropertyService qualifiedService;
+//    @Inject
+//    @OSGiService
+//    @Name("2")
+//    private PropertyService qualifiedService;
 //
 //    @Inject
 //    @OSGiService
@@ -61,4 +60,9 @@ public class ServiceProvider {
 //    @Inject
 //    @Filter("Name.value=1")
 //    private Service<PropertyService> otherFilteredServices;
+
+
+    public PropertyService getService() {
+        return service;
+    }
 }

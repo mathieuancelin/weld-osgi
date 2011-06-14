@@ -1,6 +1,8 @@
 package org.osgi.cdi.test;
 
 import com.sample.osgi.bundle1.api.*;
+import com.sample.osgi.bundle1.util.EventListener;
+import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +42,6 @@ public class UsageTest {
         Environment.waitForEnvironment(context);
 
         Bundle bundle1 = null, bundle2 = null, bundle3 = null;
-
         for(Bundle b : context.getBundles()) {
             Assert.assertEquals("Bundle" + b.getSymbolicName() + "is not ACTIVE", Bundle.ACTIVE, b.getState());
             if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle1")) {
@@ -53,7 +54,6 @@ public class UsageTest {
                 bundle3=b;
             }
         }
-
         Assert.assertNotNull("The bundle1 was not retrieved",bundle1);
         Assert.assertNotNull("The bundle2 was not retrieved",bundle2);
         Assert.assertNotNull("The bundle3 was not retrieved",bundle3);
@@ -230,38 +230,81 @@ public class UsageTest {
     public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
-//        ServiceReference[] beanProviderReferences = context.getServiceReferences(BeanProvider.class.getName(),null);
-//        Assert.assertNotNull("The service provider reference array was null",beanProviderReferences);
-//        Assert.assertEquals("The number of service provider implementations was wrong", 1,beanProviderReferences.length);
-//        BeanProvider beanProvider = (BeanProvider)context.getService(beanProviderReferences[0]);
-//        Assert.assertNotNull("The service provider was null",beanProvider);
-//
-//        ServiceProviderBean serviceProviderBean = beanProvider.getServiceProviderBean();
-//        Assert.assertNotNull("The service provider bean was null", serviceProviderBean);
-//
-//        PropertyService service = serviceProviderBean.getService();
-//        Assert.assertNotNull("The service was null", service);
-//        Assert.assertEquals("The service method result was wrong",String.class,service.whoAmI().getClass());
-//        PropertyService filteredService = serviceProviderBean.getFilteredService();
-//        Assert.assertNotNull("The filtered service was null", service);
-//        Assert.assertEquals("The filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",filteredService.whoAmI());
-//
-//        Service<PropertyService> services = serviceProvider.getServices();
-//        Assert.assertNotNull("The services were null", services);
-//        Assert.assertEquals("The number of services was wrong",3,services.size());
-//        Assert.assertTrue("The services were not ambiguous",services.isAmbiguous());
-//        Assert.assertFalse("The services were not satisfied",services.isUnsatisfied());
-//        PropertyService serviceGet = services.get();
-//        Assert.assertNotNull("The got service was null", serviceGet);
-//        Assert.assertEquals("The got service method result was wrong",String.class,serviceGet.whoAmI().getClass());
-//        Service<PropertyService> servicesFilter = services.select("name = 1");
-//        Assert.assertNotNull("The filtered services were null", servicesFilter);
-//        Assert.assertEquals("The number of filtered services was wrong",1,servicesFilter.size());
-//        Assert.assertFalse("The filtered services were ambiguous",servicesFilter.isAmbiguous());
-//        Assert.assertFalse("The filtered services were not satisfied",servicesFilter.isUnsatisfied());
-//        PropertyService serviceFilter = servicesFilter.get();
-//        Assert.assertNotNull("The filtered service was null", serviceFilter);
-//        Assert.assertEquals("The filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",serviceFilter.whoAmI());
+        ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
+        Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
+        Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
+        ServiceProvider serviceProvider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
+        Assert.assertNotNull("The service provider was null",serviceProvider);
 
+        PropertyService service = serviceProvider.getService();
+        Assert.assertNotNull("The service was null", service);
+        Assert.assertEquals("The service method result was wrong",String.class,service.whoAmI().getClass());
+    }
+
+    @Test
+    public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
+        Environment.waitForEnvironment(context);
+
+        Bundle bundle1 = null, bundle2 = null, bundle3 = null;
+        for(Bundle b : context.getBundles()) {
+            if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle1")) {
+                bundle1=b;
+            }
+            else if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle2")) {
+                bundle2=b;
+            }
+            else if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle3")) {
+                bundle3=b;
+            }
+        }
+        Assert.assertNotNull("The bundle1 was not retrieved",bundle1);
+        Assert.assertNotNull("The bundle2 was not retrieved",bundle2);
+        Assert.assertNotNull("The bundle3 was not retrieved",bundle3);
+
+        ServiceReference[] eventListenerReferences = context.getServiceReferences(EventListener.class.getName(),null);
+        Assert.assertNotNull("The event listener reference array was null",eventListenerReferences);
+        Assert.assertEquals("The number of event listener implementations was wrong", 1,eventListenerReferences.length);
+        EventListener eventListener = (EventListener)context.getService(eventListenerReferences[0]);
+        Assert.assertNotNull("The event listener was null",eventListener);
+
+        Assert.assertEquals("The number of listened BundleContainerInitialized event was wrong",1,eventListener.getStart());
+        Assert.assertEquals("The number of listened BundleContainerShutdown event was wrong",0,eventListener.getStop());
+
+        int serviceArrival = eventListener.getServiceArrival();
+        int serviceChanged = eventListener.getServiceChanged();
+        int serviceDeparture = eventListener.getServiceDeparture();
+        Assert.assertTrue("The number of listened ServiceArrival event was wrong",serviceArrival > 0);
+        Assert.assertEquals("The number of listened ServiceChanged event was wrong", 0, serviceChanged);
+        Assert.assertEquals("The number of listened ServiceDeparture event was wrong", 0, serviceDeparture);
+
+        int bundleInstalled = eventListener.getBundleInstalled();
+        int bundleUninstalled = eventListener.getBundleUninstalled();
+        int bundleResolved = eventListener.getBundleResolved();
+        int bundleUnresolved = eventListener.getBundleUnresolved();
+        int bundleStarting = eventListener.getBundleStarting();
+        int bundleStarted = eventListener.getBundleStarted();
+        int bundleStopping = eventListener.getBundleStopping();
+        int bundleStopped = eventListener.getBundleStopped();
+        int bundleUpdated = eventListener.getBundleUpdated();
+        int bundleLazyActivation = eventListener.getBundleLazyActivation();
+        Assert.assertEquals("The number of listened BundleInstalled event was wrong", 0, bundleInstalled);
+        Assert.assertEquals("The number of listened BundleUninstalled event was wrong", 0, bundleUninstalled);
+        Assert.assertEquals("The number of listened BundleResolved event was wrong", 2, bundleResolved);
+        Assert.assertEquals("The number of listened BundleUnresolved event was wrong", 0, bundleUnresolved);
+        Assert.assertEquals("The number of listened BundleStarting event was wrong", 0, bundleStarting);
+        Assert.assertEquals("The number of listened BundleStarted event was wrong", 2, bundleStarted);
+        Assert.assertEquals("The number of listened BundleStopping event was wrong", 0, bundleStopping);
+        Assert.assertEquals("The number of listened BundleStopped event was wrong", 0, bundleStopped);
+        Assert.assertEquals("The number of listened BundleUpdated event was wrong", 0, bundleUpdated);
+        Assert.assertEquals("The number of listened BundleLazyActivation event was wrong", 0, bundleLazyActivation);
+
+
+//        bundle1.stop();
+//        ServiceReference[] bundle1ListenerReferences = context.getServiceReferences(Bundle1Listener.class.getName(),null);
+//        Assert.assertNotNull("The bundle 1 listener reference array was null",bundle1ListenerReferences);
+//        Assert.assertEquals("The number of bundle 1 listener implementations was wrong", 1,bundle1ListenerReferences.length);
+//        Bundle1Listener bundle1Listener = (Bundle1Listener)context.getService(bundle1ListenerReferences[0]);
+//        Assert.assertNotNull("The bundle 1 listener was null",bundle1Listener);
+//        Assert.assertEquals("The new number of listened BundleContainerShutdown event was wrong",1,bundle1Listener.getStop());
     }
 }

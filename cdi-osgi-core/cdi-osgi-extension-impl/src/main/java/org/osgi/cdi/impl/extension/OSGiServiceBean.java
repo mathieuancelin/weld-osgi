@@ -109,9 +109,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        injectionPoints.add(injectionPoint);
-        return injectionPoints;
+        return Collections.emptySet();
     }
 
     @Override
