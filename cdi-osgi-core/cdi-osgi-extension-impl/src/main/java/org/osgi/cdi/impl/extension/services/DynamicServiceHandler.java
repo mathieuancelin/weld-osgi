@@ -1,7 +1,7 @@
 package org.osgi.cdi.impl.extension.services;
 
-import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -33,7 +33,7 @@ public class DynamicServiceHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         ServiceReference reference = null;
-        if (filter != null) {
+        if (filter != null && filter.value() != null && filter.value().length() > 0) {
             ServiceReference[] refs =
                     bundle.getBundleContext().getServiceReferences(name, filter.value());
             if (refs != null && refs.length > 0) {
