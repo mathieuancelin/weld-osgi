@@ -1,5 +1,7 @@
 package com.sample.osgi.bundle1.util;
 
+import com.sample.osgi.bundle1.api.MovingService;
+import com.sample.osgi.bundle1.impl.MovingServiceImpl;
 import org.osgi.cdi.api.extension.annotation.Publish;
 import org.osgi.cdi.api.extension.events.BundleContainerEvents;
 import org.osgi.cdi.api.extension.events.BundleEvents;
@@ -12,9 +14,9 @@ import javax.enterprise.event.Observes;
 @ApplicationScoped
 public class EventListener {
 
-//    @Inject
-//    @OSGiService
-//    Bundle1Listener listener;
+    public MovingService getMovingServiceInstance() {
+        return new MovingServiceImpl();
+    }
 
     private int start = 0;
     private int stop = 0;
@@ -25,7 +27,6 @@ public class EventListener {
 
     private void stop(@Observes BundleContainerEvents.BundleContainerShutdown event) {
         stop++;
-//        listener.setStop(stop);
     }
 
     public int getStart() {

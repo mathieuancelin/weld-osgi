@@ -37,7 +37,7 @@ public class UsageTest {
         );
     }
 
-//    @Test
+    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -113,7 +113,7 @@ public class UsageTest {
 
     }
 
-//    @Test
+    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -277,6 +277,21 @@ public class UsageTest {
         Assert.assertEquals("The number of listened ServiceChanged event was wrong", 0, serviceChanged);
         Assert.assertEquals("The number of listened ServiceDeparture event was wrong", 0, serviceDeparture);
 
+        ServiceRegistration registration = context.registerService(MovingService.class.getName(), eventListener.getMovingServiceInstance(), null);
+        Assert.assertEquals("The new number of listened ServiceArrival event was wrong", serviceArrival + 1, eventListener.getServiceArrival());
+        Assert.assertEquals("The new number of listened ServiceChanged event was wrong", serviceChanged, eventListener.getServiceChanged());
+        Assert.assertEquals("The new number of listened ServiceDeparture event was wrong", serviceDeparture, eventListener.getServiceDeparture());
+
+        registration.setProperties(null);
+        Assert.assertEquals("The new number of listened ServiceArrival event was wrong", serviceArrival + 1, eventListener.getServiceArrival());
+        Assert.assertEquals("The new number of listened ServiceChanged event was wrong", serviceChanged + 1, eventListener.getServiceChanged());
+        Assert.assertEquals("The new number of listened ServiceDeparture event was wrong", serviceDeparture, eventListener.getServiceDeparture());
+
+        registration.unregister();
+        Assert.assertEquals("The new number of listened ServiceArrival event was wrong", serviceArrival + 1, eventListener.getServiceArrival());
+        Assert.assertEquals("The new number of listened ServiceChanged event was wrong", serviceChanged + 1, eventListener.getServiceChanged());
+        Assert.assertEquals("The new number of listened ServiceDeparture event was wrong", serviceDeparture + 1, eventListener.getServiceDeparture());
+
         int bundleInstalled = eventListener.getBundleInstalled();
         int bundleUninstalled = eventListener.getBundleUninstalled();
         int bundleResolved = eventListener.getBundleResolved();
@@ -298,13 +313,70 @@ public class UsageTest {
         Assert.assertEquals("The number of listened BundleUpdated event was wrong", 0, bundleUpdated);
         Assert.assertEquals("The number of listened BundleLazyActivation event was wrong", 0, bundleLazyActivation);
 
+        bundle3.stop();
+        Environment.waitForState(bundle3,Bundle.RESOLVED);
+        Assert.assertEquals("The new number of listened BundleInstalled event was wrong", bundleInstalled, eventListener.getBundleInstalled());
+        Assert.assertEquals("The new number of listened BundleUninstalled event was wrong", bundleUninstalled, eventListener.getBundleUninstalled());
+        Assert.assertEquals("The new number of listened BundleResolved event was wrong", bundleResolved, eventListener.getBundleResolved());
+        Assert.assertEquals("The new number of listened BundleUnresolved event was wrong", bundleUnresolved, eventListener.getBundleUnresolved());
+        Assert.assertEquals("The new number of listened BundleStarting event was wrong", bundleStarting, eventListener.getBundleStarting());
+        Assert.assertEquals("The new number of listened BundleStarted event was wrong", bundleStarted, eventListener.getBundleStarted());
+//        Assert.assertEquals("The new number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
+        Assert.assertEquals("The new number of listened BundleStopped event was wrong", bundleStopped + 1, eventListener.getBundleStopped());
+        Assert.assertEquals("The new number of listened BundleUpdated event was wrong", bundleUpdated, eventListener.getBundleUpdated());
+        Assert.assertEquals("The new number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
 
-//        bundle1.stop();
-//        ServiceReference[] bundle1ListenerReferences = context.getServiceReferences(Bundle1Listener.class.getName(),null);
-//        Assert.assertNotNull("The bundle 1 listener reference array was null",bundle1ListenerReferences);
-//        Assert.assertEquals("The number of bundle 1 listener implementations was wrong", 1,bundle1ListenerReferences.length);
-//        Bundle1Listener bundle1Listener = (Bundle1Listener)context.getService(bundle1ListenerReferences[0]);
-//        Assert.assertNotNull("The bundle 1 listener was null",bundle1Listener);
-//        Assert.assertEquals("The new number of listened BundleContainerShutdown event was wrong",1,bundle1Listener.getStop());
+        bundle3.start();
+        Environment.waitForState(bundle3,Bundle.ACTIVE);
+        Assert.assertEquals("The new number of listened BundleInstalled event was wrong", bundleInstalled, eventListener.getBundleInstalled());
+        Assert.assertEquals("The new number of listened BundleUninstalled event was wrong", bundleUninstalled, eventListener.getBundleUninstalled());
+        Assert.assertEquals("The new number of listened BundleResolved event was wrong", bundleResolved, eventListener.getBundleResolved());
+        Assert.assertEquals("The new number of listened BundleUnresolved event was wrong", bundleUnresolved, eventListener.getBundleUnresolved());
+//        Assert.assertEquals("The new number of listened BundleStarting event was wrong", bundleStarting + 1, eventListener.getBundleStarting());
+        Assert.assertEquals("The new number of listened BundleStarted event was wrong", bundleStarted + 1, eventListener.getBundleStarted());
+//        Assert.assertEquals("The new number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
+        Assert.assertEquals("The new number of listened BundleStopped event was wrong", bundleStopped + 1, eventListener.getBundleStopped());
+        Assert.assertEquals("The new number of listened BundleUpdated event was wrong", bundleUpdated, eventListener.getBundleUpdated());
+        Assert.assertEquals("The new number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
+
+        bundle3.update();
+        Environment.waitForState(bundle3,Bundle.ACTIVE);
+        Assert.assertEquals("The new number of listened BundleInstalled event was wrong", bundleInstalled, eventListener.getBundleInstalled());
+        Assert.assertEquals("The new number of listened BundleUninstalled event was wrong", bundleUninstalled, eventListener.getBundleUninstalled());
+        Assert.assertEquals("The new number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
+        Assert.assertEquals("The new number of listened BundleUnresolved event was wrong", bundleUnresolved + 1, eventListener.getBundleUnresolved());
+//        Assert.assertEquals("The new number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The new number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
+//        Assert.assertEquals("The new number of listened BundleStopping event was wrong", bundleStopping + 2, eventListener.getBundleStopping());
+        Assert.assertEquals("The new number of listened BundleStopped event was wrong", bundleStopped + 2, eventListener.getBundleStopped());
+        Assert.assertEquals("The new number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
+        Assert.assertEquals("The new number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
+
+        String location = bundle3.getLocation();
+        bundle3.uninstall();
+        Environment.waitForState(bundle3,Bundle.UNINSTALLED);
+        Assert.assertEquals("The new number of listened BundleInstalled event was wrong", bundleInstalled, eventListener.getBundleInstalled());
+        Assert.assertEquals("The new number of listened BundleUninstalled event was wrong", bundleUninstalled + 1, eventListener.getBundleUninstalled());
+        Assert.assertEquals("The new number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
+        Assert.assertEquals("The new number of listened BundleUnresolved event was wrong", bundleUnresolved + 2, eventListener.getBundleUnresolved());
+//        Assert.assertEquals("The new number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The new number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
+//        Assert.assertEquals("The new number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
+        Assert.assertEquals("The new number of listened BundleStopped event was wrong", bundleStopped + 3, eventListener.getBundleStopped());
+        Assert.assertEquals("The new number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
+        Assert.assertEquals("The new number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
+
+        context.installBundle(location);
+        Thread.sleep(500);
+        Assert.assertEquals("The new number of listened BundleInstalled event was wrong", bundleInstalled + 1, eventListener.getBundleInstalled());
+        Assert.assertEquals("The new number of listened BundleUninstalled event was wrong", bundleUninstalled + 1, eventListener.getBundleUninstalled());
+        Assert.assertEquals("The new number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
+        Assert.assertEquals("The new number of listened BundleUnresolved event was wrong", bundleUnresolved + 2, eventListener.getBundleUnresolved());
+//        Assert.assertEquals("The new number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The new number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
+//        Assert.assertEquals("The new number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
+        Assert.assertEquals("The new number of listened BundleStopped event was wrong", bundleStopped + 3, eventListener.getBundleStopped());
+        Assert.assertEquals("The new number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
+        Assert.assertEquals("The new number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
     }
 }
