@@ -39,18 +39,14 @@ import java.util.Set;
  */
 public class OSGiServiceBean implements Bean {
 
-    private final Type type;
     private final InjectionPoint injectionPoint;
-    private  Set<Annotation> qualifiers;
     private Filter filter;
-    private boolean required = false;
+    private Set<Annotation> qualifiers;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
-        type = injectionPoint.getType();
-        required = false;
         qualifiers = injectionPoint.getQualifiers();
-        for(Annotation qualifier: qualifiers) {
+        for(Annotation qualifier : qualifiers) {
             if(qualifier.annotationType().equals(Filter.class)) {
                 filter = (Filter)qualifier;
                 break;
@@ -64,7 +60,7 @@ public class OSGiServiceBean implements Bean {
     @Override
     public Set<Type> getTypes() {
         Set<Type> s = new HashSet<Type>();
-        s.add(type);
+        s.add(injectionPoint.getType());
         s.add(Object.class);
         return s;
     }
@@ -94,7 +90,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Class getBeanClass() {
-        return (Class)type;
+        return (Class)injectionPoint.getType();
     }
 
     @Override
@@ -120,7 +116,7 @@ public class OSGiServiceBean implements Bean {
             return Proxy.newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[]{getBeanClass()},
-                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter));
+                    new DynamicServiceHandler(bundle, ((Class)injectionPoint.getType()).getName(), filter));
         } catch (Exception e) {
             throw new CreationException(e);
         }
@@ -132,35 +128,9 @@ public class OSGiServiceBean implements Bean {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OSGiServiceBean)) return false;
-
-        OSGiServiceBean that = (OSGiServiceBean) o;
-
-        if (required != that.required) return false;
-        if (!filter.equals(that.filter)) return false;
-        if (!injectionPoint.equals(that.injectionPoint)) return false;
-        if (!qualifiers.equals(that.qualifiers)) return false;
-        if (!type.equals(that.type)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + injectionPoint.hashCode();
-        result = 31 * result + qualifiers.hashCode();
-        result = 31 * result + filter.hashCode();
-        result = 31 * result + (required ? 1 : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "OSGiServiceBean [" +
-                ((Class)type).getSimpleName() +
+                ((Class)injectionPoint.getType()).getSimpleName() +
                 "] with qualifiers [" +
                 printQualifiers() +
                 "]";

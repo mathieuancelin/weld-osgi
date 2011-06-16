@@ -90,14 +90,14 @@ public class CDIOSGiExtension implements Extension {
                 System.out.println("Unknown type:" + type);
                 event.addDefinitionError(
                     new UnsupportedOperationException("Injection target type " + type + "not supported"));
-                break; 
+                break;
             }
-            addService(event, type, this.servicesToBeInjected.get(type));
+            addService(event, this.servicesToBeInjected.get(type));
         }
 
         for (Iterator<Type> iterator = this.serviceProducerToBeInjected.keySet().iterator(); iterator.hasNext();) {
             Type type =  iterator.next();
-            addServiceProducer(event, type, this.serviceProducerToBeInjected.get(type));
+            addServiceProducer(event, this.serviceProducerToBeInjected.get(type));
         }
     }
 
@@ -140,14 +140,14 @@ public class CDIOSGiExtension implements Extension {
         servicesToBeInjected.get(key).add(injectionPoint);
     }
     
-    private void addService(AfterBeanDiscovery event, final Type type, final Set<InjectionPoint> injectionPoints) {
+    private void addService(AfterBeanDiscovery event, final Set<InjectionPoint> injectionPoints) {
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
             event.addBean(new OSGiServiceBean(injectionPoint));
         }
     }
 
-    private void addServiceProducer(AfterBeanDiscovery event, final Type type, final Set<InjectionPoint> injectionPoints) {
+    private void addServiceProducer(AfterBeanDiscovery event, final Set<InjectionPoint> injectionPoints) {
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
             event.addBean(new OSGiServiceProducerBean(injectionPoint));

@@ -49,7 +49,7 @@ public class ServicePublisher {
     }
 
     public void registerAndLaunchComponents() {
-        System.out.println(String.format("\nRegistering/Starting OSGi Service for bundle %s\n", bundle.getSymbolicName()));
+        System.out.println("Registering/Starting OSGi Service for bundle" + bundle.getSymbolicName());
         for (String className : classes) {
             Class<?> clazz = null;
             try {
@@ -66,6 +66,7 @@ public class ServicePublisher {
                         Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                         service = instance.get();
                     } catch (Throwable e) {
+                        e.printStackTrace();
                         throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
                     }
                     publish(clazz, service, qualifiers);
@@ -87,6 +88,10 @@ public class ServicePublisher {
                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                     registration = bundle.getBundleContext().registerService(
                             contract.getName(), getProxy(contract, clazz, annotations, bundle), properties);
+                    if (registration != null) {
+                        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+                        instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+                    }
                 }
             } else { //else use service interfaces or type
                 if (service.getClass().getInterfaces().length > 0) {
@@ -95,18 +100,22 @@ public class ServicePublisher {
                             System.out.println("Registering OSGi service " + clazz.getName() + " as " + interfaces.getName());
                             registration = bundle.getBundleContext().registerService(
                                     interfaces.getName(), getProxy(interfaces, clazz, annotations, bundle), properties);
+                            if (registration != null) {
+                                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+                                instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+                            }
                         }
                     }
                 }
             }
-            if(registration == null) {
+            if(registration == null) { //there was neither contract nor interface
                 System.out.println("Registering OSGi service " + clazz.getName() + " as " + clazz.getName());
                 registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
+                if (registration != null) {
+                    CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+                    instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+                }
             }
-        }
-        if (registration != null) {
-            CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-            instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
         }
     }
 
