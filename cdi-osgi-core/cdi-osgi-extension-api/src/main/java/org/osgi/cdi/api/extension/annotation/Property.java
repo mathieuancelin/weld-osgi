@@ -12,8 +12,10 @@
 
 package org.osgi.cdi.api.extension.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * <p>This annotation wraps an OSGi service property used for automatic OSGi service
@@ -37,7 +39,9 @@ import java.lang.annotation.RetentionPolicy;
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
+@Target({  })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Property {
 
     /**

@@ -35,8 +35,18 @@ public class Environment {
                     ready = false;
                     break;
                 }
-                Thread.sleep(1000);
+                Thread.sleep(500);
             }
+        }
+    }
+
+    public static void waitForState(Bundle bundle, int state) throws InterruptedException {
+        boolean ready = false;
+        while(!ready) {
+            if(bundle.getState() == state) {
+                ready = true;
+            }
+            Thread.sleep(500);
         }
     }
 
