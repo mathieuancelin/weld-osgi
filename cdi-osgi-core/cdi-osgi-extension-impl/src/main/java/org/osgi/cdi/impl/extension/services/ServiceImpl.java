@@ -9,10 +9,7 @@ import org.osgi.framework.ServiceReference;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -79,7 +76,7 @@ public class ServiceImpl<T> implements Service<T> {
     @Override
     public Service<T> select(Annotation... qualifiers) {
         service = null;
-        filter = FilterGenerator.makeFilter(filter,qualifiers);
+        filter = FilterGenerator.makeFilter(filter, Arrays.asList(qualifiers));
         return this;
     }
 

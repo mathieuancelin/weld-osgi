@@ -58,7 +58,13 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(InstanceHolder.class));
     }
 
-    public void discoverCDIOSGiServices(@Observes ProcessInjectionTarget<?> event){
+    public void discoverCDIOSGiClass(@Observes ProcessAnnotatedType<?> event) {
+        AnnotatedType annotatedType = event.getAnnotatedType();
+        annotatedType = discoverAndProcessCDIOSGiClass(annotatedType);
+        event.setAnnotatedType(annotatedType);
+    }
+
+    public void discoverCDIOSGiServices(@Observes ProcessInjectionTarget<?> event) {
         Set<InjectionPoint> injectionPoints = event.getInjectionTarget().getInjectionPoints();
         discoverServiceInjectionPoints(injectionPoints);
     }
@@ -101,6 +107,10 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
+    private AnnotatedType discoverAndProcessCDIOSGiClass(AnnotatedType annotatedType) {
+        return new CDIOSGiAnnotatedType(annotatedType);
+    }
+
     private void discoverServiceInjectionPoints(Set<InjectionPoint> injectionPoints) {
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
@@ -141,9 +151,13 @@ public class CDIOSGiExtension implements Extension {
     }
     
     private void addService(AfterBeanDiscovery event, final Set<InjectionPoint> injectionPoints) {
+        Set<OSGiServiceBean> beans = new HashSet<OSGiServiceBean>();
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
-            event.addBean(new OSGiServiceBean(injectionPoint));
+            beans.add(new OSGiServiceBean(injectionPoint));
+        }
+        for(OSGiServiceBean bean : beans) {
+            event.addBean(bean);
         }
     }
 

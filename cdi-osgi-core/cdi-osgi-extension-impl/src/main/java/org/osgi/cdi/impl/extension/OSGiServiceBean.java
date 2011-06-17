@@ -52,9 +52,7 @@ public class OSGiServiceBean implements Bean {
                 break;
             }
         }
-        filter = FilterGenerator.makeFilter(filter, qualifiers.toArray(new Annotation[qualifiers.size()]));
-
-        System.out.println("Registration of a new OSGiServiceBean: " + toString());
+        filter = FilterGenerator.makeFilter(filter, qualifiers);
     }
 
     @Override
@@ -110,7 +108,6 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Object create(CreationalContext ctx) {
-        System.out.println("Creation of a new OSGiServiceBean: " + toString());
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             return Proxy.newProxyInstance(
@@ -125,6 +122,28 @@ public class OSGiServiceBean implements Bean {
     @Override
     public void destroy(Object instance, CreationalContext creationalContext) {
         // Nothing to do, services are unget after each call.
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OSGiServiceBean)) return false;
+
+        OSGiServiceBean that = (OSGiServiceBean) o;
+
+        if (!filter.value().equals(that.filter.value())) return false;
+        if (!getTypes().equals(that.getTypes())) return false;
+        if (!getQualifiers().equals(that.getQualifiers())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getTypes().hashCode();
+        result = 31 * result + filter.value().hashCode();
+        result = 31 * result + getQualifiers().hashCode();
+        return result;
     }
 
     @Override

@@ -48,6 +48,8 @@ public class DynamicServiceHandler implements InvocationHandler {
         Object instanceToUse = bundle.getBundleContext().getService(reference);
         try {
             return method.invoke(instanceToUse, args);
+        } catch(Throwable t) {
+            throw new RuntimeException(t);
         } finally {
             bundle.getBundleContext().ungetService(reference);
             CDIOSGiExtension.currentBundle.remove();

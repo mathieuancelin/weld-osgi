@@ -49,7 +49,6 @@ public class ServicePublisher {
     }
 
     public void registerAndLaunchComponents() {
-        System.out.println("Registering/Starting OSGi Service for bundle" + bundle.getSymbolicName());
         for (String className : classes) {
             Class<?> clazz = null;
             try {
@@ -85,7 +84,6 @@ public class ServicePublisher {
             Properties properties = getServiceProperties(publish, qualifiers);
             if (contracts.length != 0) {//if contracts are precised
                 for (Class contract : contracts) {
-                    System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
                     registration = bundle.getBundleContext().registerService(
                             contract.getName(), getProxy(contract, clazz, annotations, bundle), properties);
                     if (registration != null) {
@@ -97,7 +95,6 @@ public class ServicePublisher {
                 if (service.getClass().getInterfaces().length > 0) {
                     for (Class interfaces : service.getClass().getInterfaces()) {
                         if (!blackList.contains(interfaces.getName())) {
-                            System.out.println("Registering OSGi service " + clazz.getName() + " as " + interfaces.getName());
                             registration = bundle.getBundleContext().registerService(
                                     interfaces.getName(), getProxy(interfaces, clazz, annotations, bundle), properties);
                             if (registration != null) {
@@ -109,7 +106,6 @@ public class ServicePublisher {
                 }
             }
             if(registration == null) { //there was neither contract nor interface
-                System.out.println("Registering OSGi service " + clazz.getName() + " as " + clazz.getName());
                 registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 if (registration != null) {
                     CDIOSGiExtension.currentBundle.set(bundle.getBundleId());

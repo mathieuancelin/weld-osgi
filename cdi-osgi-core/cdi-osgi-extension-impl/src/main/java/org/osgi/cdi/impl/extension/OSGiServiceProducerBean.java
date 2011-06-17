@@ -55,7 +55,6 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
                 break;
             }
         }
-        System.out.println("New registered service producer bean: " + toString());
     }
 
     @Override
@@ -114,7 +113,6 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Service create(CreationalContext creationalContext) {
-        System.out.println("Creation of a new OSGiServiceProducerBean: " + toString());
         BundleContext registry = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass()).getBundleContext();
         return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], registry, filter);
     }
