@@ -12,11 +12,12 @@
 
 package org.osgi.cdi.api.extension.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.*;
 
 /**
  * <p>This annotation notices that this type is an OSGi service implementation and
@@ -44,8 +45,9 @@ import static java.lang.annotation.ElementType.TYPE;
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
-@Target({TYPE})
+@Target({ TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Publish {
 
     /**
