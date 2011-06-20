@@ -42,9 +42,11 @@ public class OSGiServiceBean implements Bean {
     private final InjectionPoint injectionPoint;
     private Filter filter;
     private Set<Annotation> qualifiers;
+    private Type type;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
+        type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
         for(Annotation qualifier : qualifiers) {
             if(qualifier.annotationType().equals(Filter.class)) {
@@ -88,7 +90,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Class getBeanClass() {
-        return (Class)injectionPoint.getType();
+        return (Class)type;
     }
 
     @Override
@@ -113,7 +115,7 @@ public class OSGiServiceBean implements Bean {
             return Proxy.newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[]{getBeanClass()},
-                    new DynamicServiceHandler(bundle, ((Class)injectionPoint.getType()).getName(), filter));
+                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter));
         } catch (Exception e) {
             throw new CreationException(e);
         }
@@ -149,7 +151,7 @@ public class OSGiServiceBean implements Bean {
     @Override
     public String toString() {
         return "OSGiServiceBean [" +
-                ((Class)injectionPoint.getType()).getSimpleName() +
+                ((Class)type).getSimpleName() +
                 "] with qualifiers [" +
                 printQualifiers() +
                 "]";

@@ -39,22 +39,22 @@ import java.util.Set;
  */
 public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
-    private final Type type;
     private final InjectionPoint injectionPoint;
     private Filter filter;
+    private Set<Annotation> qualifiers;
+    private Type type;
 
     protected OSGiServiceProducerBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
-        filter = new OSGiFilterQualifierType("");
-
-        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+        qualifiers = injectionPoint.getQualifiers();
         for (Annotation qualifier : qualifiers) {
             if (qualifier.annotationType().equals(Filter.class)) {
                 filter = (Filter) qualifier;
                 break;
             }
         }
+        filter = FilterGenerator.makeFilter(filter, qualifiers);
     }
 
     @Override
@@ -67,11 +67,10 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Set<Annotation> getQualifiers() {
-        Set<Annotation> s = new HashSet<Annotation>();
-        s.add(new AnnotationLiteral<Any>() {
-        });
-        s.add(filter);
-        return s;
+        Set<Annotation> result = new HashSet<Annotation>();
+        result.addAll(qualifiers);
+        result.add(new AnnotationLiteral<Any>() {});
+        return result;
     }
 
     @Override
@@ -91,7 +90,7 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Class getBeanClass() {
-        return ((Class) ((ParameterizedType) type).getRawType());
+        return (Class)((ParameterizedType)type).getRawType();
     }
 
     @Override
@@ -106,9 +105,7 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        injectionPoints.add(injectionPoint);
-        return injectionPoints;
+        return Collections.emptySet();
     }
 
     @Override
@@ -122,35 +119,35 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
         // Nothing to do, services are unget after each call.
     }
 
-    @Override
+   @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof OSGiServiceProducerBean)) return false;
 
         OSGiServiceProducerBean that = (OSGiServiceProducerBean) o;
 
-        if (!filter.equals(that.filter)) return false;
-        if (!injectionPoint.equals(that.injectionPoint)) return false;
-        if (!type.equals(that.type)) return false;
+        if (!filter.value().equals(that.filter.value())) return false;
+        if (!getTypes().equals(that.getTypes())) return false;
+        if (!getQualifiers().equals(that.getQualifiers())) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + injectionPoint.hashCode();
-        result = 31 * result + filter.hashCode();
+        int result = getTypes().hashCode();
+        result = 31 * result + filter.value().hashCode();
+        result = 31 * result + getQualifiers().hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "OSGiServiceProducerBean{" +
-                "type=" + "Service<" + ((Class)((ParameterizedType) type).getActualTypeArguments()[0]).getSimpleName() + ">" +
-                ", filter=" + filter.value() +
-                ", qualifiers=" + printQualifiers() +
-                '}';
+        return "OSGiServiceProducerBean [" +
+                injectionPoint.getType().toString() +
+                "] with qualifiers [" +
+                printQualifiers() +
+                "]";
     }
 
     public String printQualifiers() {

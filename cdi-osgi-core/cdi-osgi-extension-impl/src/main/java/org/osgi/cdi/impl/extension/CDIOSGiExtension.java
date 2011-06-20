@@ -134,20 +134,20 @@ public class CDIOSGiExtension implements Extension {
         }
     }
 
-    private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
-        Type key = injectionPoint.getType();
-        if (!serviceProducerToBeInjected.containsKey(key)){
-            serviceProducerToBeInjected.put(key, new HashSet<InjectionPoint>());
-        }
-        serviceProducerToBeInjected.get(key).add(injectionPoint);
-    }
-
     private void addServiceInjectionInfo(InjectionPoint injectionPoint) {
         Type key = injectionPoint.getType();
         if (!servicesToBeInjected.containsKey(key)){
             servicesToBeInjected.put(key, new HashSet<InjectionPoint>());
         }
         servicesToBeInjected.get(key).add(injectionPoint);
+    }
+
+    private void addServiceProducerInjectionInfo(InjectionPoint injectionPoint) {
+        Type key = injectionPoint.getType();
+        if (!serviceProducerToBeInjected.containsKey(key)){
+            serviceProducerToBeInjected.put(key, new HashSet<InjectionPoint>());
+        }
+        serviceProducerToBeInjected.get(key).add(injectionPoint);
     }
     
     private void addService(AfterBeanDiscovery event, final Set<InjectionPoint> injectionPoints) {
@@ -162,9 +162,13 @@ public class CDIOSGiExtension implements Extension {
     }
 
     private void addServiceProducer(AfterBeanDiscovery event, final Set<InjectionPoint> injectionPoints) {
+        Set<OSGiServiceProducerBean> beans = new HashSet<OSGiServiceProducerBean>();
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
             final InjectionPoint injectionPoint = iterator.next();
-            event.addBean(new OSGiServiceProducerBean(injectionPoint));
+            beans.add(new OSGiServiceProducerBean(injectionPoint));
+        }
+        for(OSGiServiceProducerBean bean : beans) {
+            event.addBean(bean);
         }
     }
 
