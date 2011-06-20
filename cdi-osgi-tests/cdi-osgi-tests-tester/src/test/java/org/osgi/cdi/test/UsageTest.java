@@ -115,7 +115,7 @@ public class UsageTest {
 
     }
 
-    @Test
+//    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -257,27 +257,46 @@ public class UsageTest {
         Assert.assertNotNull("The other filtered service was null", otherFilteredService);
         Assert.assertEquals("The other service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",otherFilteredService.whoAmI());
 
-//        Service<PropertyService> services = serviceProvider.getServices();
-//        Assert.assertNotNull("The service provider was null", services);
-//        Assert.assertEquals("The service provider method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl1",services.get().whoAmI());
-//        Service<PropertyService> filteredServices = serviceProvider.getFilteredServices();
-//        Assert.assertNotNull("The filtered provider service was null", filteredServices);
-//        Assert.assertEquals("The filtered service provider method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",filteredServices.get().whoAmI());
-//        Service<PropertyService> qualifiedServices = serviceProvider.getQualifiedServices();
-//        Assert.assertNotNull("The qualified service provider was null", qualifiedServices);
-//        Assert.assertEquals("The qualified service provider method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",qualifiedServices.get().whoAmI());
-//        Service<PropertyService> filteredFromQualifierServices = serviceProvider.getFilteredFromQualifierServices();
-//        Assert.assertNotNull("The filtered from qualifier service provider was null", filteredFromQualifierServices);
-//        Assert.assertEquals("The filtered from qualifier service provider method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",filteredFromQualifierServices.get().whoAmI());
-//        Service<PropertyService> qualifiedFromPropertyServices = serviceProvider.getQualifiedFromPropertyServices();
-//        Assert.assertNotNull("The qualified from property service was null", qualifiedFromPropertyServices);
-//        Assert.assertEquals("The qualified from property service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",qualifiedFromPropertyServices.get().whoAmI());
-//        Service<PropertyService> otherFilteredServices = serviceProvider.getOtherFilteredServices();
-//        Assert.assertNotNull("The other filtered service was null", otherFilteredServices);
-//        Assert.assertEquals("The other service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",otherFilteredServices.get().whoAmI());
+        PropertyService constructorService = serviceProvider.getConstructorService();
+        Assert.assertNotNull("The constructor service was null", constructorService);
+        Assert.assertEquals("The constructor service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl1",constructorService.whoAmI());
+        PropertyService constructorFilteredService = serviceProvider.getConstructorFilteredService();
+        Assert.assertNotNull("The constructor filtered service was null", constructorFilteredService);
+        Assert.assertEquals("The constructor filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",constructorFilteredService.whoAmI());
+        PropertyService constructorQualifiedService = serviceProvider.getConstructorQualifiedService();
+        Assert.assertNotNull("The constructor qualified service was null", constructorQualifiedService);
+        Assert.assertEquals("The constructor qualified service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",constructorQualifiedService.whoAmI());
+        PropertyService constructorFilteredFromQualifierService = serviceProvider.getConstructorFilteredFromQualifierService();
+        Assert.assertNotNull("The constructor filtered from qualifier service was null", constructorFilteredFromQualifierService);
+        Assert.assertEquals("The constructor filtered from qualifier service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",constructorFilteredFromQualifierService.whoAmI());
+        PropertyService constructorQualifiedFromPropertyService = serviceProvider.getConstructorQualifiedFromPropertyService();
+        Assert.assertNotNull("The constructor qualified from property service was null", constructorQualifiedFromPropertyService);
+        Assert.assertEquals("The constructor qualified from property service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",constructorQualifiedFromPropertyService.whoAmI());
+        PropertyService constructorOtherFilteredService = serviceProvider.getConstructorOtherFilteredService();
+        Assert.assertNotNull("The constructor other filtered service was null", constructorOtherFilteredService);
+        Assert.assertEquals("The constructor other service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",constructorOtherFilteredService.whoAmI());
+
+        PropertyService initializerService = serviceProvider.getInitializerService();
+        Assert.assertNotNull("The initializer service was null", initializerService);
+        Assert.assertEquals("The initializer service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl1",initializerService.whoAmI());
+        PropertyService initializerFilteredService = serviceProvider.getInitializerFilteredService();
+        Assert.assertNotNull("The initializer filtered service was null", initializerFilteredService);
+        Assert.assertEquals("The initializer filtered service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",initializerFilteredService.whoAmI());
+        PropertyService initializerQualifiedService = serviceProvider.getInitializerQualifiedService();
+        Assert.assertNotNull("The initializer qualified service was null", initializerQualifiedService);
+        Assert.assertEquals("The initializer qualified service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",initializerQualifiedService.whoAmI());
+        PropertyService initializerFilteredFromQualifierService = serviceProvider.getInitializerFilteredFromQualifierService();
+        Assert.assertNotNull("The initializer filtered from qualifier service was null", initializerFilteredFromQualifierService);
+        Assert.assertEquals("The initializer filtered from qualifier service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",initializerFilteredFromQualifierService.whoAmI());
+        PropertyService initializerQualifiedFromPropertyService = serviceProvider.getInitializerQualifiedFromPropertyService();
+        Assert.assertNotNull("The initializer qualified from property service was null", initializerQualifiedFromPropertyService);
+        Assert.assertEquals("The initializer qualified from property service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",initializerQualifiedFromPropertyService.whoAmI());
+        PropertyService initializerOtherFilteredService = serviceProvider.getInitializerOtherFilteredService();
+        Assert.assertNotNull("The initializer other filtered service was null", initializerOtherFilteredService);
+        Assert.assertEquals("The initializer other service method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",initializerOtherFilteredService.whoAmI());
     }
 
-    @Test
+//    @Test
     public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 

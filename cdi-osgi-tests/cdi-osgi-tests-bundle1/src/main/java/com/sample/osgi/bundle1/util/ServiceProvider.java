@@ -15,6 +15,65 @@ import javax.inject.Inject;
 public class ServiceProvider {
 
     @Inject
+    public ServiceProvider(@OSGiService PropertyService constructorService,
+                           @OSGiService @Filter("(Name.value=1)") PropertyService constructorFilteredService,
+                           @OSGiService @Name("2") PropertyService constructorQualifiedService,
+                           @OSGiService @Name("1") PropertyService constructorQualifiedFromPropertyService,
+                           @OSGiService @Filter("(Name.value=2)") PropertyService constructorFilteredFromQualifierService,
+                           @OSGiService @Filter("(Name.value=1)") PropertyService constructorOtherFilteredService) {
+        this.constructorService = constructorService;
+        this.constructorFilteredService = constructorFilteredService;
+        this.constructorQualifiedService = constructorQualifiedService;
+        this.constructorQualifiedFromPropertyService = constructorQualifiedFromPropertyService;
+        this.constructorFilteredFromQualifierService = constructorFilteredFromQualifierService;
+        this.constructorOtherFilteredService = constructorOtherFilteredService;
+    }
+
+    private PropertyService constructorService;
+    private PropertyService constructorFilteredService;
+    private PropertyService constructorQualifiedService;
+    private PropertyService constructorQualifiedFromPropertyService;
+    private PropertyService constructorFilteredFromQualifierService;
+    private PropertyService constructorOtherFilteredService;
+
+    private PropertyService initializerService;
+    private PropertyService initializerFilteredService;
+    private PropertyService initializerQualifiedService;
+    private PropertyService initializerQualifiedFromPropertyService;
+    private PropertyService initializerFilteredFromQualifierService;
+    private PropertyService initializerOtherFilteredService;
+
+    @Inject
+    public void setInitializerService(@OSGiService PropertyService initializerService) {
+        this.initializerService = initializerService;
+    }
+
+    @Inject
+    public void setInitializerFilteredService(@OSGiService @Filter("(Name.value=1)") PropertyService initializerFilteredService) {
+        this.initializerFilteredService = initializerFilteredService;
+    }
+
+    @Inject
+    public void setInitializerQualifiedService(@OSGiService @Name("2") PropertyService initializerQualifiedService) {
+        this.initializerQualifiedService = initializerQualifiedService;
+    }
+
+    @Inject
+    public void setInitializerQualifiedFromPropertyService(@OSGiService @Name("1") PropertyService initializerQualifiedFromPropertyService) {
+        this.initializerQualifiedFromPropertyService = initializerQualifiedFromPropertyService;
+    }
+
+    @Inject
+    public void setInitializerFilteredFromQualifierService(@OSGiService @Filter("(Name.value=2)") PropertyService initializerFilteredFromQualifierService) {
+        this.initializerFilteredFromQualifierService = initializerFilteredFromQualifierService;
+    }
+
+    @Inject
+    public void setInitializerOtherFilteredService(@OSGiService @Filter("(Name.value=1)") PropertyService initializerOtherFilteredService) {
+        this.initializerOtherFilteredService = initializerOtherFilteredService;
+    }
+
+    @Inject
     @OSGiService
     private PropertyService service;
 
@@ -43,28 +102,53 @@ public class ServiceProvider {
     @Filter("(Name.value=1)")
     private PropertyService otherFilteredService;
 
-//    @Inject
-//    private Service<PropertyService> services;
-//
-//    @Inject
-//    @Filter("Name.value=1")
-//    private Service<PropertyService> filteredServices;
-//
-//    @Inject
-//    @Name("2")
-//    private Service<PropertyService> qualifiedServices;
-//
-//    @Inject
-//    @Name("1")
-//    private Service<PropertyService> qualifiedFromPropertyServices;
-//
-//    @Inject
-//    @Filter("Name.value=2")
-//    private Service<PropertyService> filteredFromQualifierServices;
-//
-//    @Inject
-//    @Filter("Name.value=1")
-//    private Service<PropertyService> otherFilteredServices;
+    public PropertyService getConstructorService() {
+        return constructorService;
+    }
+
+    public PropertyService getConstructorFilteredService() {
+        return constructorFilteredService;
+    }
+
+    public PropertyService getConstructorQualifiedService() {
+        return constructorQualifiedService;
+    }
+
+    public PropertyService getConstructorQualifiedFromPropertyService() {
+        return constructorQualifiedFromPropertyService;
+    }
+
+    public PropertyService getConstructorFilteredFromQualifierService() {
+        return constructorFilteredFromQualifierService;
+    }
+
+    public PropertyService getConstructorOtherFilteredService() {
+        return constructorOtherFilteredService;
+    }
+
+    public PropertyService getInitializerService() {
+        return initializerService;
+    }
+
+    public PropertyService getInitializerFilteredService() {
+        return initializerFilteredService;
+    }
+
+    public PropertyService getInitializerQualifiedService() {
+        return initializerQualifiedService;
+    }
+
+    public PropertyService getInitializerQualifiedFromPropertyService() {
+        return initializerQualifiedFromPropertyService;
+    }
+
+    public PropertyService getInitializerFilteredFromQualifierService() {
+        return initializerFilteredFromQualifierService;
+    }
+
+    public PropertyService getInitializerOtherFilteredService() {
+        return initializerOtherFilteredService;
+    }
 
     public PropertyService getService() {
         return service;
@@ -89,28 +173,4 @@ public class ServiceProvider {
     public PropertyService getOtherFilteredService() {
         return otherFilteredService;
     }
-
-//    public Service<PropertyService> getServices() {
-//        return services;
-//    }
-//
-//    public Service<PropertyService> getFilteredServices() {
-//        return filteredServices;
-//    }
-//
-//    public Service<PropertyService> getQualifiedServices() {
-//        return qualifiedServices;
-//    }
-//
-//    public Service<PropertyService> getQualifiedFromPropertyServices() {
-//        return qualifiedFromPropertyServices;
-//    }
-//
-//    public Service<PropertyService> getFilteredFromQualifierServices() {
-//        return filteredFromQualifierServices;
-//    }
-//
-//    public Service<PropertyService> getOtherFilteredServices() {
-//        return otherFilteredServices;
-//    }
 }
