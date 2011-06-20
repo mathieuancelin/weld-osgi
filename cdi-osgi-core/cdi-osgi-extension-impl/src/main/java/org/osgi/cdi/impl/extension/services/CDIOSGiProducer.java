@@ -85,21 +85,6 @@ public class CDIOSGiProducer {
         return holder.getContext().getDataFile(file.value());
     }
 
-    @Produces @Required
-    public <T> Service<T> getOSGiRequiredService(BundleHolder holder,
-            CDIOSGiExtension extension, InjectionPoint p) {
-
-        extension.getRequiredOsgiServiceDependencies().add((Class)
-            ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
-        return getOSGiService(holder, p);
-    }
-
-    @Produces
-    public <T> Service<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
-        return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                holder.getContext());
-    }
-
     @Produces
     public <T> Registration<T> getRegistrations(
             BundleHolder bundleHolder,

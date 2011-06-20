@@ -21,12 +21,12 @@ public class ServiceProvider {
                            @OSGiService @Name("1") PropertyService constructorQualifiedFromPropertyService,
                            @OSGiService @Filter("(Name.value=2)") PropertyService constructorFilteredFromQualifierService,
                            @OSGiService @Filter("(Name.value=1)") PropertyService constructorOtherFilteredService,
-                           @OSGiService Service<PropertyService> constructorServiceProvider,
-                           @OSGiService @Filter("(Name.value=1)") Service<PropertyService> constructorFilteredServiceProvider,
-                           @OSGiService @Name("2") Service<PropertyService> constructorQualifiedServiceProvider,
-                           @OSGiService @Name("1") Service<PropertyService> constructorQualifiedFromPropertyServiceProvider,
-                           @OSGiService @Filter("(Name.value=2)") Service<PropertyService> constructorFilteredFromQualifierServiceProvider,
-                           @OSGiService @Filter("(Name.value=1)") Service<PropertyService> constructorOtherFilteredServiceProvider) {
+                           Service<PropertyService> constructorServiceProvider,
+                           @Filter("(Name.value=1)") Service<PropertyService> constructorFilteredServiceProvider,
+                           @Name("2") Service<PropertyService> constructorQualifiedServiceProvider,
+                           @Name("1") Service<PropertyService> constructorQualifiedFromPropertyServiceProvider,
+                           @Filter("(Name.value=2)") Service<PropertyService> constructorFilteredFromQualifierServiceProvider,
+                           @Filter("(Name.value=1)") Service<PropertyService> constructorOtherFilteredServiceProvider) {
         this.constructorService = constructorService;
         this.constructorFilteredService = constructorFilteredService;
         this.constructorQualifiedService = constructorQualifiedService;
@@ -100,32 +100,32 @@ public class ServiceProvider {
     }
 
     @Inject
-    public void setInitializerServiceProvider(@OSGiService Service<PropertyService> initializerServiceProvider) {
+    public void setInitializerServiceProvider(Service<PropertyService> initializerServiceProvider) {
         this.initializerServiceProvider = initializerServiceProvider;
     }
 
     @Inject
-    public void setInitializerFilteredServiceProvider(@OSGiService @Filter("(Name.value=1)") Service<PropertyService> initializerFilteredServiceProvider) {
+    public void setInitializerFilteredServiceProvider(@Filter("(Name.value=1)") Service<PropertyService> initializerFilteredServiceProvider) {
         this.initializerFilteredServiceProvider = initializerFilteredServiceProvider;
     }
 
     @Inject
-    public void setInitializerQualifiedServiceProvider(@OSGiService @Name("2") Service<PropertyService> initializerQualifiedServiceProvider) {
+    public void setInitializerQualifiedServiceProvider(@Name("2") Service<PropertyService> initializerQualifiedServiceProvider) {
         this.initializerQualifiedServiceProvider = initializerQualifiedServiceProvider;
     }
 
     @Inject
-    public void setInitializerQualifiedFromPropertyServiceProvider(@OSGiService @Name("1") Service<PropertyService> initializerQualifiedFromPropertyServiceProvider) {
+    public void setInitializerQualifiedFromPropertyServiceProvider(@Name("1") Service<PropertyService> initializerQualifiedFromPropertyServiceProvider) {
         this.initializerQualifiedFromPropertyServiceProvider = initializerQualifiedFromPropertyServiceProvider;
     }
 
     @Inject
-    public void setInitializerFilteredFromQualifierServiceProvider(@OSGiService @Filter("(Name.value=2)") Service<PropertyService> initializerFilteredFromQualifierServiceProvider) {
+    public void setInitializerFilteredFromQualifierServiceProvider(@Filter("(Name.value=2)") Service<PropertyService> initializerFilteredFromQualifierServiceProvider) {
         this.initializerFilteredFromQualifierServiceProvider = initializerFilteredFromQualifierServiceProvider;
     }
 
     @Inject
-    public void setInitializerOtherFilteredServiceProvider(@OSGiService @Filter("(Name.value=1)") Service<PropertyService> initializerOtherFilteredServiceProvider) {
+    public void setInitializerOtherFilteredServiceProvider(@Filter("(Name.value=1)") Service<PropertyService> initializerOtherFilteredServiceProvider) {
         this.initializerOtherFilteredServiceProvider = initializerOtherFilteredServiceProvider;
     }
 
@@ -159,31 +159,25 @@ public class ServiceProvider {
     private PropertyService otherFilteredService;
 
     @Inject
-    @OSGiService
     private Service<PropertyService> serviceProvider;
 
     @Inject
-    @OSGiService
     @Filter("(Name.value=1)")
     private Service<PropertyService> filteredServiceProvider;
 
     @Inject
-    @OSGiService
     @Name("2")
     private Service<PropertyService> qualifiedServiceProvider;
 
     @Inject
-    @OSGiService
     @Name("1")
     private Service<PropertyService> qualifiedFromPropertyServiceProvider;
 
     @Inject
-    @OSGiService
     @Filter("(Name.value=2)")
     private Service<PropertyService> filteredFromQualifierServiceProvider;
 
     @Inject
-    @OSGiService
     @Filter("(Name.value=1)")
     private Service<PropertyService> otherFilteredServiceProvider;
 
