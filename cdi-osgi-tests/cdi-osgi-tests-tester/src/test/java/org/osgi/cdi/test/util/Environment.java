@@ -46,7 +46,19 @@ public class Environment {
             if(bundle.getState() == state) {
                 ready = true;
             }
-            Thread.sleep(500);
+            Thread.sleep(50);
+        }
+    }
+
+    public static void waitForState(BundleContext context, String symbolicName, int state) throws InterruptedException {
+        boolean ready = false;
+        while(!ready) {
+            for(Bundle bundle : context.getBundles()) {
+                if(bundle.getSymbolicName().equals(symbolicName) && bundle.getState() == state) {
+                    ready = true;
+                }
+            }
+            Thread.sleep(50);
         }
     }
 

@@ -48,13 +48,7 @@ public class OSGiServiceBean implements Bean {
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
-        for(Annotation qualifier : qualifiers) {
-            if(qualifier.annotationType().equals(Filter.class)) {
-                filter = (Filter)qualifier;
-                break;
-            }
-        }
-        filter = FilterGenerator.makeFilter(filter, qualifiers);
+        filter = FilterGenerator.makeFilter(injectionPoint);
     }
 
     @Override

@@ -12,7 +12,8 @@ import org.osgi.framework.*;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -21,14 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
 public class IntegrationActivator implements BundleActivator, BundleListener, ServiceListener {
-
     private ServiceReference factoryRef = null;
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
 
     @Override
     public void start(BundleContext context) throws Exception {
-
         this.context = context;
         ServiceReference[] refs = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
         if (refs != null && refs.length > 0) {

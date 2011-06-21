@@ -5,6 +5,7 @@ import org.osgi.cdi.impl.integration.IntegrationActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+
 /**
  * 
  * @author Guillaume Sauthier

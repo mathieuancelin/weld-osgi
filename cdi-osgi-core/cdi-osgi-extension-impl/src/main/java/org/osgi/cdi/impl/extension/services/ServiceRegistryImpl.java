@@ -4,6 +4,7 @@ import org.osgi.cdi.api.extension.BundleState;
 import org.osgi.cdi.api.extension.Registration;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.events.*;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.*;
@@ -19,6 +20,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -56,7 +59,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     @Inject
     private BundleHolder bundleHolder;
 
-    private  Set<Class<?>> osgiServiceDependencies;
+    private  Map<Class, Set<Filter>> osgiServiceDependencies;
     
     private Map<Class<?>, Beantype<?>> types = new HashMap<Class<?>, Beantype<?>>();
 
@@ -103,52 +106,61 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     public void bind(@Observes ServiceEvents.ServiceArrival arrival) {
         checkForValidDependencies(arrival);
+        System.out.println(bundleHolder.getBundle().getSymbolicName() + " arrival " + arrival.getServiceClasses());
     }
 
     public void changed(@Observes ServiceEvents.ServiceChanged changed) {
         checkForValidDependencies(changed);
+        System.out.println(bundleHolder.getBundle().getSymbolicName() + " changed " + changed.getServiceClasses());
     }
 
     public void unbind(@Observes ServiceEvents.ServiceDeparture departure) {
         checkForValidDependencies(departure);
+        System.out.println(bundleHolder.getBundle().getSymbolicName() + " departure " + departure.getServiceClasses());
     }
 
     private void checkForValidDependencies(AbstractServiceEvent event) {
         if (event == null || applicable(event.getServiceClasses())) {
             boolean valid = true;
-            if (osgiServiceDependencies.isEmpty()) {
-                valid = false;
-            } else {
-                for (Class<?> clazz : osgiServiceDependencies) {
-                    try {
-                        ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), null);
-                        if (refs != null) {
-                            int available = refs.length;
-                            if (available <= 0) {
-                                valid = false;
+            if(!osgiServiceDependencies.isEmpty()) {
+                invalid:
+                for (Map.Entry<Class, Set<Filter>> entry : osgiServiceDependencies.entrySet()) {
+                    Class clazz = entry.getKey();
+                    for (Filter filter : entry.getValue()) {
+                            try {
+                                ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), filter.value());
+                                if (refs != null) {
+                                    int available = refs.length;
+                                    if (available <= 0) {
+                                        valid = false;
+                                        break invalid;
+                                    }
+                                } else {
+                                    valid = false;
+                                    break invalid;
+                                }
+                            } catch (InvalidSyntaxException ex) {
+                                // nothing here
                             }
-                        } else {
-                            valid = false;
                         }
-                    } catch (InvalidSyntaxException ex) {
-                        // nothing here
-                    }
                 }
             }
             // TODO : synchronize here to change the state of the bundle
             if (valid && bundleHolder.getState().equals(BundleState.INVALID)) {
                 bundleHolder.setState(BundleState.VALID);
                 validEvent.fire(new Valid());
+                System.out.println(bundleHolder.getBundle().getSymbolicName() + " goes VALID");
             } else if (!valid && bundleHolder.getState().equals(BundleState.VALID)) {
                 bundleHolder.setState(BundleState.INVALID);
                 invalidEvent.fire(new Invalid());
+                System.out.println(bundleHolder.getBundle().getSymbolicName() + " goes INVALID");
             }
         }
     }
 
     private boolean applicable(List<Class<?>> classes) {
         for (Class<?> clazz : classes) {
-            if (osgiServiceDependencies.contains(clazz)) {
+            if (osgiServiceDependencies.containsKey(clazz)) {
                 return true;
             }
         }

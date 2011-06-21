@@ -22,6 +22,7 @@ import org.osgi.framework.ServiceRegistration;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
+import javax.swing.text.StyleContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -82,30 +83,33 @@ public class ServicePublisher {
             Publish publish = clazz.getAnnotation(Publish.class);
             Class[] contracts = publish.contracts();
             Properties properties = getServiceProperties(publish, qualifiers);
-            if (contracts.length != 0) {//if contracts are precised
-                for (Class contract : contracts) {
-                    registration = bundle.getBundleContext().registerService(
-                            contract.getName(), getProxy(contract, clazz, annotations, bundle), properties);
-                    if (registration != null) {
-                        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-                        instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+            if (contracts.length > 0) {//if contracts are precised
+                String[] names = new String[contracts.length];
+                for(int i = 0;i < contracts.length;i++) {
+                    names[i] = contracts[i].getName();
+                }
+                registration = bundle.getBundleContext().registerService(names, service, properties);
+            } else if (service.getClass().getInterfaces().length > 0) { //else use service interfaces
+                List<Class> interfaces = new ArrayList<Class>();
+                for (Class itf : service.getClass().getInterfaces()) {
+                    if (!blackList.contains(itf.getName())) {
+                        interfaces.add(itf);
                     }
                 }
-            } else { //else use service interfaces or type
-                if (service.getClass().getInterfaces().length > 0) {
-                    for (Class interfaces : service.getClass().getInterfaces()) {
-                        if (!blackList.contains(interfaces.getName())) {
-                            registration = bundle.getBundleContext().registerService(
-                                    interfaces.getName(), getProxy(interfaces, clazz, annotations, bundle), properties);
-                            if (registration != null) {
-                                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-                                instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
-                            }
-                        }
+                if (interfaces.size() > 0) {
+                    String[] names = new String[interfaces.size()];
+                    for (int i = 0; i < interfaces.size(); i++) {
+                        names[i] = interfaces.get(i).getName();
                     }
+                    registration = bundle.getBundleContext().registerService(names, service, properties);
                 }
+            } else {
+                //TODO use (abstract) superclass
             }
-            if(registration == null) { //there was neither contract nor interface
+            if (registration != null) {
+                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+                instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+            } else { //there was neither contract nor interface
                 registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 if (registration != null) {
                     CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
