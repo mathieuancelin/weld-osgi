@@ -38,7 +38,7 @@ public class UsageTest {
         );
     }
 
-//    @Test
+    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -114,7 +114,7 @@ public class UsageTest {
 
     }
 
-//    @Test
+    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -227,7 +227,7 @@ public class UsageTest {
         Assert.assertEquals("The property service 3 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",propertyService3.whoAmI());
     }
 
-//    @Test
+    @Test
     public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -561,9 +561,10 @@ public class UsageTest {
         Assert.assertEquals("The new number of listened BundleValid event was wrong", bundleValid, eventListener.getBundleValid());
         Assert.assertEquals("The new number of listened BundleInvalid event was wrong", bundleInvalid + 1, eventListener.getBundleInvalid());
 
-//        bundle2.start();
-//        Environment.waitForState(bundle2, Bundle.ACTIVE);
-//        Assert.assertEquals("The new number of listened BundleValid event was wrong", bundleValid + 1, eventListener.getBundleValid());
-//        Assert.assertEquals("The new number of listened BundleInvalid event was wrong", bundleInvalid + 1, eventListener.getBundleInvalid());
+        bundle2.start();
+        Environment.waitForState(bundle2, Bundle.ACTIVE);
+        Thread.sleep(2000);
+        Assert.assertEquals("The new number of listened BundleValid event was wrong", bundleValid + 1, eventListener.getBundleValid());
+        Assert.assertEquals("The new number of listened BundleInvalid event was wrong", bundleInvalid + 1, eventListener.getBundleInvalid());
     }
 }

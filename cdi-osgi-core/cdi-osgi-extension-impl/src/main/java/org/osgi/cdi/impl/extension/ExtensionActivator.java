@@ -186,9 +186,9 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
                                                     Instance<Object> instance) {
         Set<Annotation> eventQualifiers = new HashSet<Annotation>();
         eventQualifiers.add(specific);
-        CDIOSGiExtension ext = instance.select(CDIOSGiExtension.class).get();
-        for (Annotation anno : ext.getObservers()) {
-            String value = ((Filter) anno).value();
+        CDIOSGiExtension extension = instance.select(CDIOSGiExtension.class).get();
+        for (Annotation annotation : extension.getObservers()) {
+            String value = ((Filter) annotation).value();
             try {
                 org.osgi.framework.Filter filter
                         = context.createFilter(value);

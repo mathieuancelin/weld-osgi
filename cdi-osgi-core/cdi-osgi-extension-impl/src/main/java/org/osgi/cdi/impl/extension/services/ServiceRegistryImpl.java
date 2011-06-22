@@ -117,27 +117,33 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     private void checkForValidDependencies(AbstractServiceEvent event) {
         if (event == null || applicable(event.getServiceClasses())) {
             boolean valid = true;
-            if(!osgiServiceDependencies.isEmpty()) {
+            if (!osgiServiceDependencies.isEmpty()) {
                 invalid:
                 for (Map.Entry<Class, Set<Filter>> entry : osgiServiceDependencies.entrySet()) {
                     Class clazz = entry.getKey();
                     for (Filter filter : entry.getValue()) {
-                            try {
-                                ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), filter.value());
-                                if (refs != null) {
-                                    int available = refs.length;
-                                    if (available <= 0) {
-                                        valid = false;
-                                        break invalid;
-                                    }
-                                } else {
+                        try {
+                             ServiceReference[] refs = null;
+                            if(filter != null && filter.value() != null && filter.value().length() > 0) {
+                                refs = registry.getServiceReferences(clazz.getName(), filter.value());
+                            } else {
+                                refs = registry.getServiceReferences(clazz.getName(), null);
+                            }
+                            if (refs != null) {
+                                int available = refs.length;
+                                if (available <= 0) {
                                     valid = false;
                                     break invalid;
                                 }
-                            } catch (InvalidSyntaxException ex) {
-                                // nothing here
+                            } else {
+                                valid = false;
+                                break invalid;
                             }
+                        } catch (InvalidSyntaxException ex) {
+                            valid = false;
+                            break invalid;
                         }
+                    }
                 }
             }
             // TODO : synchronize here to change the state of the bundle

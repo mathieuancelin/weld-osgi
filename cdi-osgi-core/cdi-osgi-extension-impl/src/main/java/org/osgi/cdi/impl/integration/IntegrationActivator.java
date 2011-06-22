@@ -121,7 +121,6 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         CDIContainer holder = factory().createContainer(bundle);
         holder.initialize();
         if (holder.isStarted()) {
-
             // setting contextual information
             holder.getInstance().select(BundleHolder.class).get().setBundle(bundle);
             holder.getInstance().select(BundleHolder.class).get().setContext(bundle.getBundleContext());
