@@ -4,6 +4,7 @@ import org.osgi.cdi.api.extension.BundleState;
 import org.osgi.cdi.api.extension.Registration;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.ServiceRegistry;
+import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.events.*;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.*;
@@ -56,7 +57,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     @Inject
     private BundleHolder bundleHolder;
 
-    private  Set<Class<?>> osgiServiceDependencies;
+    private  Map<Class, Set<Filter>> osgiServiceDependencies;
     
     private Map<Class<?>, Beantype<?>> types = new HashMap<Class<?>, Beantype<?>>();
 
@@ -116,22 +117,32 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     private void checkForValidDependencies(AbstractServiceEvent event) {
         if (event == null || applicable(event.getServiceClasses())) {
             boolean valid = true;
-            if (osgiServiceDependencies.isEmpty()) {
-                valid = false;
-            } else {
-                for (Class<?> clazz : osgiServiceDependencies) {
-                    try {
-                        ServiceReference[] refs = registry.getServiceReferences(clazz.getName(), null);
-                        if (refs != null) {
-                            int available = refs.length;
-                            if (available <= 0) {
-                                valid = false;
+            if (!osgiServiceDependencies.isEmpty()) {
+                invalid:
+                for (Map.Entry<Class, Set<Filter>> entry : osgiServiceDependencies.entrySet()) {
+                    Class clazz = entry.getKey();
+                    for (Filter filter : entry.getValue()) {
+                        try {
+                             ServiceReference[] refs = null;
+                            if(filter != null && filter.value() != null && filter.value().length() > 0) {
+                                refs = registry.getServiceReferences(clazz.getName(), filter.value());
+                            } else {
+                                refs = registry.getServiceReferences(clazz.getName(), null);
                             }
-                        } else {
+                            if (refs != null) {
+                                int available = refs.length;
+                                if (available <= 0) {
+                                    valid = false;
+                                    break invalid;
+                                }
+                            } else {
+                                valid = false;
+                                break invalid;
+                            }
+                        } catch (InvalidSyntaxException ex) {
                             valid = false;
+                            break invalid;
                         }
-                    } catch (InvalidSyntaxException ex) {
-                        // nothing here
                     }
                 }
             }
@@ -148,7 +159,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     private boolean applicable(List<Class<?>> classes) {
         for (Class<?> clazz : classes) {
-            if (osgiServiceDependencies.contains(clazz)) {
+            if (osgiServiceDependencies.containsKey(clazz)) {
                 return true;
             }
         }

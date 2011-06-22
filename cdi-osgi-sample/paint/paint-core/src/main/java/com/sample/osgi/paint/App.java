@@ -28,7 +28,7 @@ public class App {
         frame.start();
     }
 
-    public void invalidListen(@Observes Invalid valid) {
+    public void invalidListen(@Observes Invalid invalid) {
         frame.stop();
     }
 }

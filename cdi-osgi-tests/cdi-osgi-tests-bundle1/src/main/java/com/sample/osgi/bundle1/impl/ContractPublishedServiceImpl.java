@@ -7,5 +7,5 @@ import org.osgi.cdi.api.extension.annotation.Publish;
 @Publish(contracts = {
         ContractInterface.class
 })
-public class ContractPublishedServiceImpl implements NotContractInterface {
+public class ContractPublishedServiceImpl implements ContractInterface, NotContractInterface {
 }

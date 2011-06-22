@@ -2,6 +2,7 @@ package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
+import org.osgi.cdi.api.extension.annotation.Required;
 
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -25,6 +26,9 @@ public class CDIOSGiAnnotatedField<T> implements AnnotatedField<T> {
         filter = FilterGenerator.makeFilter(filter,field.getAnnotations());
         annotations.add(filter);
         annotations.add(new AnnotationLiteral<OSGiService>() {});
+        if(field.getAnnotation(Required.class) != null) {
+            annotations.add(new AnnotationLiteral<Required>() {});
+        }
         for(Annotation annotation : field.getAnnotations()) {
             if(!annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
                 annotations.add(annotation);
