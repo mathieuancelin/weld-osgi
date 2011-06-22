@@ -9,7 +9,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.osgi.cdi.impl.integration;
 
 import org.osgi.cdi.api.extension.annotation.Property;
@@ -22,14 +21,12 @@ import org.osgi.framework.ServiceRegistration;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
-import javax.swing.text.StyleContext;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
+ * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
@@ -41,8 +38,7 @@ public class ServicePublisher {
     private final Instance<Object> instance;
     private final Set<String> blackList;
 
-    public ServicePublisher(Collection<String> classes, Bundle bundle,
-                            Instance<Object> instance, Set<String> blackList) {
+    public ServicePublisher(Collection<String> classes, Bundle bundle, Instance<Object> instance, Set<String> blackList) {
         this.classes = classes;
         this.bundle = bundle;
         this.instance = instance;
@@ -50,98 +46,92 @@ public class ServicePublisher {
     }
 
     public void registerAndLaunchComponents() {
+        Class<?> clazz;
         for (String className : classes) {
-            Class<?> clazz = null;
             try {
                 clazz = bundle.loadClass(className);
-            } catch (Exception e) {//inaccessible class, silently ignore :-)
+            } catch (Exception e) {//inaccessible class
+                continue;
             }
-            if (clazz != null) {
-                //is an auto-publishable class?
-                if (clazz.isAnnotationPresent(Publish.class)) {
-                    Object service = null;
-                    InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
-                    List<Annotation> qualifiers = getQualifiers(clazz);
-                    try {
-                        Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
-                        service = instance.get();
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                        throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
-                    }
-                    publish(clazz, service, qualifiers);
+            //is an auto-publishable class?
+            if (clazz.isAnnotationPresent(Publish.class)) {
+                Object service = null;
+                InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
+                List<Annotation> qualifiers = getQualifiers(clazz);
+                try {
+                    Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
+                    service = instance.get();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
                 }
+                publish(clazz, service, qualifiers);
             }
         }
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
-        // register service
-        Annotation[] annotations = qualifiers.toArray(new Annotation[qualifiers.size()]);
         ServiceRegistration registration = null;
-        if (service != null) {
-            Publish publish = clazz.getAnnotation(Publish.class);
-            Class[] contracts = publish.contracts();
-            Properties properties = getServiceProperties(publish, qualifiers);
-            if (contracts.length > 0) {//if contracts are precised
-                String[] names = new String[contracts.length];
-                for(int i = 0;i < contracts.length;i++) {
-                    names[i] = contracts[i].getName();
-                }
-                registration = bundle.getBundleContext().registerService(names, service, properties);
-            } else if (service.getClass().getInterfaces().length > 0) { //else use service interfaces
+        Publish publish = clazz.getAnnotation(Publish.class);
+        Class[] contracts = publish.contracts();
+        Properties properties = getServiceProperties(publish, qualifiers);
+        if(contracts.length > 0) {// if there are contracts
+            String[] names = new String[contracts.length];
+            for(int i = 0;i < contracts.length;i++) {
+                names[i] = contracts[i].getName();
+            }
+            registration = bundle.getBundleContext().registerService(names, service, properties);
+        } else {
+            if(service.getClass().getInterfaces().length > 0) {
                 List<Class> interfaces = new ArrayList<Class>();
                 for (Class itf : service.getClass().getInterfaces()) {
                     if (!blackList.contains(itf.getName())) {
                         interfaces.add(itf);
                     }
                 }
-                if (interfaces.size() > 0) {
-                    String[] names = new String[interfaces.size()];
-                    for (int i = 0; i < interfaces.size(); i++) {
-                        names[i] = interfaces.get(i).getName();
-                    }
-                    registration = bundle.getBundleContext().registerService(names, service, properties);
+                contracts = interfaces.toArray(new Class[interfaces.size()]);
+            }
+            if(contracts.length > 0) {// if there are non-blacklisted interfaces
+                String[] names = new String[contracts.length];
+                for(int i = 0;i < contracts.length;i++) {
+                    names[i] = contracts[i].getName();
                 }
+                registration = bundle.getBundleContext().registerService(names, service, properties);
             } else {
-                //TODO use (abstract) superclass
-            }
-            if (registration != null) {
-                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-                instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
-            } else { //there was neither contract nor interface
-                registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
-                if (registration != null) {
-                    CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-                    instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
+                Class superClass = service.getClass().getSuperclass();
+                if(superClass != null && superClass != Object.class) {// if there is a superclass
+                    registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
+                } else {// publish directly with the implementation type
+                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 }
             }
+        }
+        if (registration != null) {
+            CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+            instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
         }
     }
 
     private static Properties getServiceProperties(Publish publish, List<Annotation> qualifiers) {
-        Properties properties = null;
+        Properties properties = new Properties();
         if (!qualifiers.isEmpty()) {
-            properties = new Properties();
-            for (Annotation qualif : qualifiers) {
-                for (Method m : qualif.annotationType().getDeclaredMethods()) {
+            for (Annotation qualifier : qualifiers) {
+                for (Method m : qualifier.annotationType().getDeclaredMethods()) {
                     if (!m.isAnnotationPresent(Nonbinding.class)) {
                         try {
-                            String key = qualif.annotationType().getSimpleName() + "." + m.getName();
-                            Object value = m.invoke(qualif);
+                            String key = qualifier.annotationType().getSimpleName() + "." + m.getName();
+                            Object value = m.invoke(qualifier);
                             if (value == null) {
                                 value = m.getDefaultValue();
                             }
                             properties.setProperty(key, value.toString());
-                        } catch (Throwable t) {
-                            // ignore
+                        } catch (Throwable t) {// ignore
                         }
                     }
                 }
             }
         }
         if (publish.properties().length > 0) {
-            properties = new Properties();
             for (Property property : publish.properties()) {
                 properties.setProperty(property.name(), property.value());
             }
@@ -151,45 +141,12 @@ public class ServicePublisher {
 
     private static List<Annotation> getQualifiers(Class<?> clazz) {
         List<Annotation> qualifiers = new ArrayList<Annotation>();
-        for (Annotation a : clazz.getAnnotations()) {
-            if (a.annotationType().isAnnotationPresent(Qualifier.class)) {
-                qualifiers.add(a);
+        for (Annotation annotation : clazz.getAnnotations()) {
+            if (annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
+                qualifiers.add(annotation);
             }
         }
         return qualifiers;
     }
 
-    private <T> T getProxy(Class<T> interf, Class<? extends T> clazz, Annotation[] qualifiers, Bundle bundle) {
-        return interf.cast(
-                Proxy.newProxyInstance(
-                    clazz.getClassLoader(),
-                    new Class[]{interf},
-                    new LazyService(clazz, qualifiers, bundle)));
-    }
-
-    private class LazyService implements InvocationHandler {
-
-        private final Class<?> contract;
-        private final Annotation[] qualifiers;
-        private final Bundle bundle;
-
-        public LazyService(Class<?> contract, Annotation[] qualifiers, Bundle bundle) {
-            this.contract = contract;
-            this.qualifiers = qualifiers;
-            this.bundle = bundle;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            try {
-                CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-                InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
-                return method.invoke(
-                        instanceHolder.select(contract, qualifiers).get(),
-                        args);
-            } finally {
-                CDIOSGiExtension.currentBundle.remove();
-            }
-        }
-    }
 }
