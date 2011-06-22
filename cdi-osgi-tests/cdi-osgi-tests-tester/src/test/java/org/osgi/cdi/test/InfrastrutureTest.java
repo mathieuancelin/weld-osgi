@@ -16,7 +16,7 @@ import java.util.Collection;
 
 import static org.ops4j.pax.exam.CoreOptions.options;
 
-//@RunWith(JUnit4TestRunner.class)
+@RunWith(JUnit4TestRunner.class)
 public class InfrastrutureTest {
 
     @Configuration
@@ -26,7 +26,7 @@ public class InfrastrutureTest {
         );
     }
 
-//    @Test
+    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -63,7 +63,7 @@ public class InfrastrutureTest {
 
     }
 
-//    @Test
+    @Test
     public void CDIContainerFactoryTest(BundleContext context) throws InterruptedException {
         Environment.waitForEnvironment(context);
 
@@ -97,7 +97,7 @@ public class InfrastrutureTest {
 
     }
 
-//    @Test
+    @Test
     public void CDIContainerTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 

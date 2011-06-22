@@ -17,11 +17,18 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 
+ * This is the activator of the CDI-OSGi extension part. It starts with the extension bundle.
+ * <p/>
+ * It looks for a CDI container factory service before it starts managing bean bundles.
+ * It monitors bundle and service events to manage/unmanage arriving/departing bean bundle and to start/stop when a CDI
+ * container factory service arrives/leaves.
+ *
  * @author Guillaume Sauthier
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class IntegrationActivator implements BundleActivator, BundleListener, ServiceListener {
+
     private ServiceReference factoryRef = null;
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
@@ -75,6 +82,63 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         }
     }
 
+    @Override
+    public void serviceChanged(ServiceEvent event) {
+        try {
+            ServiceReference[] refs = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
+            if (ServiceEvent.REGISTERED == event.getType()) {
+                if (!started.get() && refs != null && refs.length > 0) {
+                    factoryRef = refs[0];
+                    startCDIOSGi();
+                }
+            } else if (ServiceEvent.UNREGISTERING == event.getType()) {
+                if (started.get() && (refs == null || refs.length == 0)) {
+                    factoryRef = null;
+                    stopCDIOSGi();
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void startManagement(Bundle bundle) {
+        boolean set = CDIOSGiExtension.currentBundle.get() != null;
+        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
+        CDIContainer holder = factory().createContainer(bundle);
+        holder.initialize();
+        if (holder.isStarted()) {
+
+            // setting contextual information
+            holder.getInstance().select(BundleHolder.class).get().setBundle(bundle);
+            holder.getInstance().select(BundleHolder.class).get().setContext(bundle.getBundleContext());
+            holder.getInstance().select(ContainerObserver.class).get().setContainers(factory().containers());
+            holder.getInstance().select(ContainerObserver.class).get().setCurrentContainer(holder);
+            // registering publishable services
+            ServicePublisher publisher = new ServicePublisher(holder.getBeanClasses(),
+                                                              bundle,
+                                                              holder.getInstance(),
+                                                              factory().getContractBlacklist());
+            publisher.registerAndLaunchComponents();
+            // fire container start
+            holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerInitialized(bundle.getBundleContext()));
+            // registering utility services
+            Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
+            BundleContext bundleContext = bundle.getBundleContext();
+            try {
+                regs.add(bundleContext.registerService(Event.class.getName(), holder.getEvent(), null));
+                regs.add(bundleContext.registerService(BeanManager.class.getName(), holder.getBeanManager(), null));
+                regs.add(bundleContext.registerService(Instance.class.getName(), holder.getInstance(), null));
+            } catch (Throwable t) {// Ignore
+            }
+            holder.setRegistrations(regs);
+            factory().addContainer(holder);
+        }
+        if (!set) {
+            CDIOSGiExtension.currentBundle.remove();
+        }
+    }
+
     private void stopManagement(Bundle bundle) {
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
@@ -85,8 +149,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             for (ServiceRegistration reg : regs) {
                 try {
                     reg.unregister();
-                } catch (IllegalStateException e) {
-                    // Ignore
+                } catch (IllegalStateException e) {// Ignore
                 }
             }
             try {
@@ -109,74 +172,6 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         }
         if (!set) {
             CDIOSGiExtension.currentBundle.remove();
-        }
-    }
-
-    private void startManagement(Bundle bundle) {
-        boolean set = CDIOSGiExtension.currentBundle.get() != null;
-        CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-        CDIContainer holder = factory().createContainer(bundle);
-        holder.initialize();
-        if (holder.isStarted()) {
-
-            // setting contextual informations
-            holder.getInstance().select(BundleHolder.class).get().setBundle(bundle);
-            holder.getInstance().select(BundleHolder.class).get().setContext(bundle.getBundleContext());
-            holder.getInstance().select(ContainerObserver.class).get().setContainers(factory().containers());
-            holder.getInstance().select(ContainerObserver.class).get().setCurrentContainer(holder);
-            // fire container start
-            ServicePublisher publisher = new ServicePublisher(holder.getBeanClasses(),
-                    bundle, holder.getInstance(),
-                    factory().getContractBlacklist());
-            // registering publishable services
-            publisher.registerAndLaunchComponents();
-            holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerInitialized(bundle.getBundleContext()));
-            Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
-
-            BundleContext bundleContext = bundle.getBundleContext();
-            try {
-                regs.add(
-                        bundleContext.registerService(Event.class.getName(),
-                                holder.getEvent(),
-                                null));
-
-                regs.add(
-                        bundleContext.registerService(BeanManager.class.getName(),
-                                holder.getBeanManager(),
-                                null));
-
-                regs.add(
-                        bundleContext.registerService(Instance.class.getName(),
-                                holder.getInstance(),
-                                null));
-            } catch (Throwable t) {
-                // Ignore
-            }
-            holder.setRegistrations(regs);
-            factory().addContainer(holder);
-        }
-        if (!set) {
-            CDIOSGiExtension.currentBundle.remove();
-        }
-    }
-
-    @Override
-    public void serviceChanged(ServiceEvent event) {
-        try {
-            ServiceReference[] refs = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
-            if (ServiceEvent.REGISTERED == event.getType()) {
-                if (!started.get() && refs != null && refs.length > 0) {
-                    factoryRef = refs[0];
-                    startCDIOSGi();
-                }
-            } else if (ServiceEvent.UNREGISTERING == event.getType()) {
-                if (started.get() && (refs == null || refs.length == 0)) {
-                    factoryRef = null;
-                    stopCDIOSGi();
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 

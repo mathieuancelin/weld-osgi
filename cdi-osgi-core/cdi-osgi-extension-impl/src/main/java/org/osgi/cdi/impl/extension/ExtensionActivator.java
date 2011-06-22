@@ -17,15 +17,17 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * It seems we cannot get the BundleContext in the Extension, so
- * to fire up OSGi Events (BundleEvent, ServiceEvent and FrameworkEvent)
- * we need to act here.
+ * This is the activator of the CDI-OSGi extension part. It starts with the extension bundle.
+ * <p/>
+ * It seems we cannot get the BundleContext in the Extension, so to fire up OSGi Events (BundleEvent, ServiceEvent and
+ * FrameworkEvent) we need to act here.
+ * Thus it listens to all {@link BundleEvent}s and {@link ServiceEvent}s in order to relay them using {@link Event}s.
  *
+ * @author Guillaume Sauthier
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-public class ExtensionActivator implements BundleActivator,
-                                     BundleListener,
-                                     ServiceListener {
+public class ExtensionActivator implements BundleActivator, BundleListener, ServiceListener {
 
     private BundleContext context;
 
@@ -42,55 +44,99 @@ public class ExtensionActivator implements BundleActivator,
 
     @Override
     public void bundleChanged(BundleEvent event) {
-
         ServiceReference[] references = findReferences(context, Event.class);
 
-        if (references != null) {
-            for (ServiceReference reference : references) {
+        if (references != null) { //if there are some listening bean bundles
+            Bundle bundle = event.getBundle();
+            AbstractBundleEvent bundleEvent = null;
+            switch (event.getType()) {
+                case BundleEvent.INSTALLED:
+                    bundleEvent = new BundleEvents.BundleInstalled(bundle);
+                    break;
+                case BundleEvent.LAZY_ACTIVATION:
+                    bundleEvent = new BundleEvents.BundleLazyActivation(bundle);
+                    break;
+                case BundleEvent.RESOLVED:
+                    bundleEvent = new BundleEvents.BundleResolved(bundle);
+                    break;
+                case BundleEvent.STARTED:
+                    bundleEvent = new BundleEvents.BundleStarted(bundle);
+                    break;
+                case BundleEvent.STARTING:
+                    bundleEvent = new BundleEvents.BundleStarting(bundle);
+                    break;
+                case BundleEvent.STOPPED:
+                    bundleEvent = new BundleEvents.BundleStopped(bundle);
+                    break;
+                case BundleEvent.STOPPING:
+                    bundleEvent = new BundleEvents.BundleStopping(bundle);
+                    break;
+                case BundleEvent.UNINSTALLED:
+                    bundleEvent = new BundleEvents.BundleUninstalled(bundle);
+                    break;
+                case BundleEvent.UNRESOLVED:
+                    bundleEvent = new BundleEvents.BundleUnresolved(bundle);
+                    break;
+                case BundleEvent.UPDATED:
+                    bundleEvent = new BundleEvents.BundleUpdated(bundle);
+                    break;
+            }
+            for (ServiceReference reference : references) { //broadcast event
                 boolean set = CDIOSGiExtension.currentBundle.get() != null;
                 CDIOSGiExtension.currentBundle.set(reference.getBundle().getBundleId());
                 Event<Object> e = (Event<Object>) context.getService(reference);
                 try {
+                    //broadcast the OSGi event through CDI event system
                     e.select(BundleEvent.class).fire(event);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
-                Bundle bundle = event.getBundle();
-                AbstractBundleEvent bundleEvent = null;
-                switch (event.getType()) {
-                    case BundleEvent.INSTALLED:
-                        bundleEvent = new BundleEvents.BundleInstalled(bundle);
-                    break;
-                    case BundleEvent.LAZY_ACTIVATION:
-                        bundleEvent = new BundleEvents.BundleLazyActivation(bundle);
-                    break;
-                    case BundleEvent.RESOLVED:
-                        bundleEvent = new BundleEvents.BundleResolved(bundle);
-                    break;
-                    case BundleEvent.STARTED:
-                        bundleEvent = new BundleEvents.BundleStarted(bundle);
-                    break;
-                    case BundleEvent.STARTING:
-                        bundleEvent = new BundleEvents.BundleStarting(bundle);
-                    break;
-                    case BundleEvent.STOPPED:
-                        bundleEvent = new BundleEvents.BundleStopped(bundle);
-                    break;
-                    case BundleEvent.STOPPING:
-                        bundleEvent = new BundleEvents.BundleStopping(bundle);
-                    break;
-                    case BundleEvent.UNINSTALLED:
-                        bundleEvent = new BundleEvents.BundleUninstalled(bundle);
-                    break;
-                    case BundleEvent.UNRESOLVED:
-                        bundleEvent = new BundleEvents.BundleUnresolved(bundle);
-                    break;
-                    case BundleEvent.UPDATED:
-                        bundleEvent = new BundleEvents.BundleUpdated(bundle);
-                    break;
-                }
                 if (bundleEvent != null) {
+                    //broadcast the corresponding CDI-OSGi event
                     fireAllEvent(bundleEvent, e);
+                }
+                if (!set) {
+                    CDIOSGiExtension.currentBundle.remove();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void serviceChanged(ServiceEvent event) {
+        ServiceReference[] references = findReferences(context, Instance.class);
+
+        if (references != null) { //if there are some listening bean bundles
+            ServiceReference ref = event.getServiceReference();
+            AbstractServiceEvent serviceEvent = null;
+            switch (event.getType()) {
+                case ServiceEvent.MODIFIED:
+                    serviceEvent =
+                            new ServiceEvents.ServiceChanged(ref, context);
+                    break;
+                case ServiceEvent.REGISTERED:
+                    serviceEvent =
+                            new ServiceEvents.ServiceArrival(ref, context);
+                    break;
+                case ServiceEvent.UNREGISTERING:
+                    serviceEvent =
+                            new ServiceEvents.ServiceDeparture(ref, context);
+                    break;
+            }
+            for (ServiceReference reference : references) { //broadcast event
+                boolean set = CDIOSGiExtension.currentBundle.get() != null;
+                CDIOSGiExtension.currentBundle.set(reference.getBundle().getBundleId());
+                Instance<Object> instance = (Instance<Object>) context.getService(reference);
+                Event<Object> e = instance.select(Event.class).get();
+                try {
+                    //broadcast the OSGi event through CDI event system
+                    e.select(ServiceEvent.class).fire(event);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                if (serviceEvent != null) {
+                    //broadcast the corresponding CDI-OSGi event
+                    fireAllEvent(serviceEvent, e, instance);
                 }
                 if (!set) {
                     CDIOSGiExtension.currentBundle.remove();
@@ -103,63 +149,21 @@ public class ExtensionActivator implements BundleActivator,
         ServiceReference[] references = null;
         try {
             references = context.getServiceReferences(type.getName(), null);
-        } catch (InvalidSyntaxException e) {
-            // Ignored
+        } catch (InvalidSyntaxException e) {// Ignored
         }
         return references;
     }
 
-    @Override
-    public void serviceChanged(ServiceEvent event) {
-        ServiceReference[] references = findReferences(context, Instance.class);
-
-        if (references != null) {
-            for (ServiceReference reference : references) {
-                boolean set = CDIOSGiExtension.currentBundle.get() != null;
-                CDIOSGiExtension.currentBundle.set(reference.getBundle().getBundleId());
-                Instance<Object> instance = (Instance<Object>) context.getService(reference);
-                Event<Object> e = instance.select(Event.class).get();
-                try {
-                    e.select(ServiceEvent.class).fire(event);
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-                ServiceReference ref = event.getServiceReference();
-                AbstractServiceEvent serviceEvent = null;
-                switch (event.getType()) {
-                    case ServiceEvent.MODIFIED:
-                        serviceEvent =
-                            new ServiceEvents.ServiceChanged(ref, context);
-                        break;
-                    case ServiceEvent.REGISTERED:
-                        serviceEvent =
-                            new ServiceEvents.ServiceArrival(ref, context);
-                        break;
-                    case ServiceEvent.UNREGISTERING:
-                        serviceEvent =
-                            new ServiceEvents.ServiceDeparture(ref, context);
-                        break;
-                }
-                if (serviceEvent != null) {
-                    fireAllEvent(serviceEvent, e, instance);
-                }
-                if (!set) {
-                    CDIOSGiExtension.currentBundle.remove();
-                }
-            }
-        }
-    }
-
-    private void fireAllEvent(AbstractServiceEvent event, 
-            Event broadcaster, Instance<Object> instance) {
+    private void fireAllEvent(AbstractServiceEvent event, Event broadcaster, Instance<Object> instance) {
         List<Class<?>> classes = event.getServiceClasses();
         Class eventClass = event.getClass();
         for (Class<?> clazz : classes) {
             try {
                 broadcaster.select(eventClass,
-                    filteredServicesQualifiers(event,
-                        new SpecificationAnnotation(clazz), instance))
-                    .fire(event);
+                                   filteredServicesQualifiers(event,
+                                                              new SpecificationAnnotation(clazz),
+                                                              instance))
+                           .fire(event);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -167,14 +171,15 @@ public class ExtensionActivator implements BundleActivator,
     }
 
     private Annotation[] filteredServicesQualifiers(AbstractServiceEvent event,
-            SpecificationAnnotation specific, Instance<Object> instance) {
+                                                    SpecificationAnnotation specific,
+                                                    Instance<Object> instance) {
         Set<Annotation> eventQualifiers = new HashSet<Annotation>();
         eventQualifiers.add(specific);
         CDIOSGiExtension ext = instance.select(CDIOSGiExtension.class).get();
         for (Annotation anno : ext.getObservers()) {
             String value = ((Filter) anno).value();
             try {
-                org.osgi.framework.Filter filter 
+                org.osgi.framework.Filter filter
                         = context.createFilter(value);
                 if (filter.match(event.getReference())) {
                     eventQualifiers.add(new FilterAnnotation(value));
@@ -189,17 +194,15 @@ public class ExtensionActivator implements BundleActivator,
     private void fireAllEvent(AbstractBundleEvent event, Event broadcaster) {
         try {
             broadcaster.select(event.getClass(),
-                new BundleNameAnnotation(event.getSymbolicName()),
-                new BundleVersionAnnotation(event.getVersion().toString()))
-                .fire(event);
+                               new BundleNameAnnotation(event.getSymbolicName()),
+                               new BundleVersionAnnotation(event.getVersion().toString()))
+                       .fire(event);
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
-    private static class BundleNameAnnotation
-            extends AnnotationLiteral<BundleName>
-            implements BundleName {
+    private static class BundleNameAnnotation extends AnnotationLiteral<BundleName> implements BundleName {
 
         private final String value;
 
@@ -218,9 +221,7 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    private static class BundleVersionAnnotation
-            extends AnnotationLiteral<BundleVersion>
-            implements BundleVersion {
+    private static class BundleVersionAnnotation extends AnnotationLiteral<BundleVersion> implements BundleVersion {
 
         private final String value;
 
@@ -239,9 +240,7 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    public static class SpecificationAnnotation
-            extends AnnotationLiteral<Specification>
-            implements Specification {
+    public static class SpecificationAnnotation extends AnnotationLiteral<Specification> implements Specification {
 
         private final Class value;
 
@@ -260,9 +259,7 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    public static class SentAnnotation
-            extends AnnotationLiteral<Sent>
-            implements Sent {
+    public static class SentAnnotation extends AnnotationLiteral<Sent> implements Sent {
 
         @Override
         public Class<? extends Annotation> annotationType() {
@@ -270,9 +267,7 @@ public class ExtensionActivator implements BundleActivator,
         }
     }
 
-    public static class FilterAnnotation
-            extends AnnotationLiteral<Filter>
-            implements Filter {
+    public static class FilterAnnotation extends AnnotationLiteral<Filter> implements Filter {
 
         private final String value;
 
