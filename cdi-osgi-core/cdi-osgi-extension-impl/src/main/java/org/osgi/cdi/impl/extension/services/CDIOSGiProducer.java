@@ -3,13 +3,10 @@ package org.osgi.cdi.impl.extension.services;
 import org.osgi.cdi.api.extension.BundleState;
 import org.osgi.cdi.api.extension.Registration;
 import org.osgi.cdi.api.extension.RegistrationHolder;
-import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.BundleDataFile;
 import org.osgi.cdi.api.extension.annotation.BundleHeader;
 import org.osgi.cdi.api.extension.annotation.BundleHeaders;
 import org.osgi.cdi.api.extension.annotation.OSGiBundle;
-import org.osgi.cdi.api.extension.annotation.Required;
-import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -83,21 +80,6 @@ public class CDIOSGiProducer {
             return null;
         }
         return holder.getContext().getDataFile(file.value());
-    }
-
-    @Produces @Required
-    public <T> Service<T> getOSGiRequiredService(BundleHolder holder,
-            CDIOSGiExtension extension, InjectionPoint p) {
-
-        extension.getRequiredOsgiServiceDependencies().add((Class)
-            ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
-        return getOSGiService(holder, p);
-    }
-
-    @Produces
-    public <T> Service<T> getOSGiService(BundleHolder holder, InjectionPoint p) {
-        return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                holder.getContext());
     }
 
     @Produces

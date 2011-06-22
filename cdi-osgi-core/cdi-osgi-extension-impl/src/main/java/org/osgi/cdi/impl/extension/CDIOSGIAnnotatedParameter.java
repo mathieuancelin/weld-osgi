@@ -2,6 +2,7 @@ package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
+import org.osgi.cdi.api.extension.annotation.Required;
 
 import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -24,6 +25,9 @@ public class CDIOSGIAnnotatedParameter<T> implements AnnotatedParameter<T> {
         filter = FilterGenerator.makeFilter(filter,parameter.getAnnotations());
         annotations.add(filter);
         annotations.add(new AnnotationLiteral<OSGiService>() {});
+        if(parameter.getAnnotation(Required.class) != null) {
+            annotations.add(new AnnotationLiteral<Required>() {});
+        }
         for(Annotation annotation : parameter.getAnnotations()) {
             if(!annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
                 annotations.add(annotation);

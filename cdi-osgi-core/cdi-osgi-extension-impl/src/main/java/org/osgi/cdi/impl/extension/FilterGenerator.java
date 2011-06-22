@@ -4,6 +4,7 @@ import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.Property;
 import org.osgi.cdi.api.extension.annotation.Publish;
 
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
@@ -43,6 +44,18 @@ public class FilterGenerator {
 
     public static Filter makeFilter(Publish publish) {
         return make(tokenize(publish));
+    }
+
+    public static Filter makeFilter(InjectionPoint injectionPoint) {
+        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+        Filter filter = null;
+        for(Annotation qualifier : qualifiers) {
+            if(qualifier.annotationType().equals(Filter.class)) {
+                filter = (Filter)qualifier;
+                break;
+            }
+        }
+        return FilterGenerator.makeFilter(filter, qualifiers);
     }
 
     public static Filter makeFilter(Publish publish, Collection<Annotation> annotations) {

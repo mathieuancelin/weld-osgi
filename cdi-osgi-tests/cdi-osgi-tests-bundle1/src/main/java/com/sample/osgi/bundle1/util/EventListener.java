@@ -3,9 +3,7 @@ package com.sample.osgi.bundle1.util;
 import com.sample.osgi.bundle1.api.MovingService;
 import com.sample.osgi.bundle1.impl.MovingServiceImpl;
 import org.osgi.cdi.api.extension.annotation.Publish;
-import org.osgi.cdi.api.extension.events.BundleContainerEvents;
-import org.osgi.cdi.api.extension.events.BundleEvents;
-import org.osgi.cdi.api.extension.events.ServiceEvents;
+import org.osgi.cdi.api.extension.events.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -120,79 +118,58 @@ public class EventListener {
         return bundleInstalled;
     }
 
-    public void setBundleInstalled(int bundleInstalled) {
-        this.bundleInstalled = bundleInstalled;
-    }
-
     public int getBundleUninstalled() {
         return bundleUninstalled;
-    }
-
-    public void setBundleUninstalled(int bundleUninstalled) {
-        this.bundleUninstalled = bundleUninstalled;
     }
 
     public int getBundleResolved() {
         return bundleResolved;
     }
 
-    public void setBundleResolved(int bundleResolved) {
-        this.bundleResolved = bundleResolved;
-    }
-
     public int getBundleUnresolved() {
         return bundleUnresolved;
-    }
-
-    public void setBundleUnresolved(int bundleUnresolved) {
-        this.bundleUnresolved = bundleUnresolved;
     }
 
     public int getBundleStarting() {
         return bundleStarting;
     }
 
-    public void setBundleStarting(int bundleStarting) {
-        this.bundleStarting = bundleStarting;
-    }
-
     public int getBundleStarted() {
         return bundleStarted;
-    }
-
-    public void setBundleStarted(int bundleStarted) {
-        this.bundleStarted = bundleStarted;
     }
 
     public int getBundleStopping() {
         return bundleStopping;
     }
 
-    public void setBundleStopping(int bundleStopping) {
-        this.bundleStopping = bundleStopping;
-    }
-
     public int getBundleStopped() {
         return bundleStopped;
-    }
-
-    public void setBundleStopped(int bundleStopped) {
-        this.bundleStopped = bundleStopped;
     }
 
     public int getBundleUpdated() {
         return bundleUpdated;
     }
 
-    public void setBundleUpdated(int bundleUpdated) {
-        this.bundleUpdated = bundleUpdated;
-    }
-
     public int getBundleLazyActivation() {
         return bundleLazyActivation;
     }
 
-    public void setBundleLazyActivation(int bundleLazyActivation) {
-        this.bundleLazyActivation = bundleLazyActivation;
+    private int bundleValid = 0;
+    private int bundleInvalid = 0;
+
+    private void bundleValid(@Observes Valid event) {
+        bundleValid++;
+    }
+
+    private void bundleInvalid(@Observes Invalid event) {
+        bundleInvalid++;
+    }
+
+    public int getBundleValid() {
+        return bundleValid;
+    }
+
+    public int getBundleInvalid() {
+        return bundleInvalid;
     }
 }
