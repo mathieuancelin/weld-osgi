@@ -11,7 +11,9 @@
  */
 package org.osgi.cdi.impl.integration;
 
+import org.osgi.cdi.api.extension.BundleState;
 import org.osgi.cdi.api.extension.events.BundleContainerEvents;
+import org.osgi.cdi.api.extension.events.Invalid;
 import org.osgi.cdi.api.integration.CDIContainer;
 import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
@@ -178,6 +180,12 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
+            }
+            BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
+            if (bundleHolder.getState().equals(BundleState.VALID)) {
+                bundleHolder.setState(BundleState.INVALID);
+                Event<Invalid> invalidEvent = holder.getEvent();
+                invalidEvent.fire(new Invalid());
             }
             holder.shutdown();
         }
