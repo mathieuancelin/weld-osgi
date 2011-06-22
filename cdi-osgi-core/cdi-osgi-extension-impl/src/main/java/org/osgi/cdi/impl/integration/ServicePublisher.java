@@ -82,9 +82,9 @@ public class ServicePublisher {
             }
             registration = bundle.getBundleContext().registerService(names, service, properties);
         } else {
-            if(service.getClass().getInterfaces().length > 0) {
+            if(clazz.getInterfaces().length > 0) {
                 List<Class> interfaces = new ArrayList<Class>();
-                for (Class itf : service.getClass().getInterfaces()) {
+                for (Class itf : clazz.getInterfaces()) {
                     if (!blackList.contains(itf.getName())) {
                         interfaces.add(itf);
                     }
@@ -98,7 +98,7 @@ public class ServicePublisher {
                 }
                 registration = bundle.getBundleContext().registerService(names, service, properties);
             } else {
-                Class superClass = service.getClass().getSuperclass();
+                Class superClass = clazz.getClass().getSuperclass();
                 if(superClass != null && superClass != Object.class) {// if there is a superclass
                     registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
                 } else {// publish directly with the implementation type
