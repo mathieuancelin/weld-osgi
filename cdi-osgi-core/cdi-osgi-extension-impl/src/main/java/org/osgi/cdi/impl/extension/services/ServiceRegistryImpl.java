@@ -20,8 +20,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -106,17 +104,14 @@ public class ServiceRegistryImpl implements ServiceRegistry {
 
     public void bind(@Observes ServiceEvents.ServiceArrival arrival) {
         checkForValidDependencies(arrival);
-        System.out.println(bundleHolder.getBundle().getSymbolicName() + " arrival " + arrival.getServiceClasses());
     }
 
     public void changed(@Observes ServiceEvents.ServiceChanged changed) {
         checkForValidDependencies(changed);
-        System.out.println(bundleHolder.getBundle().getSymbolicName() + " changed " + changed.getServiceClasses());
     }
 
     public void unbind(@Observes ServiceEvents.ServiceDeparture departure) {
         checkForValidDependencies(departure);
-        System.out.println(bundleHolder.getBundle().getSymbolicName() + " departure " + departure.getServiceClasses());
     }
 
     private void checkForValidDependencies(AbstractServiceEvent event) {
@@ -149,11 +144,9 @@ public class ServiceRegistryImpl implements ServiceRegistry {
             if (valid && bundleHolder.getState().equals(BundleState.INVALID)) {
                 bundleHolder.setState(BundleState.VALID);
                 validEvent.fire(new Valid());
-                System.out.println(bundleHolder.getBundle().getSymbolicName() + " goes VALID");
             } else if (!valid && bundleHolder.getState().equals(BundleState.VALID)) {
                 bundleHolder.setState(BundleState.INVALID);
                 invalidEvent.fire(new Invalid());
-                System.out.println(bundleHolder.getBundle().getSymbolicName() + " goes INVALID");
             }
         }
     }

@@ -35,13 +35,13 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        integration.start(context);
         extension.start(context);
+        integration.start(context);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        extension.stop(context);
         integration.stop(context);
+        extension.stop(context);
     }
 }

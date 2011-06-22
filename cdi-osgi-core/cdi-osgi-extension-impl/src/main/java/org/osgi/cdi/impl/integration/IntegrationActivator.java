@@ -184,8 +184,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
             if (bundleHolder.getState().equals(BundleState.VALID)) {
                 bundleHolder.setState(BundleState.INVALID);
-                Event<Invalid> invalidEvent = holder.getEvent();
-                invalidEvent.fire(new Invalid());
+                holder.getBeanManager().fireEvent(new Invalid());
             }
             holder.shutdown();
         }
