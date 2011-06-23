@@ -53,60 +53,6 @@
             <para>Weld-OSGi is one of the five bundles composing CDI-OSGi. But it also names the
                 framework CDI-OSGi using this particular CDI integration.</para>
         </section>
-        <section>
-            <title>Organization and interactions between CDI-OSGi bundles</title>
-            <figure>
-                <title>The five bundles of CDI-OSGi</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png" align="center" format="PNG" width="800" depth="600"/>
-                    </imageobject>
-                    <caption>This figure shows the five bundles of CDI-OSGi and the links between
-                        them. Each is described below.</caption>
-                </mediaobject>
-            </figure>
-            <section>
-                <title>CDI-OSGi extension</title>
-                <para>The blue part represents the CDI OSGi extension. It is composed of one API
-                    bundle and its implementation. It is the core of CDI-OSGi that manages all bean
-                    bundles.</para>
-                <para>Thus the extension API bundle exposes the CDI-OSGi features and the extension
-                    bundle enables these features. All interactions with client bundles go through
-                    the CDI-OSGi extension part.</para>
-            </section>
-            <section>
-                <title>CDI-OSGi integration</title>
-                <para>The yellow part represents the CDI OSGi integration. It is composed of one API
-                    bundle and its implementation. It is how CDI features are provided to
-                    CDI-OSGi.</para>
-                <para>Thus the integration API bundle exposes the requirements of CDI-OSGi in order
-                    to run CDI features in OSGi environment and the integration bundle is the
-                    implementation of these requirements using a vendor specific CDI implementation
-                    (such as Weld).</para>
-                <para>Weld-OSGi is one of the possible extension bundle. So the extension bundle is
-                    commutable to support various CDI implementation.</para>
-            </section>
-            <section>
-                <title>CDI API bundle</title>
-                <para>The fith bundle is the CDI API. It exposes regular CDI features for all client
-                    bundles and exempts the user to load CDI API by himself. It is a third-party API
-                    provided for convenience to the user.</para>
-            </section>
-            <section>
-                <title>Interaction between bundles</title>
-                <para>User client bean bundles should only know about the extension API bundle of
-                    CDI-OSGi and the CDI API bundle because they may import their packages in order
-                    to use CDI-OSGi features. They do not need to know the other three
-                    bundles.</para>
-                <para>The extension bundle manages bean bundles transparently. It also implements
-                    the extension API and uses the container factory service from the integration
-                    bundle.</para>
-                <para>Integration API bundle should only be known by users who want to provide an
-                    alternative integration bundle. This latter provides the CDI compliant containers
-                    used by the extension bundle. The CDI-OSGi integration part is only used
-                    internally.</para>
-            </section>
-        </section>
     </section>
     <section>
         <title>What about other frameworks</title>

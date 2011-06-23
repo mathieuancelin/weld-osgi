@@ -2,23 +2,75 @@
     <title id="osgicdipresentation">Organization of CDI-OSGi</title>
     <section>
         <title>API bundles, extension bundle and integration bundle</title>
-        <para>CDI-OSGi is composed of five bundles: <itemizedlist>
-                <listitem>
-                    <para>The API bundles that provides the API used to define both utilities
-                        provided and hooking up system with implementation bundle,</para>
-                </listitem>
-                <listitem>
-                    <para>The extension bundle that provides CDI-OSGi features for bean bundles by
-                        managing them,</para>
-                </listitem>
-                <listitem>
-                    <para>An integration bundle that provides CDI features usable by the extension
-                        bundle through an OSGi service.</para>
-                </listitem>
-            </itemizedlist></para>
-        <para>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an OSGi
-            core bundle too. This one provide OSGi features for all other bundles, including
-            CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</para>
+        <section>
+            <title>Bundles presentation and interaction</title>
+            <para>CDI-OSGi is composed of five bundles: <itemizedlist>
+                    <listitem>
+                        <para>The three API bundles that provides the API used to define both
+                            utilities provided and hooking up system with implementation
+                            bundle,</para>
+                    </listitem>
+                    <listitem>
+                        <para>The extension bundle that provides CDI-OSGi features for bean bundles
+                            by managing them,</para>
+                    </listitem>
+                    <listitem>
+                        <para>An integration bundle that provides CDI features usable by the
+                            extension bundle through an OSGi service.</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an
+                OSGi core bundle too. This one provide OSGi features for all other bundles,
+                including CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</para>
+            <figure>
+                <title>The five bundles of CDI-OSGi</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png"
+                            align="center" format="PNG" width="800" depth="600"/>
+                    </imageobject>
+                    <caption>This figure shows the five bundles of CDI-OSGi and the links between
+                        them.</caption>
+                </mediaobject>
+            </figure>
+            <para>These bundles could regroup in three part (as shown in the figure above):<itemizedlist>
+                    <listitem>
+                        <para>CDI-OSGi extension: The blue part represents the CDI OSGi extension.
+                            It is composed of one API bundle and its implementation (the extension
+                            bundle). It is the core of CDI-OSGi that manages all bean bundles.Thus
+                            the extension API bundle exposes the CDI-OSGi features and the extension
+                            bundle enables these features. All interactions with client bundles go
+                            through the CDI-OSGi extension part.</para>
+                    </listitem>
+                    <listitem>
+                        <para>CDI-OSGi integration: The yellow part represents the CDI OSGi
+                            integration. It is composed of one API bundle and its implementation. It
+                            is how CDI features are provided to CDI-OSGi.Thus the integration API
+                            bundle exposes the requirements of CDI-OSGi in order to run CDI features
+                            in OSGi environment.The integration bundle is the implementation of
+                            these requirements using a vendor specific CDI implementation (such as
+                            Weld).Weld-OSGi is one of the possible extension bundle. So the
+                            extension bundle is commutable to support various CDI
+                            implementation.</para>
+                    </listitem>
+                    <listitem>
+                        <para>CDI API bundle: The fith bundle is the CDI API. It exposes regular CDI
+                            features for all client bundles and exempts the user to load CDI API by
+                            himself. It is a third-party API provided for convenience to the
+                            user.</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>User client bean bundles should only know about the extension API bundle of
+                CDI-OSGi and the CDI API bundle because they may import their packages in order to
+                use CDI-OSGi features. They do not need to know the other three bundles.</para>
+            <para>The extension bundle manages bean bundles transparently. It also implements the
+                extension API and uses the container factory service from the integration
+                bundle.</para>
+            <para>Integration API bundle should only be known by users who want to provide an
+                alternative integration bundle. This latter provides the CDI compliant containers
+                used by the extension bundle. The CDI-OSGi integration part is only used
+                internally.</para>
+        </section>
         <section>
             <title>Extension API, integration API and CDI API</title>
             <para>Three API bundles expose all packages that could be needed by developers; both for
