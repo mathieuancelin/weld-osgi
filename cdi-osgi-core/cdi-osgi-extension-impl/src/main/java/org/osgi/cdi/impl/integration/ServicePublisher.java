@@ -97,9 +97,9 @@ public class ServicePublisher {
                     names[i] = contracts[i].getName();
                 }
                 registration = bundle.getBundleContext().registerService(names, service, properties);
-            } else {
+            } else {// if there is a non blacklisted superclass
                 Class superClass = clazz.getClass().getSuperclass();
-                if(superClass != null && superClass != Object.class) {// if there is a superclass
+                if(superClass != null && superClass != Object.class && !blackList.contains(superClass.getName())) {// if there is a superclass
                     registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
                 } else {// publish directly with the implementation type
                     registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
