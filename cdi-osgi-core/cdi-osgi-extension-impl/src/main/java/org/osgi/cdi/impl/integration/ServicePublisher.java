@@ -70,8 +70,8 @@ public class ServicePublisher {
                     Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                     service = instance.get();
                 } catch (Throwable e) {
-                    logger.error("Unable to instantiate the service",e);
-                    throw new RuntimeException();
+                    logger.error("###Unable to instantiate the service {} with qualifiers {}",className,qualifiers);
+                    throw new RuntimeException(e);
                 }
                 publish(clazz, service, qualifiers);
             }

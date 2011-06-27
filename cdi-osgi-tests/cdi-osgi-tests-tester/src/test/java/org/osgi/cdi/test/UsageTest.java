@@ -38,7 +38,7 @@ public class UsageTest {
         );
     }
 
-    @Test
+//    @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -114,7 +114,7 @@ public class UsageTest {
 
     }
 
-    @Test
+//    @Test
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -227,7 +227,7 @@ public class UsageTest {
         Assert.assertEquals("The property service 3 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",propertyService3.whoAmI());
     }
 
-    @Test
+//    @Test
     public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
@@ -410,6 +410,31 @@ public class UsageTest {
     }
 
     @Test
+    public void contextualTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
+        Environment.waitForEnvironment(context);
+
+        ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
+        Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
+        Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
+        ServiceProvider provider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
+        Assert.assertNotNull("The service provider was null",provider);
+
+        ContextualService applicationScopedContextualService = provider.getApplicationScopedContextualService();
+        Assert.assertNotNull("The application scoped contextual service was null", applicationScopedContextualService);
+        long applicationScopedContextualServiceId = applicationScopedContextualService.getId();
+        ContextualService dependentScopedContextualService = provider.getDependentScopedContextualService();
+        Assert.assertNotNull("The dependent scoped contextual service was null", applicationScopedContextualService);
+        long dependentScopedContextualServiceId = dependentScopedContextualService.getId();
+
+        ContextualService applicationScopedContextualService2 = provider.getApplicationScopedContextualService();
+        Assert.assertNotNull("The application scoped contextual service was null", applicationScopedContextualService2);
+        Assert.assertEquals("The application scoped contextual service id was different", applicationScopedContextualServiceId, applicationScopedContextualService2.getId());
+        ContextualService dependentScopedContextualService2 = provider.getDependentScopedContextualService();
+        Assert.assertNotNull("The dependent scoped contextual service was null", dependentScopedContextualService2);
+        Assert.assertTrue("The dependent scoped contextual service id was equals", dependentScopedContextualServiceId != dependentScopedContextualService2.getId());
+    }
+
+//    @Test
     public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
