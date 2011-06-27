@@ -1,3 +1,7 @@
+Embed-Dependency slf4j-api;version=1.6.1;scope=compile|runtime;inline=true, \
+                 logback-classic;version=0.9.29;scope=compile|runtime;inline=true, \
+                 logback-core;version=0.9.29;scope=compile|runtime;inline=true
+
 Export-Package org.osgi.cdi.impl.extension; \
                org.osgi.cdi.impl.extension.services
 

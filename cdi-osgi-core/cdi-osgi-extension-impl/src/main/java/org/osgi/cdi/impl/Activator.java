@@ -15,7 +15,6 @@ import org.osgi.cdi.impl.extension.ExtensionActivator;
 import org.osgi.cdi.impl.integration.IntegrationActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
 /**
  * This is the {@link BundleActivator} of the extension bundle. It represents the entry point of CDI-OSGi.
  * <p/>
@@ -29,19 +28,26 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 
+//    private Logger logger = LoggerFactory.getLogger(getClass());
+    private SoutLogger logger = new SoutLogger();
+
     private BundleActivator integration = new IntegrationActivator();
 
     private BundleActivator extension = new ExtensionActivator();
 
     @Override
     public void start(BundleContext context) throws Exception {
+        logger.info("CDI-OSGi STARTING");
         extension.start(context);
         integration.start(context);
+        logger.info("CDI-OSGi STARTED");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        logger.info("CDI-OSGi STOPPING");
         integration.stop(context);
         extension.stop(context);
+        logger.info("CDI-OSGi STOPPED");
     }
 }

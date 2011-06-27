@@ -1,0 +1,32 @@
+<configuration debug="true">
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <encoder>
+            <pattern>
+                CDI-OSGi %-7([%level]) - %msg %ex{short}%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="Log" class="ch.qos.logback.core.FileAppender">
+        <file>CDI-OSGi.log</file>
+        <append>false</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+        <encoder>
+            <pattern>
+                CDI-OSGi %-7([%level]) - %msg%n    [%thread]%caller{1}%xEx{full}
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="trace">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="Log"/>
+    </root>
+
+</configuration>

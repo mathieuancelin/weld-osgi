@@ -17,6 +17,7 @@ import org.osgi.cdi.api.extension.events.AbstractBundleEvent;
 import org.osgi.cdi.api.extension.events.AbstractServiceEvent;
 import org.osgi.cdi.api.extension.events.BundleEvents;
 import org.osgi.cdi.api.extension.events.ServiceEvents;
+import org.osgi.cdi.impl.SoutLogger;
 import org.osgi.framework.*;
 
 import javax.enterprise.event.Event;
@@ -40,10 +41,14 @@ import java.util.Set;
  */
 public class ExtensionActivator implements BundleActivator, BundleListener, ServiceListener {
 
+//    private Logger logger = LoggerFactory.getLogger(getClass());
+    private SoutLogger logger = new SoutLogger();
+
     private BundleContext context;
 
     @Override
     public void start(BundleContext context) throws Exception {
+        logger.info("CDI-OSGi extension START");
         this.context = context;
         context.addBundleListener(this);
         context.addServiceListener(this);
@@ -51,6 +56,7 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        logger.info("CDI-OSGi extension STOP");
     }
 
     @Override
