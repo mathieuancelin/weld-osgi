@@ -1,138 +1,119 @@
 <chapter>
     <title id="osgicdipresentation">Organization of CDI-OSGi</title>
     <section>
-        <title>API bundles, extension bundle and integration bundle</title>
+        <title>Bundles and interactions</title>
+        <para>CDI-OSGi is composed of five bundles: <itemizedlist>
+                <listitem>
+                    <para>The extension API that describes all the new features provided by CDI-OSGi
+                        in the OSGi environment.</para>
+                </listitem>
+                <listitem>
+                    <para>The integration API that allows CDI compliant container to be used with
+                        CDI-OSGi.</para>
+                </listitem>
+                <listitem>
+                    <para>The CDI API that describes all the regular CDI features provided by
+                        CDI-OSGi to bean bundles.</para>
+                </listitem>
+                <listitem>
+                    <para>The extension bundle that provides CDI-OSGi features for bean bundles by
+                        managing them,</para>
+                </listitem>
+                <listitem>
+                    <para>An integration bundle that provides CDI features usable by the extension
+                        bundle through an OSGi service.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an OSGi
+            core bundle too. This one provide OSGi features for all other bundles, including
+            CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</para>
+        <figure>
+            <title>The five bundles of CDI-OSGi</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/CDI-OSGibundlesorganization.png" align="center"
+                        format="PNG" width="800" depth="600"/>
+                </imageobject>
+                <caption>This figure shows the five bundles of CDI-OSGi and the links between
+                    them.</caption>
+            </mediaobject>
+        </figure>
+        <para>These bundles could regroup in three part (as shown in the figure above):<itemizedlist>
+                <listitem>
+                    <para>CDI-OSGi extension: The blue part represents the CDI OSGi extension. It is
+                        composed of one API bundle and its implementation (the extension bundle). It
+                        is the core of CDI-OSGi that manages all bean bundles.Thus the extension API
+                        bundle exposes the CDI-OSGi features and the extension bundle enables these
+                        features. All interactions with client bundles go through the CDI-OSGi
+                        extension part.</para>
+                </listitem>
+                <listitem>
+                    <para>CDI-OSGi integration: The yellow part represents the CDI OSGi integration.
+                        It is composed of one API bundle and its implementation. It is how CDI
+                        features are provided to CDI-OSGi.Thus the integration API bundle exposes
+                        the requirements of CDI-OSGi in order to run CDI features in OSGi
+                        environment.The integration bundle is the implementation of these
+                        requirements using a vendor specific CDI implementation (such as
+                        Weld).Weld-OSGi is one of the possible extension bundle. So the extension
+                        bundle is commutable to support various CDI implementation.</para>
+                </listitem>
+                <listitem>
+                    <para>CDI API bundle: The fith bundle is the CDI API. It exposes regular CDI
+                        features for all client bundles and exempts the user to load CDI API by
+                        himself. It is a third-party API provided for convenience to the
+                        user.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>User client bean bundles should only know about the extension API bundle of CDI-OSGi
+            and the CDI API bundle because they may import their packages in order to use CDI-OSGi
+            features. They do not need to know the other three bundles.</para>
+        <para>The extension bundle manages bean bundles transparently. It also implements the
+            extension API and uses the container factory service from the integration bundle.</para>
+        <para>Integration API bundle should only be known by users who want to provide an
+            alternative integration bundle. This latter provides the CDI compliant containers used
+            by the extension bundle. The CDI-OSGi integration part is only used internally.</para>
+    </section>
+    <section>
+        <title>Descriptions</title>
         <section>
-            <title>Bundles presentation and interaction</title>
-            <para>CDI-OSGi is composed of five bundles: <itemizedlist>
-                    <listitem>
-                        <para>The three API bundles that provides the API used to define both
-                            utilities provided and hooking up system with implementation
-                            bundle,</para>
-                    </listitem>
-                    <listitem>
-                        <para>The extension bundle that provides CDI-OSGi features for bean bundles
-                            by managing them,</para>
-                    </listitem>
-                    <listitem>
-                        <para>An integration bundle that provides CDI features usable by the
-                            extension bundle through an OSGi service.</para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an
-                OSGi core bundle too. This one provide OSGi features for all other bundles,
-                including CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</para>
-            <figure>
-                <title>The five bundles of CDI-OSGi</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png"
-                            align="center" format="PNG" width="800" depth="600"/>
-                    </imageobject>
-                    <caption>This figure shows the five bundles of CDI-OSGi and the links between
-                        them.</caption>
-                </mediaobject>
-            </figure>
-            <para>These bundles could regroup in three part (as shown in the figure above):<itemizedlist>
-                    <listitem>
-                        <para>CDI-OSGi extension: The blue part represents the CDI OSGi extension.
-                            It is composed of one API bundle and its implementation (the extension
-                            bundle). It is the core of CDI-OSGi that manages all bean bundles.Thus
-                            the extension API bundle exposes the CDI-OSGi features and the extension
-                            bundle enables these features. All interactions with client bundles go
-                            through the CDI-OSGi extension part.</para>
-                    </listitem>
-                    <listitem>
-                        <para>CDI-OSGi integration: The yellow part represents the CDI OSGi
-                            integration. It is composed of one API bundle and its implementation. It
-                            is how CDI features are provided to CDI-OSGi.Thus the integration API
-                            bundle exposes the requirements of CDI-OSGi in order to run CDI features
-                            in OSGi environment.The integration bundle is the implementation of
-                            these requirements using a vendor specific CDI implementation (such as
-                            Weld).Weld-OSGi is one of the possible extension bundle. So the
-                            extension bundle is commutable to support various CDI
-                            implementation.</para>
-                    </listitem>
-                    <listitem>
-                        <para>CDI API bundle: The fith bundle is the CDI API. It exposes regular CDI
-                            features for all client bundles and exempts the user to load CDI API by
-                            himself. It is a third-party API provided for convenience to the
-                            user.</para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>User client bean bundles should only know about the extension API bundle of
-                CDI-OSGi and the CDI API bundle because they may import their packages in order to
-                use CDI-OSGi features. They do not need to know the other three bundles.</para>
-            <para>The extension bundle manages bean bundles transparently. It also implements the
-                extension API and uses the container factory service from the integration
-                bundle.</para>
-            <para>Integration API bundle should only be known by users who want to provide an
-                alternative integration bundle. This latter provides the CDI compliant containers
-                used by the extension bundle. The CDI-OSGi integration part is only used
-                internally.</para>
+            <title>Extension API</title>
+            <para>The extension API defines all the features provided to OSGi environment using CDI
+                specification. It exposes all the new utilities and defines the comportment of the
+                extension bundle.</para>
+            <para>It exposes all the interfaces, events and annotations usable by a developers in
+                order to develop its client bean bundles. It defines the programming model of
+                CDI-OSGi client bundle. Mostly it is about publishing and consuming injectable
+                services in a CDI way.</para>
+            <para>It also describes the object the extension bundle needs to orchestrate bean
+                bundles.</para>
+            <para>So this is where to search for new usages of OSGi.</para>
         </section>
         <section>
-            <title>Extension API, integration API and CDI API</title>
-            <para>Three API bundles expose all packages that could be needed by developers; both for
-                client application using CDI-OSGi and for CDI compliant container integration. They
-                may be use as a dependency for bean bundles, extension bundle and implementation
-                bundle.</para>
-            <para>These three distinct API are: <itemizedlist>
-                    <listitem>
-                        <para>The extension API that describes all the new features provided by
-                            CDI-OSGi in the OSGi environment.</para>
-                    </listitem>
-                    <listitem>
-                        <para>The integration API that allows CDI compliant container to be used
-                            with CDI-OSGi.</para>
-                    </listitem>
-                    <listitem>
-                        <para>The CDI API that describes all the regular CDI features provided by
-                            CDI-OSGi to bean bundles.</para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>These three API are more described below.</para>
-            <section>
-                <title>Extension API</title>
-                <para>The extension API defines all the features provided to OSGi environment using
-                    CDI specification. It exposes all the new utilities and defines the comportment
-                    of the extension bundle.</para>
-                <para>It exposes all the interfaces, events and annotations usable by a developers
-                    in order to develop its client bean bundles. It defines the programming model of
-                    CDI-OSGi client bundle. Mostly it is about publishing and consuming injectable
-                    services in a CDI way.</para>
-                <para>It also describes the object the extension bundle needs to orchestrate bean
-                    bundles.</para>
-                <para>So this is where to search for new usages of OSGi.</para>
-            </section>
-            <section>
-                <title>Integration API</title>
-                <para>The integration API defines how a CDI container, such as Weld, should
-                    bootstrap with the CDI OSGi extension. So any CDI environment implementation
-                    could use the CDI OSGi extension transparently. The CDI compliant container may
-                    be provided using an implementation bundle.</para>
-                <para>This aims at providing the minimum integration in order to start a CDI
-                    compliant container with every managed bean bundle. Then the extension bundle
-                    can get a CDI container to provide to every one of its manages bean
-                    bundle.</para>
-                <para>Moreover the integration API allows to mix CDI compliant container in the same
-                    application by providing an embedded mode. In this mode a bean bundle is
-                    decoupled from the extension bundle and is managed on its own. Thus various
-                    implementations of CDI container can be used or the behavior of a particular
-                    bean bundle can be particularized.</para>
-                <para>All this bootstrapping mechanism works using the service layer of OSGi. A CDI
-                    compliant implementation bundle may provide a service that allows the extension
-                    bundle to obtain a new container for every bean bundle.</para>
-                <para>So this is where to search to make CDI-OSGi use a specific CDI compliant
-                    container.</para>
-            </section>
-            <section>
-                <title>CDI API</title>
-                <para>The CDI API is described by the CDI specifications. It is provided with
-                    CDI-OSGi and defines all the CDI features usable in bean bundles.</para>
-                <para>This API will not be describe furthermore as it would be redundant with CDI
-                    specifications.</para>
-            </section>
+            <title>Integration API</title>
+            <para>The integration API defines how a CDI container, such as Weld, should bootstrap
+                with the CDI OSGi extension. So any CDI environment implementation could use the CDI
+                OSGi extension transparently. The CDI compliant container may be provided using an
+                implementation bundle.</para>
+            <para>This aims at providing the minimum integration in order to start a CDI compliant
+                container with every managed bean bundle. Then the extension bundle can get a CDI
+                container to provide to every one of its manages bean bundle.</para>
+            <para>Moreover the integration API allows to mix CDI compliant container in the same
+                application by providing an embedded mode. In this mode a bean bundle is decoupled
+                from the extension bundle and is managed on its own. Thus various implementations of
+                CDI container can be used or the behavior of a particular bean bundle can be
+                particularized.</para>
+            <para>All this bootstrapping mechanism works using the service layer of OSGi. A CDI
+                compliant implementation bundle may provide a service that allows the extension
+                bundle to obtain a new container for every bean bundle.</para>
+            <para>So this is where to search to make CDI-OSGi use a specific CDI compliant
+                container.</para>
+        </section>
+        <section>
+            <title>CDI API</title>
+            <para>The CDI API is described by the CDI specifications. It is provided with CDI-OSGi
+                and defines all the CDI features usable in bean bundles.</para>
+            <para>This API will not be describe furthermore as it would be redundant with CDI
+                specifications.</para>
         </section>
         <section>
             <title>Extension bundle: the puppet master</title>
@@ -164,896 +145,31 @@
         </section>
     </section>
     <section>
-        <title>An OSGi extension for CDI support: the extension API</title>
-        <section>
-            <title>CDI-OSGi features</title>
-            <para>As an extension to OSGi, CDI-OSGi provides several features : <itemizedlist>
-                    <listitem>
-                        <para>Complete integration with OSGi world by the use of extender pattern
-                            and extension bundle. Thus complete compatibility with already existing
-                            tools.</para>
-                    </listitem>
-                    <listitem>
-                        <para>Non intruding, configurable and customizable behavior in new or
-                            upgraded application. Simple configuration and usage with annotations,
-                            completely xml free.</para>
-                    </listitem>
-                    <listitem>
-                        <para>Full internal CDI support for bean bundles: injection, producers,
-                            interceptors, decorators ...</para>
-                    </listitem>
-                    <listitem>
-                        <para>Lot of ease features for OSGi usages: injectable services, event
-                            notifications, inter-bundle communication ...</para>
-                    </listitem>
-                    <listitem>
-                        <para>OSGi and CDI compliance all along the way ensuring compatibility with
-                            all CDI compliant container and easy application realisation or
-                            portage.</para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>We will see in the next sections these features in deep through the description of
-                the extension API.</para>
-        </section>
-        <section>
-            <title>The interfaces</title>
-            <para>Extension API provides few interfaces that describe all specifics about OSGi
-                service injection.</para>
-            <section>
-                <title>The <code>Service</code> interface</title>
-                <programlisting>public interface Service&lt;T> extends Iterable&lt;T> {
-
-    T get();    
-    Service&lt;T> select(Annotation... qualifiers);
-    Service&lt;T> select(String filter);
-    boolean isUnsatisfied();
-    boolean isAmbiguous();
-    int size();
-}</programlisting>
-                <para>It represents a service instance producer parametrized by the service to
-                    inject. It has the same behavior than CDI <code>Instance&lt;T></code> except
-                    that it represents only OSGi service beans.</para>
-                <para>IT allows to:<itemizedlist>
-                        <listitem>
-                            <para>Wrap a list of potential service implementations as an
-                                    <code>Iterable</code> java object,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Select a subset of these service implementations filtered by
-                                    <code>Qualifier</code>s or LDAP filters,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Iterate through these service implementations,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Obtain an instance of the first remaining service
-                                implementations,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Obtain utility information about the contained service
-                                implementations.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>OSGi services should not be subtyped.</para>
-            </section>
-            <section>
-                <title>The <code>Registration</code> interface</title>
-                <programlisting>public interface Registration&lt;T> extends Iterable&lt;Registration&lt;T>> {
-
-    void unregister();
-    &lt;T> Service&lt;T> getServiceReference();
-    Registration&lt;T> select(Annotation... qualifiers);
-    Registration&lt;T> select(String filter);
-    int size();
-}
-            </programlisting>
-                <para>This interface represents the registrations of an injectable service in the
-                    service registry. Its behavior is similar to <code>Service&lt;T></code>, thus it
-                    might represent the iterable set of all the registrations of a service.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Wrap a list of service registration (i.e. the bindings between a
-                                service and its implementations) as an <code>Iterable</code> java
-                                object,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Select a subset of these registration filtered by
-                                    <code>Qualifier</code>s or LDAP filters,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Iterate through these service registrations,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Obtain the service implementations list as a
-                                    <code>Service&lt;T></code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Get the number of registrations (i.e the number of registered
-                                service implementations).</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>OSGi services should not be subtyped.</para>
-            </section>
-            <section>
-                <title>The <code>RegistrationHolder</code> interface</title>
-                <para>
-                    <programlisting>public interface RegistrationHolder {
-
-    List&lt;ServiceRegistration> getRegistrations();
-    void addRegistration(ServiceRegistration reg);
-    void removeRegistration(ServiceRegistration reg);
-    void clear();
-    int size();
-}</programlisting>
-                </para>
-                <para>This interface represents the bindings between a service and its registered
-                    implementations. It is used by <code>Registration</code> to maintain the list of
-                    registration bindings. It uses OSGi <code>ServiceRegistration</code>.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Wrap a list of <code>ServiceRegistration</code> as binding between
-                                a service and its implementations as a <code>List</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Handle this list with addition, removal, clearing and size
-                                operations.</para>
-                        </listitem>
-                    </itemizedlist></para>
-            </section>
-            <section>
-                <title>The <code>ServiceRegistry</code> interface</title>
-                <programlisting>public interface ServiceRegistry {
-
-    &lt;T> Registration&lt;T> registerService(Class&lt;T> contract, Class&lt;? extends T> implementation);
-    &lt;T, U extends T> Registration&lt;T> registerService(Class&lt;T> contract, U implementation);
-    &lt;T> Service&lt;T> getServiceReferences(Class&lt;T> contract);
-}</programlisting>
-                <para>This interface represents a service registry where all OSGi services may be
-                    handled.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Register a service implementation with a service, getting back the
-                                corresponding <code>Registration</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Obtain the service implementations list as a
-                                    <code>Service&lt;T></code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-            </section>
-        </section>
-        <section>
-            <title>The events</title>
-            <para>Extension API provides numerous events that notify about life-cycle steps for CDI
-                container management, service management, bundle management, bean bundle validation
-                and bundle communication management. They all use CDI event system.</para>
-            <para>CDI container events, as well as service and bundle events, are regroupped using
-                three classes. Thus each category of event has: <itemizedlist>
-                    <listitem>
-                        <para>An abstract class representing all the events of this category,
-                            defining the global comportment and allowing to handle all the lifecycle
-                            steps in one operation,</para>
-                    </listitem>
-                    <listitem>
-                        <para>An enumeration describing the list of possible event types, allowing
-                            to discriminate a particular lifecycle step of the category,</para>
-                    </listitem>
-                    <listitem>
-                        <para>A list of implementation class for each of the above type, allowing to
-                            handle a particular lifecycle step only. These implementation classes
-                            are regroupped as static inner classes of a global category event
-                            class.</para>
-                    </listitem>
-                </itemizedlist></para>
-            <section>
-                <title>The bundle events</title>
-                <para>The representing abstract class:
-                    <programlisting>public abstract class AbstractBundleEvent {
-
-    private final Bundle bundle;
-
-    public AbstractBundleEvent(Bundle bundle) {...}
-    
-    public abstract BundleEventType getType();
-    public long getBundleId() {...}
-    public String getSymbolicName() {...}
-    public Version getVersion() {...}
-    public Bundle getBundle() {...}
-}</programlisting></para>
-                <para>This abstract class represents all the CDI-OSGi bundle events as a
-                    superclass.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent all bundle events,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the current event type as a
-                                <code>BundleEventType</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the firing bundle and its information.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen all bundle
-                    events.</para>
-                <para>The possible event types:
-                    <programlisting>public enum BundleEventType {
-
-    INSTALLED,
-    LAZY_ACTIVATION,
-    RESOLVED,
-    STARTED,
-    STARTING,
-    STOPPED,
-    STOPPING,
-    UNINSTALLED,
-    UNRESOLVED,
-    UPDATED,
-}</programlisting></para>
-                <para>This enumeration lists all possible states of a bundle and the corresponding
-                    event types.</para>
-                <para>The implementation classes (in the global event class):
-                    <programlisting>public class BundleEvents {
-
-    public static class BundleInstalled extends AbstractBundleEvent {
-
-        public BundleInstalled(Bundle bundle) {...}
-
-        @Override
-        public BundleEventType getType() {...}
-    }
-    //next classes follow the same template as above
-    public static class BundleLazyActivation extends AbstractBundleEvent {...}
-    public static class BundleResolved extends AbstractBundleEvent {...}
-    public static class BundleStarted extends AbstractBundleEvent {...}
-    public static class BundleStarting extends AbstractBundleEvent {...}
-    public static class BundleStopped extends AbstractBundleEvent {...}
-    public static class BundleStopping extends AbstractBundleEvent {...}
-    public static class BundleUninstalled extends AbstractBundleEvent {...}
-    public static class BundleUnresolved extends AbstractBundleEvent {...}
-    public static class BundleUpdated extends AbstractBundleEvent {...}
-}</programlisting></para>
-                <para>This class wraps all the bundle events as inner static classes. There is one
-                    event class by <code>BundleEventType</code>.</para>
-                <para>Each inner class allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent a specific bundle event,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the same information as
-                                <code>AbstractBundleEvent</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>They may be used in <code>Observes</code> method in order to listen a specific
-                    bundle event.</para>
-            </section>
-            <section>
-                <title>The service events</title>
-                <para>The representing abstract class:
-                    <programlisting>public abstract class AbstractServiceEvent {
-
-    private final ServiceReference reference;
-    private final BundleContext context;
-    private List&lt;String> classesNames;
-    private List&lt;Class&lt;?>> classes;
-    private Map&lt;Class, Boolean> assignable;
-
-    public AbstractServiceEvent(ServiceReference reference, BundleContext context) {...}
-    
-    public abstract ServiceEventType eventType();
-    public ServiceReference getReference() {...}
-    public &lt;T> TypedService&lt;T> type(Class&lt;T> type) {...}
-    public Object getService() {...}
-    public boolean ungetService() {...}
-    public boolean isTyped(Class&lt;?> type) {...}
-    public Bundle getRegisteringBundle() {...}
-    public List&lt;String> getServiceClassNames() {...}
-    public List&lt;Class&lt;?>> getServiceClasses() {...}
-
-    public static class TypedService&lt;T> {
-
-        private final BundleContext context;
-        private final ServiceReference ref;
-        private final Class&lt;T> type;
-
-        TypedService(BundleContext context, ServiceReference ref, Class&lt;T> type) {...}
-        
-        static &lt;T> TypedService&lt;T> create(Class&lt;T> type, BundleContext context, ServiceReference ref) {...}
-        public T getService() {...}
-        public boolean ungetService() {...}
-    }
-}</programlisting></para>
-                <para>This abstract class represents all the CDI-OSGi service events as a
-                    superclass.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent all service events,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the current event type as a
-                                <code>ServiceEventType</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the affected <code>ServiceReference</code>, the
-                                corresponding information and registering
-                                <code>Bundle</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Manipulate the service,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retreive the firing <code>BundleContext</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen all service
-                    events.</para>
-                <para>The possible event types:
-                    <programlisting>public enum ServiceEventType {
-
-    SERVICE_ARRIVAL,
-    SERVICE_DEPARTURE,
-    SERVICE_CHANGED
-}</programlisting></para>
-                <para>This enumeration lists all possible states of a service and the corresponding
-                    event types.</para>
-                <para>The implementation classes (in the global event class):
-                    <programlisting>public class ServiceEvents {
-
-    public static class ServiceArrival extends AbstractServiceEvent {
-
-        public ServiceArrival(
-                ServiceReference ref, BundleContext context) {
-            super(ref, context);
-        }
-
-        @Override
-        public ServiceEventType eventType() {
-            return ServiceEventType.SERVICE_ARRIVAL;
-        }
-    }
-    //next classes follow the same template as above
-    public static class ServiceChanged extends AbstractServiceEvent {...}
-    public static class ServiceDeparture extends AbstractServiceEvent {...}
-
-}</programlisting></para>
-                <para>This class wraps all the service events as inner static classes. There is one
-                    event class by <code>ServiceEventType</code>.</para>
-                <para>Each inner class allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent a specific service event,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the same information as
-                                <code>AbstractServiceEvent</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>They may be used in <code>Observes</code> method in order to listen a specific
-                    service event.</para>
-            </section>
-            <section>
-                <title>The bundle container events</title>
-                <para>The representing abstract class:
-                    <programlisting>public abstract class AbstractBundleContainerEvent {
-
-    private BundleContext bundleContext;
-
-    public AbstractBundleContainerEvent(final BundleContext context) {...}
-
-    public BundleContext getBundleContext() {...}
-    public abstract BundleContainerEventType getType();
-}</programlisting></para>
-                <para>This abstract class represents all the CDI-OSGi bundle container events as a
-                    superclass.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent all bundle container events,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the current event type as a
-                                    <code>BundleContainerEventType</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the firing <code>BundleContext</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen all bundle
-                    container events.</para>
-                <para>The possible event types:
-                    <programlisting>public enum BundleContainerEventType {
-
-    INITIALIZED,
-    SHUTDOWN
-}</programlisting></para>
-                <para>This enumeration list all possible states of a bundle container and the
-                    corresponding event types.</para>
-                <para>The implementation classes (in the global event class):
-                    <programlisting>public class BundleContainerEvents {
-
-    public static class BundleContainerInitialized extends AbstractBundleContainerEvent {
-
-        public BundleContainerInitialized(BundleContext context) {
-            super(context);
-        }
-
-        @Override
-        public BundleContainerEventType getType() {
-            return BundleContainerEventType.INITIALIZED;
-        }
-    }
-    //next class follows the same template as above
-    public static class BundleContainerShutdown extends AbstractBundleContainerEvent {...}
-}</programlisting></para>
-                <para>This class wraps all the bundle container events as inner static classes.
-                    There is one event class by <code>BundleContainerEventType</code>.</para>
-                <para>Each inner class allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent a specific bundle container event,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the same information as
-                                    <code>AbstractBundleContainerEvent</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>They may be used in <code>Observes</code> method in order to listen a specific
-                    bundle container event.</para>
-            </section>
-            <section>
-                <title>The bean bundle validation events</title>
-                <para>Two events notify about the validation of bean bundle. After it starts a bean
-                    bundle should validate its required service dependencies. The <code>Valid</code>
-                    and <code>Invalid</code> events occurs when such dependencies are fulfilled or
-                    unfulfilled. These two new states are described in an enumaration:
-                        <code>BundleState</code>.</para>
-                <para>
-                    <programlisting>public class Valid {
-
-    private final Bundle bundle;
-
-    public Valid(Bundle bundle) {...}
-
-    public long getBundleId() {...}
-    public String getSymbolicName() {...}
-    public Version getVersion() {...}
-    public Bundle getBundle() {...}
-}</programlisting>
-                </para>
-                <para>This class represents all bean bundle validation event.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent all bean bundle validation events,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the validated bean bundle and its information.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen all bean
-                    bundle validation events.</para>
-                <para>
-                    <programlisting>public class Invalid {
-
-    private final Bundle bundle;
-
-    public Invalid(Bundle bundle) {...}
-
-    public long getBundleId() {...}
-    public String getSymbolicName() {...}
-    public Version getVersion() {...}
-    public Bundle getBundle() {...}
-}</programlisting>
-                </para>
-                <para>This class represents all bean bundle invalidation event.</para>
-                <para>It allows to:<itemizedlist>
-                        <listitem>
-                            <para>Represent all bean bundle invalidation events,</para>
-                        </listitem>
-                        <listitem>
-                            <para>Retrieve the invalidated bean bundle and its information.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen all bean
-                    bundle invalidation events.</para>
-                <programlisting>public enum BundleState {
-    VALID, INVALID
-}</programlisting>
-                <para>This enumeration lists the two new states of a bean bundle.</para>
-                <para>A bean bundle is in <code>VALID</code> state if all its required service
-                    dependencies are validated otherwise is in <code>INVALID</code> state. Every
-                    time a bean bundle goes from one state to another a corresponding
-                        <code>Valid</code> or <code>Invalid</code> event may be fired.</para>
-            </section>
-            <section>
-                <title>The <code>InterBundleEvent</code> event</title>
-                <para>
-                    <programlisting>public class InterBundleEvent {
-
-    private final Object event;
-    private boolean sent = false;
-    private Class&lt;?> type;
-
-    public InterBundleEvent(Object event) {...}
-    public InterBundleEvent(Object event, Class&lt;?> type) {...}
-
-    public Class&lt;?> type() {...}
-    public boolean isTyped(Class&lt;?> type) {...}
-    public &lt;T> Provider&lt;T> typed(Class&lt;T> type) {...}
-    public Object get() {...}
-    public boolean isSent() {...}
-    public void sent() {...}
-}</programlisting>
-                </para>
-                <para>This class represents a communication event between bean bundles.</para>
-                <para>It allows to specify: <itemizedlist>
-                        <listitem>
-                            <para>The message as an <code>Object</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>The type of the message as a <code>Class</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>The origin of the message (within or outside the bundle).</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used in <code>Observes</code> method in order to listen inter-bundle
-                    communications.</para>
-            </section>
-        </section>
-        <section>
-            <title>The annotations</title>
-            <para>Extension API provides annotations in order to easily use CDI-OSGi
-                features.</para>
-            <section>
-                <title>The <code>OSGiBundle</code>, <code>BundleName</code> and
-                        <code>BundleVersion</code> annotations</title>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface OSGiBundle {
-    @Nonbinding String value();
-    @Nonbinding String version() default "";
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a bundle or a
-                    bundle relative object.</para>
-                <para>It allows to specify:<itemizedlist>
-                        <listitem>
-                            <para>The symbolic name of the bundle, as a required value,</para>
-                        </listitem>
-                        <listitem>
-                            <para>The version of the bundle, as an optional value.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>The symbolic name and version are <emphasis role="bold">not</emphasis>
-                    actually qualifying the injection point, thus this annotation is for global
-                    bundle injection point with additional data. In order to actually discriminate
-                    on the symbolic name or version see <code>BundleName</code> and
-                        <code>BundleVersion</code> annotations.</para>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleName {
-    String value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a bundle or a
-                    bundle relative object.</para>
-                <para>It allows to specify the symbolic name of the bundle, as a required
-                    value.</para>
-                <para>The symbolic name actually discriminate the injection point, thus this
-                    annotation is for specific bundle relative injection point. For global bundle
-                    relative injection point see <code>OSGiBundle</code> annotation. To discriminate
-                    the bundle version see <code>BundleVersion</code>.</para>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleVersion {
-    String value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a bundle or a
-                    bundle relative object.</para>
-                <para>It allows to specify the version of the bundle, as a required value.</para>
-                <para>The version actually discriminate the injection point, thus this annotation is
-                    for specific bundle relative injection point. For global bundle relative
-                    injection point see <code>OSGiBundle</code> annotation. To discriminate the
-                    bundle symbolic name see <code>BundleName</code>.</para>
-            </section>
-            <section>
-                <title>The <code>BundleDataFile</code>, <code>BundleHeader</code> and
-                        <code>BundleHeaders</code> annotations</title>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleDataFile {
-    @Nonbinding String value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a bundle data
-                    file.</para>
-                <para>It allows to specify the relative path of the file in the bundle, as a
-                    required value.</para>
-                <para>The file path is <emphasis role="bold">not</emphasis> actually qualifying the
-                    injection point, thus this annotation is for global bundle data file injection
-                    point with additional data. To discriminate the bundle use
-                        <code>OSGiBundle</code> or <code>BundleName</code> and
-                        <code>BundleVersion</code> annotations.</para>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleHeader {
-    @Nonbinding String value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a specific bundle
-                    header.</para>
-                <para>It allows to specify the name of the bundle header, as a required
-                    value.</para>
-                <para>The header name is <emphasis role="bold">not</emphasis> actually qualifying
-                    the injection point, thus this annotation is for global specific bundle header
-                    injection point with additional data. To discriminate the bundle use
-                        <code>OSGiBundle</code> or <code>BundleName</code> and
-                        <code>BundleVersion</code> annotations. To obtain all the bundle headers see
-                        <code>BundleHeaders</code> annotations.</para>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BundleHeaders {
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents all headers of a
-                    bundle.</para>
-                <para>To discriminate the bundle use <code>OSGiBundle</code> or
-                        <code>BundleName</code> and <code>BundleVersion</code> annotations. To
-                    obtain a specific bundle header see <code>BundleHeader</code> annotation.</para>
-            </section>
-            <section>
-                <title>The <code>OSGiService</code> annotation</title>
-                <programlisting>@Qualifier
-@Target({ TYPE, METHOD, PARAMETER, FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface OSGiService {
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a service from
-                    the OSGi service registry.</para>
-                <para>It may be use to obtain an injected OSGi service using <code>Service</code>
-                    interface or directly the service contract interface. The injected service might
-                    be filtered using regular <code>Qualifer</code> annotations or a LDAP filter
-                    with <code>Filter</code> annotation. It also might be mark as required for
-                    bundle running using <code>Required</code> annotation.</para>
-            </section>
-            <section>
-                <title>The <code>Publish</code> and <code>Property</code> annotations</title>
-                <programlisting>@Target({ TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Publish {
-    public Class[] contracts() default {};
-    public Property[] properties() default {};
-    public boolean useQualifiersAsProperties() default true;
-}</programlisting>
-                <para>This annotation notices that this type is an OSGi service implementation and
-                    should be automatically published in the OSGi service registry.</para>
-                <para>It allows to specify:<itemizedlist>
-                        <listitem>
-                            <para>The contract interfaces of implemented service, as an optional
-                                array of <code>Class</code>es,</para>
-                        </listitem>
-                        <listitem>
-                            <para>The properties of the published service implementation, as an
-                                optional array of <code>Property</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>If <code>Qualifier</code> annotations are considered as
-                                properties or not, as an optional <code>Boolean</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>The published implementation might be discriminated using regular
-                        <code>Qualifer</code> annotations or a LDAP filter with <code>Filter</code>
-                    annotation.</para>
-                <para>
-                    <programlisting>@Retention(RetentionPolicy.RUNTIME)
-public @interface Property {
-    String name();
-    String value();
-}</programlisting>
-                </para>
-                <para>This annotation wraps an OSGi service property used for automatic OSGi service
-                    publishing.</para>
-                <para>It allows to specify:<itemizedlist>
-                        <listitem>
-                            <para>The name of the property, as a required
-                                <code>String</code>,</para>
-                        </listitem>
-                        <listitem>
-                            <para>The value of the property, as a required
-                                <code>String</code>.</para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>It may be used within the <code>Publish</code> annotation to provide the
-                    published service implementation properties.</para>
-            </section>
-            <section>
-                <title>The <code>Required</code> annotation</title>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Required {
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a required
-                    service.</para>
-                <para>It may be coupled with the <code>OSGiService</code> annotation in order to
-                    qualify a service that must be available for the application to start.</para>
-            </section>
-            <section>
-                <title>The <code>Filter</code> annotation</title>
-                <programlisting>@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Filter {
-    String value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents a LDAP filtered
-                    service.</para>
-                <para>It allows to specify the LDAP filter, as a required
-                    <code>String</code>.</para>
-                <para>It may be coupled with a <code>OSGiService</code> or a <code>Publish</code>
-                    annotation in order to filter the injected or published service implementations.
-                    The LDAP filtering acts on <code>Qualifier</code> or <code>Property</code>
-                    annotations or regular OSGi properties used in service publishing.</para>
-            </section>
-            <section>
-                <title>The <code>Specification</code> annotation</title>
-                <programlisting>@Qualifier
-@Target({ PARAMETER })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Specification {
-    Class value();
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents events whose
-                    match one of the specifications.</para>
-                <para>It allows to specify the specification interfaces of the <code>Event</code>s
-                    parametrizing types, as a required <code>Class</code>.</para>
-                <para>It may be used in an <code>Observes</code> method to restrict the listened
-                    events.</para>
-            </section>
-            <section>
-                <title>The <code>Sent</code> annotation</title>
-                <programlisting>@Qualifier
-@Target({ PARAMETER })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Sent {
-}</programlisting>
-                <para>This annotation qualifies an injection point that represents an
-                        <code>InterBundleEvent</code> from outside the current
-                    <code>Bundle</code>.</para>
-                <para>It may be used in an <code>Observes</code> method to restrict the listened
-                        <code>InterBundleEvent</code>. It allows to ignore the
-                        <code>InterBundleEvent</code> from within the current bundle.</para>
-            </section>
-        </section>
-    </section>
-    <section>
-        <title>A standard bootstrap for CDI container integration: the integration API</title>
-        <section>
-            <title>Why an integration API</title>
-            <para>CDI-OSGi could have been carried out with an internal CDI compliant container and
-                work very well. Every one of the specifications above would have been fulfilled. But
-                no other specific utilities or CDI evolution could have been added without a
-                complete modification of CDI-OSGi.</para>
-            <para>Then there is the integration API. With that, developers are able to provide their
-                own integration bundle. Thus it is possible to use any CDI compliant container with
-                a CDI-OSGi application or mix up different CDI compliant containers for different
-                bundles.</para>
-            <para>Integration API describes what needs the extension bundle to work (and therefore
-                what may provide the integraton bundle).</para>
-            <section>
-                <title>The <code>CDIContainer</code> interface</title>
-                <programlisting>public interface CDIContainer {
-
-    boolean initialize();
-
-    boolean shutdown();
-
-    boolean isStarted();
-
-    void fire(InterBundleEvent event);
-
-    Bundle getBundle();
-
-    BeanManager getBeanManager();
-
-    Event getEvent();
-
-    Instance&lt;Object> getInstance();
-
-    Collection&lt;String> getBeanClasses();
-
-    Collection&lt;ServiceRegistration> getRegistrations();
-
-    void setRegistrations(Collection&lt;ServiceRegistration> registrations);
-
-}</programlisting>
-                <para/>
-            </section>
-            <section>
-                <title>The <code>BundleContainerFactory</code> interface</title>
-                <programlisting>public interface BundleContainerFactory {
-
-    Class&lt;? extends BundleContainerFactory> delegateClass();
-    String getID();
-    Set&lt;String> getContractBlacklist()
-    BundleContainer container(Bundle bundle);
-}</programlisting>
-                <para>This the how the extension bundle require a CDI compliant container from the
-                    implementation bundle. This latter should publish an OSGi service that complies
-                    with this interface.</para>
-            </section>
-        </section>
-        <section>
-            <title>Embedded mode</title>
-            <para>TODO How does it work ? Should we provide something ? Should business bundles use
-                the integration API ? A template activator ?</para>
-        </section>
-        <section>
-            <title>Integration bundle discovery and CDI-OSGi start</title>
-            <figure>
-                <title>CDI-OSGi framework start and stop protocol</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGistartprotocol.png" format="PNG"
-                            align="center" width="800" depth="600"/>
-                    </imageobject>
-                    <caption>This figure shows the steps of the CDI-OSGi starting and stopping
-                        protocol. Between step 8 and step 11 the framework is in stable state and
-                        manages bean bundles.</caption>
-                </mediaobject>
-            </figure>
-        </section>
-    </section>
-    <section>
-        <title>An orchestrator : the extension bundle TODO</title>
-        <para> </para>
-        <section>
-            <title>The extender pattern</title>
-            <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
-                bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
-                CDI utilities are enabled for these bean bundles over OSGi environment.</para>
-        </section>
-        <section>
-            <title>The extension bundle works that way:</title>
-            <para>
-                <programlisting>BEGIN
-    start
-    WHILE ! implementation_bundle.isStarted
-        wait
-    END_WHILE
-    obtain_container_factory
-    FOR bean_bundle : started_bundles
-        manage_bean_bundle
-        provide_container
-    END_FOR
-    WHILE implementation_bundle.isStarted
-        wait_event
-        OnBeanBundleStart
-            manage_bean_bundle
-            provide_container
-        OnBeanBundleStop
-            unmanage_bean_bundle
-    END_WHILE
-    stop
-    FOR bean_bundle : namaged_bundles
-        unmanage_bean_bundle
-        stop_bean_bundle
-    END_FOR
-END</programlisting>
-            </para>
-        </section>
-    </section>
-    <section>
-        <title>A interchangeable CDI container factory: the implementation bundle TODO</title>
-        <para>The implementation bundle is is necessary in a CDI-OSGi application. This section
-            explains the part the implementation bundle plays but does not enter in specifics
-            because it depends on the CDI vendor implementation used.</para>
-        <para>Weld-OSGi chapter presents how an implementation bundle can work.</para>
-        <section>
-            <title>A implementation bundle may work that way:</title>
-            <para>
-                <programlisting>BEGIN
-    start
-    register_container_factory_service
-    WHILE true
-        wait
-        OnContainerRequest
-            provide_container
-    END_WHILE
-    unregister_container_factory_service
-END</programlisting>
-            </para>
-        </section>
+        <title>CDI-OSGi features</title>
+        <para>As an extension to OSGi, CDI-OSGi provides several features : <itemizedlist>
+                <listitem>
+                    <para>Complete integration with OSGi world by the use of extender pattern and
+                        extension bundle. Thus complete compatibility with already existing
+                        tools.</para>
+                </listitem>
+                <listitem>
+                    <para>Non intruding, configurable and customizable behavior in new or upgraded
+                        application. Simple configuration and usage with annotations, completely xml
+                        free.</para>
+                </listitem>
+                <listitem>
+                    <para>Full internal CDI support for bean bundles: injection, producers,
+                        interceptors, decorators ...</para>
+                </listitem>
+                <listitem>
+                    <para>Lot of ease features for OSGi usages: injectable services, event
+                        notifications, inter-bundle communication ...</para>
+                </listitem>
+                <listitem>
+                    <para>OSGi and CDI compliance all along the way ensuring compatibility with all
+                        CDI compliant container and easy application realisation or portage.</para>
+                </listitem>
+            </itemizedlist></para>
     </section>
     <section>
         <title>The life of a bean bundle</title>

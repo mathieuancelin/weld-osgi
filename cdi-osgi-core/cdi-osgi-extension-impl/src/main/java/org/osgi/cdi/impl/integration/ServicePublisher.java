@@ -13,7 +13,6 @@ package org.osgi.cdi.impl.integration;
 
 import org.osgi.cdi.api.extension.annotation.Property;
 import org.osgi.cdi.api.extension.annotation.Publish;
-import org.osgi.cdi.impl.SoutLogger;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.impl.extension.services.RegistrationsHolderImpl;
 import org.osgi.framework.Bundle;
@@ -34,16 +33,12 @@ import java.util.*;
  */
 public class ServicePublisher {
 
-//    private Logger logger = LoggerFactory.getLogger(getClass());
-    private SoutLogger logger = new SoutLogger();
-
     private final Collection<String> classes;
     private final Bundle bundle;
     private final Instance<Object> instance;
     private final Set<String> blackList;
 
     public ServicePublisher(Collection<String> classes, Bundle bundle, Instance<Object> instance, Set<String> blackList) {
-        logger.debug("Contructing a new ServicePublisher for {}",bundle);
         this.classes = classes;
         this.bundle = bundle;
         this.instance = instance;
@@ -53,16 +48,13 @@ public class ServicePublisher {
     public void registerAndLaunchComponents() {
         Class<?> clazz;
         for (String className : classes) {
-            logger.trace("Scanning class {}",className);
             try {
                 clazz = bundle.loadClass(className);
-            } catch (Exception e) {// inaccessible class
-                logger.warn("Inaccessible class {}, skipping for next class",className);
+            } catch (Exception e) {//inaccessible class
                 continue;
             }
             //is an auto-publishable class?
             if (clazz.isAnnotationPresent(Publish.class)) {
-                logger.debug("Found a auto-publishable class {}", className);
                 Object service = null;
                 InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                 List<Annotation> qualifiers = getQualifiers(clazz);
@@ -70,8 +62,8 @@ public class ServicePublisher {
                     Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                     service = instance.get();
                 } catch (Throwable e) {
-                    logger.error("###Unable to instantiate the service {} with qualifiers {}",className,qualifiers);
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
                 }
                 publish(clazz, service, qualifiers);
             }
@@ -84,8 +76,6 @@ public class ServicePublisher {
         Class[] contracts = publish.contracts();
         Properties properties = getServiceProperties(publish, qualifiers);
         if(contracts.length > 0) {// if there are contracts
-            logger.debug("Registering class {} with contracts",clazz.getName());
-            logger.trace("Contracts are: {}",contracts);
             String[] names = new String[contracts.length];
             for(int i = 0;i < contracts.length;i++) {
                 names[i] = contracts[i].getName();
@@ -102,8 +92,6 @@ public class ServicePublisher {
                 contracts = interfaces.toArray(new Class[interfaces.size()]);
             }
             if(contracts.length > 0) {// if there are non-blacklisted interfaces
-                logger.debug("Registering class {} with interfaces",clazz.getName());
-                logger.trace("Interfaces are: {}",contracts);
                 String[] names = new String[contracts.length];
                 for(int i = 0;i < contracts.length;i++) {
                     names[i] = contracts[i].getName();
@@ -111,12 +99,9 @@ public class ServicePublisher {
                 registration = bundle.getBundleContext().registerService(names, service, properties);
             } else {
                 Class superClass = clazz.getClass().getSuperclass();
-                if(superClass != null && superClass != Object.class && !blackList.contains(superClass.getName())) {// if there is a non blacklisted superclass
-                    logger.debug("Registering class {} with its superclass",clazz.getName());
-                    logger.trace("Superclass is: {}",superClass.getName());
+                if(superClass != null && superClass != Object.class) {// if there is a superclass
                     registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
                 } else {// publish directly with the implementation type
-                    logger.debug("Registering class {} with its own type",clazz.getName());
                     registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 }
             }
@@ -124,8 +109,6 @@ public class ServicePublisher {
         if (registration != null) {
             CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
             instance.select(RegistrationsHolderImpl.class).get().addRegistration(registration);
-        } else {
-            logger.warn("The registration of {} did not occurred",clazz.getName());
         }
     }
 

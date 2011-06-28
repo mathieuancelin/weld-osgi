@@ -30,6 +30,8 @@
             <para>This document uses both CDI and OSGi specification documentations as technical
                 references. You may refer to these documents for a better understanding of CDI and
                 OSGi functionality, references and naming conventions.</para>
+            <para>CDI-OSGi comes with other documentations and you may refer to CDI-OSGi JavaDoc and
+                CDI-OSGi user manual for a better understanding of CDI-OSGi.</para>
         </section>
     </section>
     <section>
@@ -53,6 +55,16 @@
             <para>Weld-OSGi is one of the five bundles composing CDI-OSGi. But it also names the
                 framework CDI-OSGi using this particular CDI integration.</para>
         </section>
+    </section>
+    <section>
+        <title>Third party dependencies and environement</title>
+        <para>CDI-OSGi may run into an OSGi environment, therefore it requires an OSGi
+            implementation framework to run in (such as Apahe Felix, Equinox, Knopflerfish
+            ...).</para>
+        <para>CDI-OSGi also depends on a CDI implementation (such as Weld, Open Web Beans, CanDI
+            ..).</para>
+        <para>CDI-OSGi logs its operations using the SLF4J logging facade and the LogBack logging
+            implementation.</para>
     </section>
     <section>
         <title>What about other frameworks</title>

@@ -1,13 +1,14 @@
 package com.sample.osgi.bundle1.util;
 
-import com.sample.osgi.bundle1.api.ContextualService;
 import com.sample.osgi.bundle1.api.Name;
 import com.sample.osgi.bundle1.api.PropertyService;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.api.extension.annotation.Publish;
+import org.osgi.cdi.api.extension.events.BundleContainerEvents;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @Publish
@@ -322,21 +323,5 @@ public class ServiceProvider {
 
     public Service<PropertyService> getOtherFilteredServiceProvider() {
         return otherFilteredServiceProvider;
-    }
-
-    @Inject
-    @Name("Application")
-    private Service<ContextualService> applicationScopedContextualService;
-
-    @Inject
-    @Name("Dependent")
-    private Service<ContextualService> dependentScopedContextualService;
-
-    public ContextualService getApplicationScopedContextualService() {
-        return applicationScopedContextualService.get();
-    }
-
-    public ContextualService getDependentScopedContextualService() {
-        return dependentScopedContextualService.get();
     }
 }

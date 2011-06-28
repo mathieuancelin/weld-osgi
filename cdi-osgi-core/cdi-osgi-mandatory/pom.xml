@@ -16,7 +16,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>CDI-OSGi :: Core :: Mandatory</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -48,5 +48,5 @@
             </plugin>
         </plugins>
     </build>
-
+    
 </project>
