@@ -17,13 +17,19 @@
                 that bundle.</para>
         </section>
         <section>
-            <title>Bean bundle</title>
-            <para>A bean bundle is a java archive that contains both special marker file
-                    <code>META-INF/bean.xml</code> and special OSGi marker headers in
-                    its<code>META-INF/Manifest.MF</code>.</para>
-            <para>A bean bundle may be deployed in an OSGi environment with CDI-OSGi and then be
-                managed by the CDI-OSGi. It enables both OSGi and CDI features for that
-                bundle.</para>
+            <title>Service, implementation, instance and registration</title>
+            <para>A service is mostly an interface. This interface defines the contract that
+                describes what the service may do. It might be several way to actually providing the
+                service, thus a service might have multiple implementations.</para>
+            <para>A service implementation is a class that implements this service. It is what is
+                available to other components that use the service. To use the service the component
+                obtain an instance of the implementation.</para>
+            <para>A service instance is an instance of one of the service implementations. It is
+                what the user manipulates to perform the service.</para>
+            <para>A registration is the object that represents a service registered with a
+                particular implementation. Then this implementation can be searched and its
+                instances can be obtained. Every time a service implementation his register a
+                corresponding registration object is created.</para>
         </section>
         <section>
             <title>References</title>
