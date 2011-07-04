@@ -17,19 +17,27 @@
                 that bundle.</para>
         </section>
         <section>
-            <title>Bean bundle</title>
-            <para>A bean bundle is a java archive that contains both special marker file
-                    <code>META-INF/bean.xml</code> and special OSGi marker headers in
-                    its<code>META-INF/Manifest.MF</code>.</para>
-            <para>A bean bundle may be deployed in an OSGi environment with CDI-OSGi and then be
-                managed by the CDI-OSGi. It enables both OSGi and CDI features for that
-                bundle.</para>
+            <title>Service, implementation, instance and registration</title>
+            <para>A service is mostly an interface. This interface defines the contract that
+                describes what the service may do. It might be several way to actually providing the
+                service, thus a service might have multiple implementations.</para>
+            <para>A service implementation is a class that implements this service. It is what is
+                available to other components that use the service. To use the service the component
+                obtain an instance of the implementation.</para>
+            <para>A service instance is an instance of one of the service implementations. It is
+                what the user manipulates to perform the service.</para>
+            <para>A registration is the object that represents a service registered with a
+                particular implementation. Then this implementation can be searched and its
+                instances can be obtained. Every time a service implementation his register a
+                corresponding registration object is created.</para>
         </section>
         <section>
             <title>References</title>
             <para>This document uses both CDI and OSGi specification documentations as technical
                 references. You may refer to these documents for a better understanding of CDI and
                 OSGi functionality, references and naming conventions.</para>
+            <para>CDI-OSGi comes with other documentations and you may refer to CDI-OSGi JavaDoc and
+                CDI-OSGi user manual for a better understanding of CDI-OSGi.</para>
         </section>
     </section>
     <section>
@@ -53,60 +61,16 @@
             <para>Weld-OSGi is one of the five bundles composing CDI-OSGi. But it also names the
                 framework CDI-OSGi using this particular CDI integration.</para>
         </section>
-        <section>
-            <title>Organization and interactions between CDI-OSGi bundles</title>
-            <figure>
-                <title>The five bundles of CDI-OSGi</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGibundlesorganization.png" align="center" format="PNG" width="800" depth="600"/>
-                    </imageobject>
-                    <caption>This figure shows the five bundles of CDI-OSGi and the links between
-                        them. Each is described below.</caption>
-                </mediaobject>
-            </figure>
-            <section>
-                <title>CDI-OSGi extension</title>
-                <para>The blue part represents the CDI OSGi extension. It is composed of one API
-                    bundle and its implementation. It is the core of CDI-OSGi that manages all bean
-                    bundles.</para>
-                <para>Thus the extension API bundle exposes the CDI-OSGi features and the extension
-                    bundle enables these features. All interactions with client bundles go through
-                    the CDI-OSGi extension part.</para>
-            </section>
-            <section>
-                <title>CDI-OSGi integration</title>
-                <para>The yellow part represents the CDI OSGi integration. It is composed of one API
-                    bundle and its implementation. It is how CDI features are provided to
-                    CDI-OSGi.</para>
-                <para>Thus the integration API bundle exposes the requirements of CDI-OSGi in order
-                    to run CDI features in OSGi environment and the integration bundle is the
-                    implementation of these requirements using a vendor specific CDI implementation
-                    (such as Weld).</para>
-                <para>Weld-OSGi is one of the possible extension bundle. So the extension bundle is
-                    commutable to support various CDI implementation.</para>
-            </section>
-            <section>
-                <title>CDI API bundle</title>
-                <para>The fith bundle is the CDI API. It exposes regular CDI features for all client
-                    bundles and exempts the user to load CDI API by himself. It is a third-party API
-                    provided for convenience to the user.</para>
-            </section>
-            <section>
-                <title>Interaction between bundles</title>
-                <para>User client bean bundles should only know about the extension API bundle of
-                    CDI-OSGi and the CDI API bundle because they may import their packages in order
-                    to use CDI-OSGi features. They do not need to know the other three
-                    bundles.</para>
-                <para>The extension bundle manages bean bundles transparently. It also implements
-                    the extension API and uses the container factory service from the integration
-                    bundle.</para>
-                <para>Integration API bundle should only be known by users who want to provide an
-                    alternative integration bundle. This latter provides the CDI compliant containers
-                    used by the extension bundle. The CDI-OSGi integration part is only used
-                    internally.</para>
-            </section>
-        </section>
+    </section>
+    <section>
+        <title>Third party dependencies and environment</title>
+        <para>CDI-OSGi may run into an OSGi environment, therefore it requires an OSGi
+            implementation framework to run in (such as Apache Felix, Equinox, Knopflerfish
+            ...).</para>
+        <para>CDI-OSGi also depends on a CDI implementation (such as Weld, Open Web Beans, CanDI
+            ..).</para>
+        <para>CDI-OSGi logs its operations using the SLF4J logging facade and the LogBack logging
+            implementation.</para>
     </section>
     <section>
         <title>What about other frameworks</title>
