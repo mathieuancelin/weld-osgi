@@ -24,6 +24,7 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes.
@@ -33,12 +34,15 @@ import java.util.*;
  */
 public class ServicePublisher {
 
+    private static Logger logger = Logger.getLogger("CDI-OSGi");
+
     private final Collection<String> classes;
     private final Bundle bundle;
     private final Instance<Object> instance;
     private final Set<String> blackList;
 
     public ServicePublisher(Collection<String> classes, Bundle bundle, Instance<Object> instance, Set<String> blackList) {
+        logger.fine("Create a new ServicePublisher for bundle " + bundle.getSymbolicName());
         this.classes = classes;
         this.bundle = bundle;
         this.instance = instance;
@@ -48,22 +52,27 @@ public class ServicePublisher {
     public void registerAndLaunchComponents() {
         Class<?> clazz;
         for (String className : classes) {
+            logger.finest("Scanning class " + className);
             try {
                 clazz = bundle.loadClass(className);
             } catch (Exception e) {//inaccessible class
+                logger.warning("Class " + className + " is inaccessible");
                 continue;
             }
             //is an auto-publishable class?
             if (clazz.isAnnotationPresent(Publish.class)) {
+                logger.finest("Found a new auto-publicated service");
                 Object service = null;
                 InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                 List<Annotation> qualifiers = getQualifiers(clazz);
                 try {
                     Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                     service = instance.get();
+                    logger.finest("Service instance generated");
                 } catch (Throwable e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("Unable to instantiate the service, CDI return this error: " + e.getMessage());
+                    logger.severe("Unable to instantiate the service, CDI return this error: " + e.getMessage());
+                    logger.severe(e.getCause().toString());
+                    throw new RuntimeException(e);
                 }
                 publish(clazz, service, qualifiers);
             }
@@ -71,6 +80,7 @@ public class ServicePublisher {
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
+        logger.fine("Publishing a new service " + clazz.getSimpleName());
         ServiceRegistration registration = null;
         Publish publish = clazz.getAnnotation(Publish.class);
         Class[] contracts = publish.contracts();

@@ -41,7 +41,7 @@ public class UsageTest {
     @Test
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
-
+        
         Bundle bundle1 = null, bundle2 = null, bundle3 = null;
         for(Bundle b : context.getBundles()) {
             Assert.assertEquals("Bundle" + b.getSymbolicName() + "is not ACTIVE", Bundle.ACTIVE, b.getState());
