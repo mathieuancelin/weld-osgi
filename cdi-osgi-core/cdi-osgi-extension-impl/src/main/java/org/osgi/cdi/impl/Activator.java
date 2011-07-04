@@ -16,6 +16,8 @@ import org.osgi.cdi.impl.integration.IntegrationActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import java.util.logging.*;
+
 /**
  * This is the {@link BundleActivator} of the extension bundle. It represents the entry point of CDI-OSGi.
  * <p/>
@@ -29,19 +31,45 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 
+    private static Logger logger = Logger.getLogger("CDI-OSGi");
+
     private BundleActivator integration = new IntegrationActivator();
 
     private BundleActivator extension = new ExtensionActivator();
 
     @Override
     public void start(BundleContext context) throws Exception {
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.ALL);
+        FileHandler fileHandler = new FileHandler("CDIOSGi.log",false);
+        fileHandler.setFormatter(new CDIOSGiFormatter());
+        fileHandler.setLevel(Level.ALL);
+        logger.addHandler(fileHandler);
+        logger.fine("CDI-OSGi is starting ...");
         extension.start(context);
         integration.start(context);
+        logger.info("CDI-OSGi STARTED");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        logger.fine("CDI-OSGi is stopping ...");
         integration.stop(context);
         extension.stop(context);
+        logger.info("CDI-OSGi STOPPED");
+    }
+    
+    public class CDIOSGiFormatter extends Formatter {
+
+        @Override
+        public String format(LogRecord logRecord) {
+            StringBuilder result = new StringBuilder();
+            result.append("[");
+            result.append(logRecord.getLevel());
+            result.append("] ");
+            result.append(logRecord.getMessage());
+            result.append(System.getProperty("line.separator" ));
+            return result.toString();
+        }
     }
 }

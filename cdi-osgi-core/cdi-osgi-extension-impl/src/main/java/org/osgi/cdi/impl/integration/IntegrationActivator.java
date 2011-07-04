@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * This is the activator of the CDI-OSGi extension part. It starts with the extension bundle.
@@ -42,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class IntegrationActivator implements BundleActivator, BundleListener, ServiceListener {
 
+    private static Logger logger = Logger.getLogger("CDI-OSGi");
+
     private ServiceReference factoryRef = null;
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
@@ -53,6 +56,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         if (refs != null && refs.length > 0) {
             factoryRef = refs[0];
             startCDIOSGi();
+        } else {
+            logger.warning("No CDI container factory service found");
         }
         context.addServiceListener(this);
     }
@@ -63,8 +68,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     public void startCDIOSGi() throws Exception {
+        logger.info("CDI-OSGi start bundle management");
         started.set(true);
         for (Bundle bundle : context.getBundles()) {
+            logger.finest("Scanning " + bundle.getSymbolicName());
             if (Bundle.ACTIVE == bundle.getState()) {
                 startManagement(bundle);
             }
@@ -73,8 +80,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     public void stopCDIOSGi() throws Exception {
+        logger.info("CDI-OSGi stop bundle management");
         started.set(false);
         for (Bundle bundle : context.getBundles()) {
+            logger.finest("Scanning " + bundle.getSymbolicName());
             CDIContainer holder = factory().container(bundle);
             if (holder != null) {
                 stopManagement(holder.getBundle());
@@ -86,10 +95,12 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     public void bundleChanged(BundleEvent event) {
         switch (event.getType()) {
             case BundleEvent.STARTED:
+                logger.finest("Bundle " + event.getBundle().getSymbolicName() + " started");
                 if (started.get())
                     startManagement(event.getBundle());
                 break;
             case BundleEvent.STOPPED:
+                logger.finest("Bundle " + event.getBundle().getSymbolicName() + " stopped");
                 stopManagement(event.getBundle());
                 break;
         }
@@ -101,11 +112,13 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             ServiceReference[] refs = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
             if (ServiceEvent.REGISTERED == event.getType()) {
                 if (!started.get() && refs != null && refs.length > 0) {
+                    logger.info("CDI container factory service found");
                     factoryRef = refs[0];
                     startCDIOSGi();
                 }
             } else if (ServiceEvent.UNREGISTERING == event.getType()) {
                 if (started.get() && (refs == null || refs.length == 0)) {
+                    logger.warning("CDI container factory service unregistered");
                     factoryRef = null;
                     stopCDIOSGi();
                 }
@@ -116,11 +129,15 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     private void startManagement(Bundle bundle) {
+        logger.fine("Managing " + bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         CDIContainer holder = factory().createContainer(bundle);
+        logger.finest("CDI container created");
         holder.initialize();
+        logger.finest("CDI container initialized");
         if (holder.isStarted()) {
+            logger.finest("CDI container started");
             // setting contextual information
             holder.getInstance().select(BundleHolder.class).get().setBundle(bundle);
             holder.getInstance().select(BundleHolder.class).get().setContext(bundle.getBundleContext());
@@ -142,9 +159,13 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 regs.add(bundleContext.registerService(BeanManager.class.getName(), holder.getBeanManager(), null));
                 regs.add(bundleContext.registerService(Instance.class.getName(), holder.getInstance(), null));
             } catch (Throwable t) {// Ignore
+                logger.warning("Unable to register a utility service" + t.getCause());
             }
             holder.setRegistrations(regs);
             factory().addContainer(holder);
+            logger.fine("Bundle " + bundle.getSymbolicName() + " is managed");
+        } else {
+            logger.fine("Bundle " + bundle.getSymbolicName() + " is not a bean bundle");
         }
         if (!set) {
             CDIOSGiExtension.currentBundle.remove();
@@ -152,16 +173,19 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     private void stopManagement(Bundle bundle) {
+        logger.fine("Unmanaging " + bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         CDIContainer holder = factory().container(bundle);
         if (holder != null) {
+            logger.finest("Bundle " + bundle.getSymbolicName() + "got a CDI container");
             factory().removeContainer(bundle);
             Collection<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
                 try {
                     reg.unregister();
                 } catch (IllegalStateException e) {// Ignore
+                    logger.warning("Unable to unregister a service" + e.getCause());
                 }
             }
             try {
@@ -186,6 +210,9 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 holder.getBeanManager().fireEvent(new Invalid());
             }
             holder.shutdown();
+            logger.fine("Bundle " + bundle.getSymbolicName() + " is unmanaged");
+        } else {
+            logger.fine("Bundle " + bundle.getSymbolicName() + " is not a bean bundle");
         }
         if (!set) {
             CDIOSGiExtension.currentBundle.remove();
