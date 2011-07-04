@@ -1,0 +1,3 @@
+org.osgi.cdi.api.extension
+org.osgi.cdi.api.extension.annotation
+org.osgi.cdi.api.extension.events
