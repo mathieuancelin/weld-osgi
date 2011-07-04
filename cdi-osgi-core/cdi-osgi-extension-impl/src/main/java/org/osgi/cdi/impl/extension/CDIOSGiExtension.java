@@ -26,6 +26,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
 
 /**
  * Weld OSGi extension.
@@ -48,6 +50,8 @@ public class CDIOSGiExtension implements Extension {
     private List<Annotation> observers = new ArrayList<Annotation>();
 
     private Map<Class, Set<Filter>> requiredOsgiServiceDependencies = new HashMap<Class, Set<Filter>>();
+    
+    private ExtensionActivator activator;
 
     public void registerCDIOSGiBeans(@Observes BeforeBeanDiscovery event, BeanManager manager) {
         event.addAnnotatedType(manager.createAnnotatedType(CDIOSGiProducer.class));
@@ -56,6 +60,54 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ContainerObserver.class));
         event.addAnnotatedType(manager.createAnnotatedType(InstanceHolder.class));
+    }
+    
+    private void runExtension() {
+        if (!servicesToBeInjected.isEmpty()) {
+            Set<InjectionPoint> injections = servicesToBeInjected.values().iterator().next();
+            if (!injections.isEmpty()) {
+                InjectionPoint ip = injections.iterator().next();
+                Class annotatedElt = ip.getMember().getDeclaringClass();
+                BundleContext bc = BundleReference.class
+                    .cast(annotatedElt.getClassLoader())
+                    .getBundle().getBundleContext();
+                activator = new ExtensionActivator();
+                try {
+                    activator.start(bc);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return;
+                }
+            }
+        } else if (!serviceProducerToBeInjected.isEmpty()) {
+            Set<InjectionPoint> injections = serviceProducerToBeInjected.values().iterator().next();
+            if (!injections.isEmpty()) {
+                InjectionPoint ip = injections.iterator().next();
+                Class annotatedElt = ip.getMember().getDeclaringClass();
+                BundleContext bc = BundleReference.class
+                    .cast(annotatedElt.getClassLoader())
+                    .getBundle().getBundleContext();
+                activator = new ExtensionActivator();
+                try {
+                    activator.start(bc);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return;
+                }
+            }
+        } else {
+            BundleContext bc = BundleReference.class
+                    .cast(getClass().getClassLoader())
+                    .getBundle().getBundleContext();
+            activator = new ExtensionActivator();
+            try {
+                System.out.println("WARN: starting the extension assuming the bundle is " + bc.getBundle().getSymbolicName());
+                activator.start(bc);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return;
+            }
+        }
     }
 
     public void discoverCDIOSGiClass(@Observes ProcessAnnotatedType<?> event) {
@@ -89,6 +141,7 @@ public class CDIOSGiExtension implements Extension {
     }
     
     public void registerCDIOSGiServices(@Observes AfterBeanDiscovery event) {
+        //runExtension();
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator();iterator.hasNext();) {
             Type type =  iterator.next();
             if (!(type instanceof Class)) {
