@@ -41,7 +41,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.ALL);
-        FileHandler fileHandler = new FileHandler("CDIOSGi.log",10000,1,false);
+        FileHandler fileHandler = new FileHandler("CDIOSGi.log",false);
         fileHandler.setFormatter(new CDIOSGiFormatter());
         fileHandler.setLevel(Level.ALL);
         logger.addHandler(fileHandler);
