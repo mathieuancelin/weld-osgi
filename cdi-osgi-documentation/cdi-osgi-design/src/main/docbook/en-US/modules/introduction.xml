@@ -63,9 +63,9 @@
         </section>
     </section>
     <section>
-        <title>Third party dependencies and environement</title>
+        <title>Third party dependencies and environment</title>
         <para>CDI-OSGi may run into an OSGi environment, therefore it requires an OSGi
-            implementation framework to run in (such as Apahe Felix, Equinox, Knopflerfish
+            implementation framework to run in (such as Apache Felix, Equinox, Knopflerfish
             ...).</para>
         <para>CDI-OSGi also depends on a CDI implementation (such as Weld, Open Web Beans, CanDI
             ..).</para>

@@ -32,7 +32,7 @@
             <mediaobject>
                 <imageobject>
                     <imagedata fileref="../images/CDI-OSGibundlesorganization.png" align="center"
-                        format="PNG" width="800" depth="600"/>
+                        format="PNG" depth="800"/>
                 </imageobject>
                 <caption>This figure shows the five bundles of CDI-OSGi and the links between
                     them.</caption>
@@ -58,7 +58,7 @@
                         bundle is commutable to support various CDI implementation.</para>
                 </listitem>
                 <listitem>
-                    <para>CDI API bundle: The fith bundle is the CDI API. It exposes regular CDI
+                    <para>CDI API bundle: The fifth bundle is the CDI API. It exposes regular CDI
                         features for all client bundles and exempts the user to load CDI API by
                         himself. It is a third-party API provided for convenience to the
                         user.</para>
@@ -118,11 +118,11 @@
         <section>
             <title>Extension bundle: the puppet master</title>
             <para>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any
-                application that requires CDI-OSGi. It may be just started at the begining of a
+                application that requires CDI-OSGi. It may be just started at the beginning of a
                 CDI-OSGi application. It requests the extension API bundle as a dependency.</para>
             <para>The extension bundle is the heart of CDI-OSGi application. Once it is started,
                 provided that it finds a started integration bundle, it manages all the bean
-                bundles. It is in charge of service automatic publishings, service injections, CDI
+                bundles. It is in charge of service automatic publishing, service injections, CDI
                 event notifications and bundle communications.</para>
             <para>It runs in background, it just need to be started with the OSGi environment, then
                 everything is transparent to the user. Client bean bundles do not have to do
@@ -182,7 +182,7 @@
             <mediaobject>
                 <imageobject>
                     <imagedata fileref="../images/Beanbundlestate.png" align="center" format="PNG"
-                        width="800" depth="600"/>
+                        depth="800"/>
                 </imageobject>
                 <caption>This figure shows the two new states a bean bundle can be in. These states
                     are triggered by two new events and address the CDI container dependency
