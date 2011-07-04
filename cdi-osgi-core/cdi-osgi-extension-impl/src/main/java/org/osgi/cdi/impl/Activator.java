@@ -41,10 +41,10 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.ALL);
-        ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setFormatter(new CDIOSGiFormatter());
-        consoleHandler.setLevel(Level.ALL);
-        logger.addHandler(consoleHandler);
+        FileHandler fileHandler = new FileHandler("CDIOSGi.log",10000,1,false);
+        fileHandler.setFormatter(new CDIOSGiFormatter());
+        fileHandler.setLevel(Level.ALL);
+        logger.addHandler(fileHandler);
         logger.fine("CDI-OSGi is starting ...");
         extension.start(context);
         integration.start(context);

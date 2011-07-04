@@ -154,9 +154,13 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             // registering utility services
             Collection<ServiceRegistration> regs = new ArrayList<ServiceRegistration>();
             BundleContext bundleContext = bundle.getBundleContext();
-            regs.add(bundleContext.registerService(Event.class.getName(), holder.getEvent(), null));
-            regs.add(bundleContext.registerService(BeanManager.class.getName(), holder.getBeanManager(), null));
-            regs.add(bundleContext.registerService(Instance.class.getName(), holder.getInstance(), null));
+            try {
+                regs.add(bundleContext.registerService(Event.class.getName(), holder.getEvent(), null));
+                regs.add(bundleContext.registerService(BeanManager.class.getName(), holder.getBeanManager(), null));
+                regs.add(bundleContext.registerService(Instance.class.getName(), holder.getInstance(), null));
+            } catch (Throwable t) {// Ignore
+                logger.warning("Unable to register a utility service" + t.getCause());
+            }
             holder.setRegistrations(regs);
             factory().addContainer(holder);
             logger.fine("Bundle " + bundle.getSymbolicName() + " is managed");
@@ -178,7 +182,11 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             factory().removeContainer(bundle);
             Collection<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
-                reg.unregister();
+                try {
+                    reg.unregister();
+                } catch (IllegalStateException e) {// Ignore
+                    logger.warning("Unable to unregister a service" + e.getCause());
+                }
             }
             try {
                 holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerShutdown(bundle.getBundleContext()));
