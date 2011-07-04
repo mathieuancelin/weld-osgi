@@ -130,6 +130,35 @@
             <para>In order to perform injections the extension bundle search for a CDI compliant
                 container service provider once it is started. Thus it can only work coupled with a
                 bundle providing such a service: an implementation bundle.</para>
+            <para>The extension bundle provides an extension to OSGi as an extender pattern. The
+                extension bundle, the extender, tracks for bean bundles, the extensions, to be
+                started. Then CDI utilities are enabled for these bean bundles over OSGi
+                environment.</para>
+            <para>The extension bundle works that
+                way:<programlisting>BEGIN
+    start
+    WHILE ! implementation_bundle.isStarted
+        wait
+    END_WHILE
+    obtain_container_factory
+    FOR bean_bundle : started_bundles
+        manage_bean_bundle
+        provide_container
+    END_FOR
+    WHILE implementation_bundle.isStarted
+        wait_event
+        OnBeanBundleStart
+            manage_bean_bundle
+            provide_container
+        OnBeanBundleStop
+            unmanage_bean_bundle
+    END_WHILE
+    stop
+    FOR bean_bundle : namaged_bundles
+        unmanage_bean_bundle
+        stop_bean_bundle
+    END_FOR
+END</programlisting></para>
             <para>So this is where the magic happens and where OSGi applications become much more
                 simple.</para>
         </section>
@@ -142,6 +171,17 @@
             <para>It is an implementation of the integration API but it can use any CDI
                 implementation in order to fulfill it. So this bundle might not be unique but exist
                 for each vendor specific CDI implementation (such as Weld).</para>
+            <para>A integration bundle may work that way:</para>
+            <programlisting>BEGIN
+    start
+    register_container_factory_service
+    WHILE true
+        wait
+        OnContainerRequest
+            provide_container
+    END_WHILE
+    unregister_container_factory_service
+END</programlisting>
         </section>
     </section>
     <section>
@@ -170,6 +210,21 @@
                         CDI compliant container and easy application realisation or portage.</para>
                 </listitem>
             </itemizedlist></para>
+    </section>
+    <section>
+        <title>Integration bundle discovery and CDI-OSGi start</title>
+        <figure>
+            <title>CDI-OSGi framework start and stop protocol</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="../images/CDI-OSGistartprotocol.png" format="PNG"
+                        align="center" width="800" depth="600"/>
+                </imageobject>
+                <caption>This figure shows the steps of the CDI-OSGi starting and stopping protocol.
+                    Between step 8 and step 11 the framework is in stable state and manages bean
+                    bundles.</caption>
+            </mediaobject>
+        </figure>
     </section>
     <section>
         <title>The life of a bean bundle</title>

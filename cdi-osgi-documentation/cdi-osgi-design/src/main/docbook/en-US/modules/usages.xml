@@ -446,9 +446,9 @@ public class MyServiceImpl implements MyService {
             </itemizedlist></para>
     </section>
     <section>
-        <title>Unaccessible service at runtime</title>
+        <title>Inaccessible service at runtime</title>
         <para><code>OSGiServiceBean</code> and <code>OSGiServiceProviderBeans</code> bean instances
-            are dynamicaly obtained OSGi service instance.</para>
+            are dynamically obtained OSGi service instance.</para>
         <para>No instance might be available at runtime due to OSGi dynamism, in such case a
                 <code>OSGiServiceUnavailableException</code> is thrown with any
                 <code>OSGiServiceBean</code> method call or the
@@ -500,10 +500,10 @@ public class MyServiceImpl implements MyService {
                     </listitem>
                     <listitem>
                         <para>A specific current bundle resource
-                            file<programlisting>@Injec @BundleDataFile("test.txt") File file;</programlisting></para>
+                            file<programlisting>@Inject @BundleDataFile("test.txt") File file;</programlisting></para>
                     </listitem>
                     <listitem>
-                        <para>The same obect of a specified bundle by symbolic name and (optional)
+                        <para>The same object of a specified bundle by symbolic name and (optional)
                             version<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;
 @Inject @BundleName("com.sample.gui") bundle;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
                     </listitem>
@@ -568,11 +568,11 @@ event.select(AbstractBundleEvent.class).fire(new BundleInstalled(bundle));</prog
             <para>CDI-OSGi provides a CDI event notification for bean bundle about bean bundle CDI
                 container lifecycle events:<itemizedlist>
                     <listitem>
-                        <para>A <code>BundleContainerInitialized</code> event is fired everytime a
-                            bean bundle CDI container is intialized</para>
+                        <para>A <code>BundleContainerInitialized</code> event is fired every time a
+                            bean bundle CDI container is initialized</para>
                     </listitem>
                     <listitem>
-                        <para>A <code>BundleContainerShutdown</code> event is fired everytime a bean
+                        <para>A <code>BundleContainerShutdown</code> event is fired every time a bean
                             bundle CDI container is shutdown</para>
                     </listitem>
                 </itemizedlist></para>
@@ -581,7 +581,7 @@ event.select(AbstractBundleEvent.class).fire(new BundleInstalled(bundle));</prog
             <title>Bundle lifecycle events</title>
             <para>CDI-OSGi provides a CDI event notification for bean bundle about bundle lifecycle events:<itemizedlist>
                     <listitem>
-                        <para>Such an event is fired everytime the correspondant OSGi bundle event
+                        <para>Such an event is fired every time the correspondent OSGi bundle event
                             is fired</para>
                     </listitem>
                     <listitem>
@@ -612,7 +612,7 @@ public void bindBundle(@Observes @BundleName("com.sample.gui") BundleInstalled e
             <title>Service lifecyle events</title>
             <para>CDI-OSGi provides a CDI event notification for bean bundle about service lifecycle events:<itemizedlist>
                     <listitem>
-                        <para>Such an event is fired everytime the correspondant OSGi service event
+                        <para>Such an event is fired every time the correspondent OSGi service event
                             is fired</para>
                     </listitem>
                     <listitem>
@@ -639,11 +639,11 @@ public void bindService(@Observes @Specification(MyService.class) @Filter("(&amp
             <para>CDI-OSGi provides a CDI event notification for bean bundle about bean bundle
                 required service dependency validation:<itemizedlist>
                     <listitem>
-                        <para>A <code>Valid</code> event is fired everytime a bean bundle got all
+                        <para>A <code>Valid</code> event is fired every time a bean bundle got all
                             its  required service dependency validated</para>
                     </listitem>
                     <listitem>
-                        <para>A <code>Invalid</code> event is fired everytime a bean bundle got one
+                        <para>A <code>Invalid</code> event is fired every time a bean bundle got one
                             of its  required service dependency invalidated</para>
                     </listitem>
                 </itemizedlist></para>
@@ -666,149 +666,11 @@ event.fire(new InterBundleEvent(myMessage));</programlisting></para>
                 the events from the current
                 bundle<programlisting>public void listenAllEventsFromOtherBundles(@Observes @Sent InterBundleEvent event) {
 }
-public void listenMyMessageEvents(@Observes @Specification(MyMessage.class) InterBundleEventevent) {
+public void listenMyMessageEvents(@Observes @Specification(MyMessage.class) InterBundleEvent event) {
 }
-public void listenMyMessageEventsFromOtherBundles(@Observes @Sent @Specification(MyMessage.class) InterBundleEventevent) {
+public void listenMyMessageEventsFromOtherBundles(@Observes @Sent @Specification(MyMessage.class) InterBundleEvent event) {
 }</programlisting>Only
                 the corresponding events are listened.</para>
-        </section>
-    </section>
-    <section>
-        <title>A standard bootstrap for CDI container integration: the integration API</title>
-        <section>
-            <title>Why an integration API</title>
-            <para>CDI-OSGi could have been carried out with an internal CDI compliant container and
-                work very well. Every one of the specifications above would have been fulfilled. But
-                no other specific utilities or CDI evolution could have been added without a
-                complete modification of CDI-OSGi.</para>
-            <para>Then there is the integration API. With that, developers are able to provide their
-                own integration bundle. Thus it is possible to use any CDI compliant container with
-                a CDI-OSGi application or mix up different CDI compliant containers for different
-                bundles.</para>
-            <para>Integration API describes what needs the extension bundle to work (and therefore
-                what may provide the integraton bundle).</para>
-            <section>
-                <title>The <code>CDIContainer</code> interface</title>
-                <programlisting>public interface CDIContainer {
-
-    boolean initialize();
-
-    boolean shutdown();
-
-    boolean isStarted();
-
-    void fire(InterBundleEvent event);
-
-    Bundle getBundle();
-
-    BeanManager getBeanManager();
-
-    Event getEvent();
-
-    Instance&lt;Object> getInstance();
-
-    Collection&lt;String> getBeanClasses();
-
-    Collection&lt;ServiceRegistration> getRegistrations();
-
-    void setRegistrations(Collection&lt;ServiceRegistration> registrations);
-
-}</programlisting>
-                <para/>
-            </section>
-            <section>
-                <title>The <code>BundleContainerFactory</code> interface</title>
-                <programlisting>public interface BundleContainerFactory {
-
-    Class&lt;? extends BundleContainerFactory> delegateClass();
-    String getID();
-    Set&lt;String> getContractBlacklist()
-    BundleContainer container(Bundle bundle);
-}</programlisting>
-                <para>This the how the extension bundle require a CDI compliant container from the
-                    implementation bundle. This latter should publish an OSGi service that complies
-                    with this interface.</para>
-            </section>
-        </section>
-        <section>
-            <title>Embedded mode</title>
-            <para>TODO How does it work ? Should we provide something ? Should business bundles use
-                the integration API ? A template activator ?</para>
-        </section>
-        <section>
-            <title>Integration bundle discovery and CDI-OSGi start</title>
-            <figure>
-                <title>CDI-OSGi framework start and stop protocol</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="../images/CDI-OSGistartprotocol.png" format="PNG"
-                            align="center" width="800" depth="600"/>
-                    </imageobject>
-                    <caption>This figure shows the steps of the CDI-OSGi starting and stopping
-                        protocol. Between step 8 and step 11 the framework is in stable state and
-                        manages bean bundles.</caption>
-                </mediaobject>
-            </figure>
-        </section>
-    </section>
-    <section>
-        <title>An orchestrator : the extension bundle TODO</title>
-        <section>
-            <title>The extender pattern</title>
-            <para>CDI-OSGi provides an extension to OSGi as an extender pattern. The extension
-                bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
-                CDI utilities are enabled for these bean bundles over OSGi environment.</para>
-        </section>
-        <section>
-            <title>The extension bundle works that way:</title>
-            <para>
-                <programlisting>BEGIN
-    start
-    WHILE ! implementation_bundle.isStarted
-        wait
-    END_WHILE
-    obtain_container_factory
-    FOR bean_bundle : started_bundles
-        manage_bean_bundle
-        provide_container
-    END_FOR
-    WHILE implementation_bundle.isStarted
-        wait_event
-        OnBeanBundleStart
-            manage_bean_bundle
-            provide_container
-        OnBeanBundleStop
-            unmanage_bean_bundle
-    END_WHILE
-    stop
-    FOR bean_bundle : namaged_bundles
-        unmanage_bean_bundle
-        stop_bean_bundle
-    END_FOR
-END</programlisting>
-            </para>
-        </section>
-    </section>
-    <section>
-        <title>A interchangeable CDI container factory: the implementation bundle TODO</title>
-        <para>The implementation bundle is is necessary in a CDI-OSGi application. This section
-            explains the part the implementation bundle plays but does not enter in specifics
-            because it depends on the CDI vendor implementation used.</para>
-        <para>Weld-OSGi chapter presents how an implementation bundle can work.</para>
-        <section>
-            <title>A implementation bundle may work that way:</title>
-            <para>
-                <programlisting>BEGIN
-    start
-    register_container_factory_service
-    WHILE true
-        wait
-        OnContainerRequest
-            provide_container
-    END_WHILE
-    unregister_container_factory_service
-END</programlisting>
-            </para>
         </section>
     </section>
 </chapter>
