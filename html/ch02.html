@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Chapter 2. Organization of CDI-OSGi</title><link rel="stylesheet" href="css/seamframework.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/><link rel="home" href="index.html" title="CDI OSGi integration"/><link rel="up" href="index.html" title="CDI OSGi integration"/><link rel="prev" href="ch01.html" title="Chapter 1. Preface"/><link rel="next" href="ch03.html" title="Chapter 3. How to make OSGi easy peasy"/></head><body><p id="title"><a href="http://www.seamframework.org" class="site_href"><strong>SeamFramework.org</strong></a><a href="http://www.seamframework.org/Documentation" class="doc_href"><strong>Community Documentation</strong></a></p><ul class="docnav"><li class="previous"><a accesskey="p" href="ch01.html"><strong>Prev</strong></a></li><li class="next"><a accesskey="n" href="ch03.html"><strong>Next</strong></a></li></ul><div class="chapter" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e123"/>Chapter 2. Organization of CDI-OSGi</h2></div></div></div><div class="toc"><dl><dt><span class="section"><a href="ch02.html#d0e126">2.1. Bundles and interactions</a></span></dt><dt><span class="section"><a href="ch02.html#d0e175">2.2. Descriptions</a></span></dt><dd><dl><dt><span class="section"><a href="ch02.html#d0e178">2.2.1. Extension API</a></span></dt><dt><span class="section"><a href="ch02.html#d0e189">2.2.2. Integration API</a></span></dt><dt><span class="section"><a href="ch02.html#d0e202">2.2.3. CDI API</a></span></dt><dt><span class="section"><a href="ch02.html#d0e209">2.2.4. Extension bundle: the puppet master</a></span></dt><dt><span class="section"><a href="ch02.html#d0e228">2.2.5. Integration bundle: choose a CDI compliant container</a></span></dt></dl></dd><dt><span class="section"><a href="ch02.html#d0e239">2.3. CDI-OSGi features</a></span></dt><dt><span class="section"><a href="ch02.html#d0e260">2.4. Integration bundle discovery and CDI-OSGi start</a></span></dt><dt><span class="section"><a href="ch02.html#d0e271">2.5. The life of a bean bundle</a></span></dt><dt><span class="section"><a href="ch02.html#d0e286">2.6. How to make a bundle or a bean archive a bean bundle</a></span></dt><dd><dl><dt><span class="section"><a href="ch02.html#d0e314">2.6.1. The META-INF/bean.xml file </a></span></dt><dt><span class="section"><a href="ch02.html#d0e327">2.6.2. The Embedded-CDIContainer META-INF/Manifest.MF header </a></span></dt></dl></dd></dl></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e126"/>2.1. Bundles and interactions</h2></div></div></div><p>CDI-OSGi is composed of five bundles: </p><div class="itemizedlist"><ul><li><p>The extension API that describes all the new features provided by CDI-OSGi
+                        in the OSGi environment.</p></li><li><p>The integration API that allows CDI compliant container to be used with
+                        CDI-OSGi.</p></li><li><p>The CDI API that describes all the regular CDI features provided by
+                        CDI-OSGi to bean bundles.</p></li><li><p>The extension bundle that provides CDI-OSGi features for bean bundles by
+                        managing them,</p></li><li><p>An integration bundle that provides CDI features usable by the extension
+                        bundle through an OSGi service.</p></li></ul></div><p>Note that as CDI-OSGi runs in an OSGi environment it is implicit that there is an OSGi
+            core bundle too. This one provide OSGi features for all other bundles, including
+            CDI-OSGi managed bundles. But it is not an actual part of CDI-OSGi.</p><div class="figure"><a id="d0e149"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/Users/mathieuancelin/Desktop/weld/weld-osgi/cdi-osgi-documentation/cdi-osgi-design/target/docbook/staging/images/../images/CDI-OSGibundlesorganization.png" align="middle" alt="The five bundles of CDI-OSGi"/><div class="caption">This figure shows the five bundles of CDI-OSGi and the links between
+                    them.</div></div></div><p class="title"><b>Figure 2.1. The five bundles of CDI-OSGi</b></p></div><br class="figure-break"/><p>These bundles could regroup in three part (as shown in the figure above):</p><div class="itemizedlist"><ul><li><p>CDI-OSGi extension: The blue part represents the CDI OSGi extension. It is
+                        composed of one API bundle and its implementation (the extension bundle). It
+                        is the core of CDI-OSGi that manages all bean bundles.Thus the extension API
+                        bundle exposes the CDI-OSGi features and the extension bundle enables these
+                        features. All interactions with client bundles go through the CDI-OSGi
+                        extension part.</p></li><li><p>CDI-OSGi integration: The yellow part represents the CDI OSGi integration.
+                        It is composed of one API bundle and its implementation. It is how CDI
+                        features are provided to CDI-OSGi.Thus the integration API bundle exposes
+                        the requirements of CDI-OSGi in order to run CDI features in OSGi
+                        environment.The integration bundle is the implementation of these
+                        requirements using a vendor specific CDI implementation (such as
+                        Weld).Weld-OSGi is one of the possible extension bundle. So the extension
+                        bundle is commutable to support various CDI implementation.</p></li><li><p>CDI API bundle: The fifth bundle is the CDI API. It exposes regular CDI
+                        features for all client bundles and exempts the user to load CDI API by
+                        himself. It is a third-party API provided for convenience to the
+                        user.</p></li></ul></div><p>User client bean bundles should only know about the extension API bundle of CDI-OSGi
+            and the CDI API bundle because they may import their packages in order to use CDI-OSGi
+            features. They do not need to know the other three bundles.</p><p>The extension bundle manages bean bundles transparently. It also implements the
+            extension API and uses the container factory service from the integration bundle.</p><p>Integration API bundle should only be known by users who want to provide an
+            alternative integration bundle. This latter provides the CDI compliant containers used
+            by the extension bundle. The CDI-OSGi integration part is only used internally.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e175"/>2.2. Descriptions</h2></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e178"/>2.2.1. Extension API</h3></div></div></div><p>The extension API defines all the features provided to OSGi environment using CDI
+                specification. It exposes all the new utilities and defines the comportment of the
+                extension bundle.</p><p>It exposes all the interfaces, events and annotations usable by a developers in
+                order to develop its client bean bundles. It defines the programming model of
+                CDI-OSGi client bundle. Mostly it is about publishing and consuming injectable
+                services in a CDI way.</p><p>It also describes the object the extension bundle needs to orchestrate bean
+                bundles.</p><p>So this is where to search for new usages of OSGi.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e189"/>2.2.2. Integration API</h3></div></div></div><p>The integration API defines how a CDI container, such as Weld, should bootstrap
+                with the CDI OSGi extension. So any CDI environment implementation could use the CDI
+                OSGi extension transparently. The CDI compliant container may be provided using an
+                implementation bundle.</p><p>This aims at providing the minimum integration in order to start a CDI compliant
+                container with every managed bean bundle. Then the extension bundle can get a CDI
+                container to provide to every one of its manages bean bundle.</p><p>Moreover the integration API allows to mix CDI compliant container in the same
+                application by providing an embedded mode. In this mode a bean bundle is decoupled
+                from the extension bundle and is managed on its own. Thus various implementations of
+                CDI container can be used or the behavior of a particular bean bundle can be
+                particularized.</p><p>All this bootstrapping mechanism works using the service layer of OSGi. A CDI
+                compliant implementation bundle may provide a service that allows the extension
+                bundle to obtain a new container for every bean bundle.</p><p>So this is where to search to make CDI-OSGi use a specific CDI compliant
+                container.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e202"/>2.2.3. CDI API</h3></div></div></div><p>The CDI API is described by the CDI specifications. It is provided with CDI-OSGi
+                and defines all the CDI features usable in bean bundles.</p><p>This API will not be describe furthermore as it would be redundant with CDI
+                specifications.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e209"/>2.2.4. Extension bundle: the puppet master</h3></div></div></div><p>The extension bundle is the orchestrator of CDI-OSGi. It may be use by any
+                application that requires CDI-OSGi. It may be just started at the beginning of a
+                CDI-OSGi application. It requests the extension API bundle as a dependency.</p><p>The extension bundle is the heart of CDI-OSGi application. Once it is started,
+                provided that it finds a started integration bundle, it manages all the bean
+                bundles. It is in charge of service automatic publishing, service injections, CDI
+                event notifications and bundle communications.</p><p>It runs in background, it just need to be started with the OSGi environment, then
+                everything is transparent to the user. Client bean bundles do not have to do
+                anything in order to use CDI-OSGi functionality.</p><p>In order to perform injections the extension bundle search for a CDI compliant
+                container service provider once it is started. Thus it can only work coupled with a
+                bundle providing such a service: an implementation bundle.</p><p>The extension bundle provides an extension to OSGi as an extender pattern. The
+                extension bundle, the extender, tracks for bean bundles, the extensions, to be
+                started. Then CDI utilities are enabled for these bean bundles over OSGi
+                environment.</p><p>The extension bundle works that
+                way:</p><pre class="programlisting">BEGIN
+    start
+    WHILE ! implementation_bundle.isStarted
+        wait
+    END_WHILE
+    obtain_container_factory
+    FOR bean_bundle : started_bundles
+        manage_bean_bundle
+        provide_container
+    END_FOR
+    WHILE implementation_bundle.isStarted
+        wait_event
+        OnBeanBundleStart
+            manage_bean_bundle
+            provide_container
+        OnBeanBundleStop
+            unmanage_bean_bundle
+    END_WHILE
+    stop
+    FOR bean_bundle : namaged_bundles
+        unmanage_bean_bundle
+        stop_bean_bundle
+    END_FOR
+END</pre><p>So this is where the magic happens and where OSGi applications become much more
+                simple.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e228"/>2.2.5. Integration bundle: choose a CDI compliant container</h3></div></div></div><p>The integration bundle is responsible for providing CDI compliant containers to
+                the extension bundle. It may be started with the extension bundle and publish a CDI
+                container factory service. It request the integration API bundle as a
+                dependency.</p><p>It is an implementation of the integration API but it can use any CDI
+                implementation in order to fulfill it. So this bundle might not be unique but exist
+                for each vendor specific CDI implementation (such as Weld).</p><p>A integration bundle may work that way:</p><pre class="programlisting">BEGIN
+    start
+    register_container_factory_service
+    WHILE true
+        wait
+        OnContainerRequest
+            provide_container
+    END_WHILE
+    unregister_container_factory_service
+END</pre></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e239"/>2.3. CDI-OSGi features</h2></div></div></div><p>As an extension to OSGi, CDI-OSGi provides several features : </p><div class="itemizedlist"><ul><li><p>Complete integration with OSGi world by the use of extender pattern and
+                        extension bundle. Thus complete compatibility with already existing
+                        tools.</p></li><li><p>Non intruding, configurable and customizable behavior in new or upgraded
+                        application. Simple configuration and usage with annotations, completely xml
+                        free.</p></li><li><p>Full internal CDI support for bean bundles: injection, producers,
+                        interceptors, decorators ...</p></li><li><p>Lot of ease features for OSGi usages: injectable services, event
+                        notifications, inter-bundle communication ...</p></li><li><p>OSGi and CDI compliance all along the way ensuring compatibility with all
+                        CDI compliant container and easy application realisation or portage.</p></li></ul></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e260"/>2.4. Integration bundle discovery and CDI-OSGi start</h2></div></div></div><div class="figure"><a id="d0e263"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/Users/mathieuancelin/Desktop/weld/weld-osgi/cdi-osgi-documentation/cdi-osgi-design/target/docbook/staging/images/../images/CDI-OSGistartprotocol.png" align="middle" alt="CDI-OSGi framework start and stop protocol"/><div class="caption">This figure shows the steps of the CDI-OSGi starting and stopping protocol.
+                    Between step 8 and step 11 the framework is in stable state and manages bean
+                    bundles.</div></div></div><p class="title"><b>Figure 2.2. CDI-OSGi framework start and stop protocol</b></p></div><br class="figure-break"/></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e271"/>2.5. The life of a bean bundle</h2></div></div></div><p>This section presents the lifecycle of a bean bundle and how it impacts CDI and OSGi
+            regular behaviors. Mostly bean bundles follow the same lifecycle than a regular bundle.
+            There are only two new possible states and they do not modify the behavior from OSGi
+            side.</p><div class="figure"><a id="d0e276"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/Users/mathieuancelin/Desktop/weld/weld-osgi/cdi-osgi-documentation/cdi-osgi-design/target/docbook/staging/images/../images/Beanbundlestate.png" align="middle" alt="The bean bundle lifecycle"/><div class="caption">This figure shows the two new states a bean bundle can be in. These states
+                    are triggered by two new events and address the CDI container dependency
+                    resolution (i.e. services annotated @Required).</div></div></div><p class="title"><b>Figure 2.3. The bean bundle lifecycle</b></p></div><br class="figure-break"/><p>The regular OSGi lifecycle is not modified by the new CDI-OSGi states as they have the
+            same meaning than the ACTIVE state from an OSGi point of view. They only add information
+            about the validation of required service availability.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e286"/>2.6. How to make a bundle or a bean archive a bean bundle</h2></div></div></div><p>There are very few things to do in order to obtain a bean bundle from a bean archive
+            or a bundle. Mostly it is just adding the missing marker files and headers in the
+            archive: </p><div class="itemizedlist"><ul><li><p> Make a bean archive a bean bundle by adding special OSGi marker headers
+                        in its <code class="code">META-INF/Manifest.MF</code> file.</p></li><li><p> Or, in the other way, make a bundle a bean bundle by adding a
+                            <code class="code">META-INF/bean.xml</code> file.</p></li></ul></div><p>Thus a bean bundle has both <code class="code">META-INF/bean.xml</code> file and OSGi marker
+            headers in its <code class="code">META-INF/Manifest.MF</code> file.</p><p>However there is a few other information that CDI-OSGi might need in order to perform
+            a correct extension. In particular a bean bundle can not be manage by the extension
+            bundle but by his own embedded CDI container. For that there is a new manifest
+            header.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e314"/>2.6.1. The <code class="code">META-INF/bean.xml</code> file </h3></div></div></div><p>The beans.xml file follows no particular rules and should be the same as in a
+                native CDI environment. Thus it can be completely empty or declare interceptors,
+                decorators or alternatives as a regular CDI beans.xml file.</p><p>There will be no different behavior with a classic bean archive except for CDI
+                OSGi extension new utilities. But these don't need any modification on the
+                    <code class="code">META-INF/bean.xml</code> file.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e327"/>2.6.2. The Embedded-CDIContainer <code class="code">META-INF/Manifest.MF</code> header </h3></div></div></div><p>This header prevents the extension bundle to automatically manage the bean bundle
+                that set this manifest header to true. So the bean bundle can be manage more finely
+                by the user or use a different CDI container. If this header is set to false or is
+                not present in the <code class="code">META-INF/Manifest.MF</code> file then the bean bundle will
+                be automatically manage by the extension bundle (if it is started).</p></div></div></div><ul class="docnav"><li class="previous"><a accesskey="p" href="ch01.html"><strong>Prev</strong>Chapter 1. Preface</a></li><li class="up"><a accesskey="u" href="#"><strong>Top of page</strong></a></li><li class="home"><a accesskey="h" href="index.html"><strong>Front page</strong></a></li><li class="next"><a accesskey="n" href="ch03.html"><strong>Next</strong>Chapter 3. How to make OSGi easy peasy</a></li></ul></body></html>
