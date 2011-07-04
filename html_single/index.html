@@ -21,6 +21,7 @@
                 providing a more modern, more user-friendly and faster way to interact with the OSGi
                 Framework.</p><p>It addresses the OSGi complexity about services management using CDI specification
                 (JSR-299). Thus it provides a CDI OSGi extension with injection utilities for the
+<<<<<<< HEAD
                 OSGi environment. An integration of any CDI implementation, such as Weld, it is
                 used. This integration is possible through a well-defined bootstrapping API.</p><p>CDI-OSGi is a framework that may be used in an OSGi environment and composed by
                 five bundles.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e85"/>1.2.2. Weld-OSGi</h3></div></div></div><p>Weld-OSGi is an integration of Weld in the OSGi environment using CDI-OSGi. It is
@@ -32,6 +33,16 @@
             implementation.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e101"/>1.4. What about other frameworks</h2></div></div></div><p>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
             mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</p><p>Thereby it is compatible with most of the current frameworks dealing with OSGi service
             management.</p><p>Weld-OSGi has the same compatibility since it is an implementation of CDI-OSGi. But as
+=======
+                OSGi environment.</p><p>Moreover an integration with any CDI implementation, such as Weld, is possible
+                through a well-defined bootstrapping API.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e108"/>1.2.2. Weld-OSGi</h3></div></div></div><p>Weld-OSGi is an implementation of Weld in the OSGi environment using CDI-OSGi. It
+                is the exhibit implementation of features exposes by CDI-OSGi APIs.</p><p>But Weld-OSGi is more than a simple implementation of CDI-OSGi. It provides other
+                utilities for OSGi environment facilitation. It comes with a complete documentation
+                and sample applications.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e115"/>1.2.3. Organization and interactions between bundles</h3></div></div></div><div class="figure"><a id="d0e118"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/home/matthieu/Documents/CDI-OSGi/weld-osgi/cdi-osgi-design/target/docbook/staging/images/../images/CDI-OSGi.png" align="middle" alt="Organization and interactions between bundles"/><div class="caption">This diagram shows the organization of bundles and how they act with
+                        each other in a CDI-OSGi application.</div></div></div><p class="title"><b>Figure 1.1. Organization and interactions between bundles</b></p></div><br class="figure-break"/></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e126"/>1.3. What about other frameworks</h2></div></div></div><p>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
+            mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</p><p>Thereby is compatible with most of the current frameworks dealing with OSGi service
+            management.</p><p>Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as
+>>>>>>> 49a6b307457db8a4ae4c725ec3d0a65de5691361
             it provides some additional features it may be impossible to use all its possibilities
             coupling with other frameworks.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e110"/>1.5. Organization of this document</h2></div></div></div><p>Since this specification covers two different (but linked) pieces of software it is
             separated into two majors parts : </p><div class="itemizedlist"><ul><li><p> The CDI-OSGi specifications for core functionality usages and CDI
@@ -93,11 +104,513 @@
                 everything is transparent to the user. Client bean bundles do not have to do
                 anything in order to use CDI-OSGi functionality.</p><p>In order to perform injections the extension bundle search for a CDI compliant
                 container service provider once it is started. Thus it can only work coupled with a
+<<<<<<< HEAD
                 bundle providing such a service: an implementation bundle.</p><p>The extension bundle provides an extension to OSGi as an extender pattern. The
                 extension bundle, the extender, tracks for bean bundles, the extensions, to be
                 started. Then CDI utilities are enabled for these bean bundles over OSGi
                 environment.</p><p>The extension bundle works that
                 way:</p><pre class="programlisting">BEGIN
+=======
+                bundle providing such a service: an implementation bundle.</p><p>So this is where the magic happens and where OSGi applications become much more
+                simple.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e219"/>2.1.3. Implementation bundle: choose a CDI compliant container</h3></div></div></div><p>The implementation bundle is responsible for providing CDI compliant containers to
+                the extension bundle. It may be started with the extension bundle and publish the
+                right service. It request the APIs bundle as a dependency.</p><p>It is an implementation of the integration API, thus it may provide a CDI
+                container factory service.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e226"/>2.1.4. CDI-OSGi bundles organization diagram</h3></div></div></div><div class="figure"><a id="d0e229"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/home/matthieu/Documents/CDI-OSGi/weld-osgi/cdi-osgi-design/target/docbook/staging/images/../images/CDI-OSGicoreorganization.png" align="middle" alt="CDI-OSGI bundles organization"/><div class="caption">This diagram represents the internal organization of CDI-OSGi bundles.
+                        The coupling between the three bundles is represented as well as what is
+                        exposed to bean bundles.</div></div></div><p class="title"><b>Figure 2.1. CDI-OSGI bundles organization</b></p></div><br class="figure-break"/><p>The diagram above shows how CDI-OSGi bundles are linked together. The blue part is
+                the core of OSGi and is provided. The red part is a required but interchangeable
+                bundle.</p><p>All together these three bundle make CDI-OSGi. Then CDI-OSGi functionalities are
+                exposed to bean bundles and an OSGi extension is provided in order to manage these
+                bean bundles.</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e241"/>2.2. An OSGi extension for CDI support: the extension API</h2></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e244"/>2.2.1. The extender pattern</h3></div></div></div><p>CDI-OSGi provides an extension to OSGi as an extender OSGi pattern. The extension
+                bundle, the extender, tracks for bean bundles, the extensions, to be started. Then
+                CDI utilities are enabled for these bean bundles over OSGi environment.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e249"/>2.2.2. CDI-OSGi features</h3></div></div></div><p>As an extension to OSGi, CDI-OSGi provides several features : </p><div class="itemizedlist"><ul><li><p> Complete integration in OSGi world by the use of extender pattern and
+                            extension bundle. Thus complete compatibility with already existing
+                            tools.</p></li><li><p> Non intruding, configurable and customizable behavior in new or
+                            upgraded application. Simple configuration and usage using annotation,
+                            completely xml free.</p></li><li><p> Full internal CDI support for bean bundles: injection, producers,
+                            interceptors, decorators ...</p></li><li><p> Lot of ease features for OSGi usages: injectable services, event
+                            notifications, inter-bundle communication ...</p></li><li><p> OSGi and CDI compliance all along the way ensuring compatibility with
+                            all CDI compliant container and easy application realisation or
+                            portage.</p></li></ul></div><p>We will see in the next sections these features in deep through the description of
+                the extension API.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e272"/>2.2.3. The interfaces</h3></div></div></div><p>Extension API provides few interfaces that describe all specifics about OSGi
+                service injection.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e277"/>2.2.3.1. The <code class="code">Service</code> interface</h4></div></div></div><pre class="programlisting">public interface Service&lt;T&gt; extends Instance&lt;T&gt; {
+    int size();
+}</pre><p>It represents a service instance producer parametrized by the service to
+                    inject. It has the same behavior than CDI <code class="code">Instance&lt;T&gt;</code> except
+                    that it represents only OSGi service beans.</p><p>IT allows to:</p><div class="itemizedlist"><ul><li><p>Wrap a list of potential service implementations as an
+                                    <code class="code">Iterable</code> java object,</p></li><li><p>Select a subset of these service implementations filtered by
+                                    <code class="code">Qualifier</code>s or LDAP filters,</p></li><li><p>Iterate through these service implementations,</p></li><li><p>Obtain an instance of the first remaining service
+                                implementations,</p></li><li><p>Obtain utility informations about the contained service
+                                implementations.</p></li></ul></div><p>OSGi services should not be subtyped.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e316"/>2.2.3.2. The <code class="code">Registration</code> interface</h4></div></div></div><pre class="programlisting">public interface Registration&lt;T&gt; extends Iterable&lt;Registration&lt;T&gt;&gt; {
+
+    void unregister();
+    &lt;T&gt; Service&lt;T&gt; getServiceReference();
+    Registration&lt;T&gt; select(Annotation... qualifiers);
+    Registration&lt;T&gt; select(String filter);
+    int size();
+}
+            </pre><p>This interface represents the registrations of a injectable service in the
+                    service resgistry. Its fonctionnement is similar to <code class="code">Service&lt;T&gt;</code>,
+                    thus it might represent the iterable set of all the registrations of a
+                    service.</p><p>It allows to:</p><div class="itemizedlist"><ul><li><p>Wrap a list of service registration (i.e. the bindings between a
+                                service and its implementations) as an <code class="code">Iterable</code> java
+                                object,</p></li><li><p>Select a subset of these registration filtered by
+                                    <code class="code">Qualfier</code>s or LDAP filters,</p></li><li><p>Iterate through these service registrations,</p></li><li><p>Obtain the service implementations list as a
+                                    <code class="code">Service&lt;T&gt;</code>,</p></li><li><p>Get the number of registration (i.e the number of registered
+                                service implementations).</p></li></ul></div><p>OSGi services should not be subtyped.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e358"/>2.2.3.3. The <code class="code">RegistrationHolder</code> interface</h4></div></div></div><p>
+                    </p><pre class="programlisting">public interface RegistrationHolder {
+
+    List&lt;ServiceRegistration&gt; getRegistrations();
+    void addRegistration(ServiceRegistration reg);
+    void removeRegistration(ServiceRegistration reg);
+    void clear();
+    int size();
+}</pre><p>
+                </p><p>This interface represents the bindings between a service and its registered
+                    implementations. It is used by <code class="code">Registration</code> to maintain the list of
+                    registration bindings. It uses OSGi <code class="code">ServiceRegistration</code>.</p><p>It allows to:</p><div class="itemizedlist"><ul><li><p>Wrap a list of <code class="code">ServiceRegistration</code> as binding between
+                                a service and its implementations as a <code class="code">List</code>,</p></li><li><p>Handle this list with addition, removal, clearing and size
+                                operations.</p></li></ul></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e392"/>2.2.3.4. The <code class="code">ServiceRegistry</code> interface</h4></div></div></div><pre class="programlisting">public interface ServiceRegistry {
+
+    &lt;T&gt; Registration&lt;T&gt; registerService(Class&lt;T&gt; contract, Class&lt;? extends T&gt; implementation);
+    &lt;T, U extends T&gt; Registration&lt;T&gt; registerService(Class&lt;T&gt; contract, U implementation);
+    &lt;T&gt; Service&lt;T&gt; getServiceReferences(Class&lt;T&gt; contract);
+    &lt;T&gt; Provider&lt;T&gt; newTypeInstance(Class&lt;T&gt; unmanagedType);
+}</pre><p>This interface represents a service registry where all OSGi services may be
+                    handled.</p><p>It allows to:</p><div class="itemizedlist"><ul><li><p>Register a service implementation with a service, getting back the
+                                corresponding <code class="code">Registration</code>,</p></li><li><p>Obtain the service implementations list as a
+                                    <code class="code">Service&lt;T&gt;</code>,</p></li><li><p>Obtain an instance provider for a specified type.</p></li></ul></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e420"/>2.2.4. The events</h3></div></div></div><p>Extension API provides numerous events that notify about new life-cycle steps for
+                container management, service injection management and communication between bean
+                bundles. They all use CDI event system.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e425"/>2.2.4.1. The <code class="code">BundleContainerInitialized</code> and
+                        <code class="code">BundleContainerShutDown</code> events</h4></div></div></div><pre class="programlisting">public class BundleContainerInitialized {
+
+    private BundleContext bundleContext;
+    
+    public BundleContainerInitialized(final BundleContext context) {
+        this.bundleContext = context;
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+}</pre><pre class="programlisting">public class BundleContainerShutdown {
+
+    private BundleContext bundleContext;
+
+    public BundleContainerShutdown(final BundleContext context) {
+        this.bundleContext = context;
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+}</pre><p>These two events advise about the state of bean bundles CDI compliant
+                    container. They are fired respectively when a container has finished its
+                    initialization and when a container begin to shutdown. They expose the
+                    coresponding bean bundle <code class="code">BundleContext</code>.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e443"/>2.2.4.2. The <code class="code">AbstractBundleEvent</code> and <code class="code">AbstractServiceEvent</code>
+                    events</h4></div></div></div><pre class="programlisting">public abstract class AbstractBundleEvent {
+                
+    public static enum EventType {
+        INSTALLED,LAZY_ACTIVATION,RESOLVED,STARTED,STARTING,
+        STOPPED,STOPPING,UNINSTALLED,UNRESOLVED,UPDATED,
+    }
+
+    private final Bundle bundle;
+
+    public AbstractBundleEvent(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public abstract EventType getType();
+
+    public long getBundleId() {
+        return bundle.getBundleId();
+    }
+
+    public String getSymbolicName() {
+        return bundle.getSymbolicName();
+    }
+
+    public Version getVersion() {
+        return bundle.getVersion();
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+}</pre><pre class="programlisting">public abstract class AbstractServiceEvent {
+
+    public static enum EventType {
+        SERVICE_ARRIVAL, SERVICE_DEPARTURE, SERVICE_CHANGED
+    }
+
+    private final ServiceReference ref;
+    private final BundleContext context;
+    private List&lt;String&gt; classesNames;
+    private List&lt;Class&lt;?&gt;&gt; classes;
+    private Map&lt;Class, Boolean&gt; assignable = new HashMap&lt;Class, Boolean&gt;();
+
+    public AbstractServiceEvent(
+        ServiceReference ref, BundleContext context) {
+        this.ref = ref;
+        this.context = context;
+    }
+
+    public abstract EventType eventType();
+
+    public ServiceReference getRef() {
+        return ref;
+    }
+
+    public &lt;T&gt; TypedService&lt;T&gt; type(Class&lt;T&gt; type) {
+        if (isTyped(type)) {
+            return TypedService.create(type, context, ref);
+        } else {
+            throw new RuntimeException("the type " + type
+                + " isn't supported for the service. Supported types are "
+                + getServiceClasses());
+        }
+    }
+
+    public Object getService() {
+        return context.getService(ref);
+    }
+
+    public boolean ungetService() {
+        return context.ungetService(ref);
+    }
+
+    public boolean isTyped(Class&lt;?&gt; type) {
+        boolean typed = false;
+        if (!assignable.containsKey(type)) {
+            for (Class clazz : getServiceClasses()) {
+                if (type.isAssignableFrom(clazz)) {
+                    typed = true;
+                    break;
+                }
+            }
+            assignable.put(type, typed);
+        }
+        return assignable.get(type);
+    }
+
+    public Bundle getRegisteringBundle() {
+        return ref.getBundle();
+    }
+
+    public List&lt;String&gt; getServiceClassNames() {
+        if (classesNames == null) {
+            classesNames = Arrays.asList((String[])
+            ref.getProperty(Constants.OBJECTCLASS));
+        }
+        return classesNames;
+    }
+
+    public List&lt;Class&lt;?&gt;&gt; getServiceClasses() {
+        if (classes == null) {
+            classes = new ArrayList&lt;Class&lt;?&gt;&gt;();
+            for (String className : getServiceClassNames()) {
+                try {
+                    classes.add(getClass().getClassLoader().loadClass(className));
+                } catch (ClassNotFoundException ex) {
+                return null;
+                }
+            }
+        }
+        return classes;
+    }
+
+    public static class TypedService&lt;T&gt; {
+
+        private final BundleContext context;
+        private final ServiceReference ref;
+        private final Class&lt;T&gt; type;
+
+        TypedService(BundleContext context, ServiceReference ref, Class&lt;T&gt; type) {
+            this.context = context;
+            this.ref = ref;
+            this.type = type;
+        }
+
+        static &lt;T&gt; TypedService&lt;T&gt; create(Class&lt;T&gt; type, BundleContext context, ServiceReference ref) {
+            return new TypedService&lt;T&gt;(context, ref, type);
+        }
+
+        public T getService() {
+            return type.cast(context.getService(ref));
+        }
+
+        public boolean ungetService() {
+            return context.ungetService(ref);
+        }
+    }
+}</pre><p>These two abstract classes represent the information that bundle and service
+                    events may carry when they are fired. They also allows to listen for all bundle
+                    or service events in one operation.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e458"/>2.2.4.3. The <code class="code">BundleEvents</code> events</h4></div></div></div><p>It regroups all the events about bundle life-cycle.</p><pre class="programlisting">public class BundleEvents {
+
+    public static class BundleInstalled extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleLazyActivation extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleResolved extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleStarted extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleStarting extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleStopped extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleStopping extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleUninstalled extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleUnresolved extends AbstractBundleEvent {
+        ...
+    }
+
+    public static class BundleUpdated extends AbstractBundleEvent {
+        ...
+    }
+}</pre><pre class="programlisting">public static class BundleInstalled extends AbstractBundleEvent {
+
+    public BundleInstalled(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.INSTALLED;
+    }
+}</pre><pre class="programlisting">public static class BundleLazyActivation extends AbstractBundleEvent {
+
+    public BundleLazyActivation(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.LAZY_ACTIVATION;
+    }
+}</pre><pre class="programlisting">public static class BundleResolved extends AbstractBundleEvent {
+
+    public BundleResolved(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.RESOLVED;
+    }
+}</pre><pre class="programlisting">public static class BundleStarted extends AbstractBundleEvent {
+
+    public BundleStarted(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.STARTED;
+    }
+}</pre><pre class="programlisting">public static class BundleStarting extends AbstractBundleEvent {
+
+    public BundleStarting(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.STARTING;
+    }
+}</pre><pre class="programlisting">public static class BundleStopped extends AbstractBundleEvent {
+
+    public BundleStopped(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.STOPPED;
+    }
+}</pre><pre class="programlisting">public static class BundleStopping extends AbstractBundleEvent {
+
+    public BundleStopping(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.STOPPING;
+    }
+}</pre><pre class="programlisting">public static class BundleUninstalled extends AbstractBundleEvent {
+
+    public BundleUninstalled(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.UNINSTALLED;
+    }
+}            </pre><pre class="programlisting">public static class BundleUnresolved extends AbstractBundleEvent {
+
+    public BundleUnresolved(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.UNRESOLVED;
+    }
+}            </pre><pre class="programlisting">public static class BundleUpdated extends AbstractBundleEvent {
+
+    public BundleUpdated(Bundle bundle) {
+        super(bundle);
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.UPDATED;
+    }
+}</pre><p>These events are automatically fired by CDI-OSGi and transmitted to other
+                    bundles when the corresponding life-cycle step occurs in a bean bundle.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e490"/>2.2.4.4. The <code class="code">ServiceArrival</code>, <code class="code">ServiceChanged</code> and
+                        <code class="code">ServiceDeparture</code> events</h4></div></div></div><pre class="programlisting">public class ServiceArrival extends AbstractServiceEvent {
+
+    public ServiceArrival(ServiceReference ref, BundleContext context) {
+        super(ref, context);
+    }
+
+    @Override
+    public EventType eventType() {
+        return EventType.SERVICE_ARRIVAL;
+    }
+}</pre><pre class="programlisting">public class ServiceChanged extends AbstractServiceEvent {
+
+    public ServiceChanged(ServiceReference ref, BundleContext context) {
+        super(ref, context);
+    }
+
+    @Override
+    public EventType eventType() {
+        return EventType.SERVICE_CHANGED;
+    }
+}</pre><pre class="programlisting">public class ServiceDeparture extends AbstractServiceEvent {
+
+    public ServiceDeparture(ServiceReference ref, BundleContext context) {
+        super(ref, context);
+    }
+
+    @Override
+    public EventType eventType() {
+        return EventType.SERVICE_DEPARTURE;
+    }
+}</pre><p>These events are automatically fired by CDI-OSGi and transmitted to other
+                    bundles when the corresponding life-cycle step occurs in a OSGi service.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e510"/>2.2.4.5. The <code class="code">Valid</code> and <code class="code">Invalid</code> events</h4></div></div></div><pre class="programlisting">public class Valid {
+}</pre><pre class="programlisting">public class Invalid {
+}</pre><p>These two events notify about the state of bean bundles dependency resolution.
+                    They are automatically fired by CDI-OSGi when all required service are available
+                    or when at least one required service is unavailable.</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e525"/>2.2.5. The annotations</h3></div></div></div><p>Extension API provides annotations in order to easily use CDI-OSGi
+                features.</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e530"/>2.2.5.1. The <code class="code">OSGiBundle</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OSGiBundle {
+    @Nonbinding String value();
+    @Nonbinding String version() default "";
+}</pre><p>This annotation qualifies an injection point that represents a bundle.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e540"/>2.2.5.2. The <code class="code">BundleDataFile</code>, <code class="code">BundleHeader</code>,
+                        <code class="code">BundleHeaders</code>, <code class="code"> BundleName</code> and
+                        <code class="code">BundleVersion</code> annotations</h4></div></div></div><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleDataFile {
+    @Nonbinding String value();
+}</pre><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleHeader {
+    @Nonbinding String value();
+}</pre><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleHeaders {
+}</pre><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleName {
+    String value();
+}</pre><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BundleVersion {
+    String value();
+}</pre><p>These annotations qualify an injection point that represents bundle relative
+                    information.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e570"/>2.2.5.3. The <code class="code">OSGiService</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OSGiService {
+}</pre><p>This annotation qualifies an injection point that represents a service in the
+                    OSGi service registry.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e580"/>2.2.5.4. The <code class="code">Publish</code> annotation</h4></div></div></div><pre class="programlisting">@Target({ TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Publish {
+    public Class[] contracts() default {};
+    public String[] properties() default {};
+    public boolean useQualifiersAsProperties() default false;
+}</pre><p>This annotation notice that this type is an OSGi service that may be
+                    automatically published in the OSGi service registry.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e590"/>2.2.5.5. The <code class="code">Required</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Required {
+}</pre><p>This annotation qualifies an injection point that represents a required
+                    service.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e600"/>2.2.5.6. The <code class="code">Filter</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Filter {
+    String value();
+}</pre><p>This annotation qualifies an injection point with an LDAP filter.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e610"/>2.2.5.7. The <code class="code">Specification</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Target({ PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Specification {
+    Class value();
+}</pre><p>This annotation qualifies an injection point by specifying the expected
+                    specification class.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e620"/>2.2.5.8. The <code class="code">Sent</code> annotation</h4></div></div></div><pre class="programlisting">@Qualifier
+@Target({ PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Sent {
+}</pre><p>This annotation qualifies an injection point that represents a incoming inter
+                    bundle communication.</p></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e630"/>2.3. A standard bootstrap for CDI container integration: the integration API</h2></div></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e633"/>2.3.1. Why an integration API</h3></div></div></div><p>CDI-OSGi could have been carried out with an internal CDI compliant container and
+                work very well. Every one of the specifications above would have been fulfilled. But
+                no other specific utilities or CDI evolution could have been added without a
+                complete modification of CDI-OSGi.</p><p>Then there is the integration API. With that, developers are able to provide their
+                own implementation bundle. Thus it is possible to use any CDI compliant container
+                with a CDI-OSGi application or mix up different CDI compliant containers for
+                different bundles.</p><p>Integration API describe what needs the extension bundle to work (and therefore
+                what may provide the implementation bundle) and what provides the extension bundle
+                (and therefore what should use the implementation bundle).</p><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e642"/>2.3.1.1. The <code class="code">BundleContainer</code> and <code class="code">BundleContainers</code>
+                    interfaces</h4></div></div></div><pre class="programlisting">public interface BundleContainer {
+    void fire(InterBundleEvent event);
+}</pre><pre class="programlisting">public interface BundleContainers {
+    Collection&lt;BundleContainer&gt; getContainers();
+}</pre><p>These interfaces represent the CDI compliant containers used by bean bundle.
+                    Such container may be accessible in the OSGi application to provide an event
+                    notification system.</p><p>Multiple containers can be manipulated by the <code class="code">BundleContainers</code>
+                    interface.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h4 class="title"><a id="d0e662"/>2.3.1.2. The <code class="code">BundleContainerFactory</code> interface</h4></div></div></div><pre class="programlisting">public interface BundleContainerFactory {
+
+    Class&lt;? extends BundleContainerFactory&gt; delegateClass();
+    String getID();
+    Set&lt;String&gt; getContractBlacklist()
+    BundleContainer container(Bundle bundle);
+}</pre><p>This the how the extension bundle require a CDI compliant container from the
+                    implementation bundle. This latter should publish an OSGi service that complies
+                    with this interface.</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e672"/>2.3.2. Embedded mode</h3></div></div></div><p>TODO How does it work ? Should we provide something ? Should business bundles use
+                the integration API ? A template activator ?</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e677"/>2.4. An orchestrator : the extension bundle</h2></div></div></div><p> </p><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e682"/>2.4.1. The extension bundle works that way:</h3></div></div></div><p>
+                </p><pre class="programlisting">BEGIN
+>>>>>>> 49a6b307457db8a4ae4c725ec3d0a65de5691361
     start
     WHILE ! implementation_bundle.isStarted
         wait

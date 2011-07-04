@@ -20,17 +20,14 @@
                 providing a more modern, more user-friendly and faster way to interact with the OSGi
                 Framework.</p><p>It addresses the OSGi complexity about services management using CDI specification
                 (JSR-299). Thus it provides a CDI OSGi extension with injection utilities for the
-                OSGi environment. An integration of any CDI implementation, such as Weld, it is
-                used. This integration is possible through a well-defined bootstrapping API.</p><p>CDI-OSGi is a framework that may be used in an OSGi environment and composed by
-                five bundles.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e85"/>1.2.2. Weld-OSGi</h3></div></div></div><p>Weld-OSGi is an integration of Weld in the OSGi environment using CDI-OSGi. It is
-                the exhibit implementation of features exposes by CDI-OSGi APIs.</p><p>Weld-OSGi is one of the five bundles composing CDI-OSGi. But it also names the
-                framework CDI-OSGi using this particular CDI integration.</p></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e92"/>1.3. Third party dependencies and environment</h2></div></div></div><p>CDI-OSGi may run into an OSGi environment, therefore it requires an OSGi
-            implementation framework to run in (such as Apache Felix, Equinox, Knopflerfish
-            ...).</p><p>CDI-OSGi also depends on a CDI implementation (such as Weld, Open Web Beans, CanDI
-            ..).</p><p>CDI-OSGi logs its operations using the SLF4J logging facade and the LogBack logging
-            implementation.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e101"/>1.4. What about other frameworks</h2></div></div></div><p>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
-            mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</p><p>Thereby it is compatible with most of the current frameworks dealing with OSGi service
-            management.</p><p>Weld-OSGi has the same compatibility since it is an implementation of CDI-OSGi. But as
+                OSGi environment.</p><p>Moreover an integration with any CDI implementation, such as Weld, is possible
+                through a well-defined bootstrapping API.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e108"/>1.2.2. Weld-OSGi</h3></div></div></div><p>Weld-OSGi is an implementation of Weld in the OSGi environment using CDI-OSGi. It
+                is the exhibit implementation of features exposes by CDI-OSGi APIs.</p><p>But Weld-OSGi is more than a simple implementation of CDI-OSGi. It provides other
+                utilities for OSGi environment facilitation. It comes with a complete documentation
+                and sample applications.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h3 class="title"><a id="d0e115"/>1.2.3. Organization and interactions between bundles</h3></div></div></div><div class="figure"><a id="d0e118"/><div class="figure-contents"><div class="mediaobject" align="center"><img src="file:/home/matthieu/Documents/CDI-OSGi/weld-osgi/cdi-osgi-design/target/docbook/staging/images/../images/CDI-OSGi.png" align="middle" alt="Organization and interactions between bundles"/><div class="caption">This diagram shows the organization of bundles and how they act with
+                        each other in a CDI-OSGi application.</div></div></div><p class="title"><b>Figure 1.1. Organization and interactions between bundles</b></p></div><br class="figure-break"/></div></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e126"/>1.3. What about other frameworks</h2></div></div></div><p>CDI-OSGi stays compliant with CDI specification and uses only standard OSGi
+            mechanisms. Every things it does (or nothing from it) CDI and OGSi can do.</p><p>Thereby is compatible with most of the current frameworks dealing with OSGi service
+            management.</p><p>Weld-OSGi has the same compatibility since it is a implementation of CDI-OSGi. But as
             it provides some additional features it may be impossible to use all its possibilities
             coupling with other frameworks.</p></div><div class="section" lang="en-US"><div class="titlepage"><div><div><h2 class="title"><a id="d0e110"/>1.5. Organization of this document</h2></div></div></div><p>Since this specification covers two different (but linked) pieces of software it is
             separated into two majors parts : </p><div class="itemizedlist"><ul><li><p> The CDI-OSGi specifications for core functionality usages and CDI
