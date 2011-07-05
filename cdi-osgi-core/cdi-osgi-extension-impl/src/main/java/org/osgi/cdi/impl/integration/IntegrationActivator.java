@@ -186,7 +186,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 try {
                     reg.unregister();
                 } catch (IllegalStateException e) {// Ignore
-                    logger.warn("Unable to unregister a service", e);
+                    //logger.warn("Unable to unregister a service", e);
                 }
             }
             try {
