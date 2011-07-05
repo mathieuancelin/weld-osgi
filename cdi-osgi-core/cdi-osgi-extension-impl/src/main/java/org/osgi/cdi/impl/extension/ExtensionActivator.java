@@ -171,9 +171,9 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
         for (Class<?> clazz : classes) {
             try {
                 broadcaster.select(eventClass,
-                                   filteredServicesQualifiers(event,
-                                                              new SpecificationAnnotation(clazz),
-                                                              instance))
+                   filteredServicesQualifiers(event,
+                      new SpecificationAnnotation(clazz),
+                      instance))
                            .fire(event);
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -205,9 +205,9 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
     private void fireAllEvent(AbstractBundleEvent event, Event broadcaster) {
         try {
             broadcaster.select(event.getClass(),
-                               new BundleNameAnnotation(event.getSymbolicName()),
-                               new BundleVersionAnnotation(event.getVersion().toString()))
-                       .fire(event);
+               new BundleNameAnnotation(event.getSymbolicName()),
+               new BundleVersionAnnotation(event.getVersion().toString()))
+                   .fire(event);
         } catch (Throwable t) {
             t.printStackTrace();
         }

@@ -28,6 +28,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Weld OSGi extension.
@@ -39,6 +41,8 @@ import org.osgi.framework.BundleReference;
  */
 @ApplicationScoped
 public class CDIOSGiExtension implements Extension {
+
+    private Logger logger = LoggerFactory.getLogger(CDIOSGiExtension.class);
 
     // hack for weld integration
     public static ThreadLocal<Long> currentBundle = new ThreadLocal<Long>();
@@ -101,7 +105,7 @@ public class CDIOSGiExtension implements Extension {
                     .getBundle().getBundleContext();
             activator = new ExtensionActivator();
             try {
-                System.out.println("WARN: starting the extension assuming the bundle is " + bc.getBundle().getSymbolicName());
+                logger.warn("Starting the extension assuming the bundle is " + bc.getBundle().getSymbolicName());
                 activator.start(bc);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -146,7 +150,7 @@ public class CDIOSGiExtension implements Extension {
             Type type =  iterator.next();
             if (!(type instanceof Class)) {
                 //TODO: need to handle Instance<Class>. This fails currently
-                System.out.println("Unknown type:" + type);
+                logger.error("Unknown type:" + type);
                 event.addDefinitionError(
                     new UnsupportedOperationException("Injection target type " + type + "not supported"));
                 break;
