@@ -27,6 +27,8 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -49,6 +51,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
 
+    private Map<Long, CDIContainer> managed;
+
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
@@ -70,6 +74,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     public void startCDIOSGi() throws Exception {
         logger.info("CDI-OSGi start bundle management");
         started.set(true);
+        managed = new HashMap<Long, CDIContainer>();
         for (Bundle bundle : context.getBundles()) {
             logger.finest("Scanning " + bundle.getSymbolicName());
             if (Bundle.ACTIVE == bundle.getState()) {
@@ -84,9 +89,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         started.set(false);
         for (Bundle bundle : context.getBundles()) {
             logger.finest("Scanning " + bundle.getSymbolicName());
-            CDIContainer holder = factory().container(bundle);
-            if (holder != null) {
-                stopManagement(holder.getBundle());
+            if (managed.get(bundle.getBundleId()) != null) {
+                stopManagement(bundle);
             }
         }
     }
@@ -163,6 +167,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             }
             holder.setRegistrations(regs);
             factory().addContainer(holder);
+            managed.put(bundle.getBundleId(),holder);
             logger.fine("Bundle " + bundle.getSymbolicName() + " is managed");
         } else {
             logger.fine("Bundle " + bundle.getSymbolicName() + " is not a bean bundle");
@@ -176,10 +181,12 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         logger.fine("Unmanaging " + bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-        CDIContainer holder = factory().container(bundle);
+        CDIContainer holder = managed.get(bundle.getBundleId());
         if (holder != null) {
             logger.finest("Bundle " + bundle.getSymbolicName() + "got a CDI container");
-            factory().removeContainer(bundle);
+            if(started.get()) {
+                factory().removeContainer(bundle);
+            }
             Collection<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
                 try {
@@ -210,6 +217,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 holder.getBeanManager().fireEvent(new Invalid());
             }
             holder.shutdown();
+            managed.remove(bundle.getBundleId());
             logger.fine("Bundle " + bundle.getSymbolicName() + " is unmanaged");
         } else {
             logger.fine("Bundle " + bundle.getSymbolicName() + " is not a bean bundle");
