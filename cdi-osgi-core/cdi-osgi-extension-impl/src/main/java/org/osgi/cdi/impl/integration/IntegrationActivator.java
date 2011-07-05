@@ -29,6 +29,8 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -50,6 +52,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
 
+    private Map<Long, CDIContainer> managed;
+
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
@@ -69,10 +73,11 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     public void startCDIOSGi() throws Exception {
-        logger.debug("CDI-OSGi start bundle management");
+        logger.info("CDI-OSGi start bundle management");
         started.set(true);
+        managed = new HashMap<Long, CDIContainer>();
         for (Bundle bundle : context.getBundles()) {
-            logger.debug("Scanning for start {}", bundle.getSymbolicName());
+            logger.debug("Scanning {}", bundle.getSymbolicName());
             if (Bundle.ACTIVE == bundle.getState()) {
                 startManagement(bundle);
             }
@@ -81,13 +86,12 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     public void stopCDIOSGi() throws Exception {
-        logger.debug("CDI-OSGi stop bundle management");
+        logger.info("CDI-OSGi stop bundle management");
         started.set(false);
         for (Bundle bundle : context.getBundles()) {
-            logger.debug("Scanning for stop {}", bundle.getSymbolicName());
-            CDIContainer holder = factory().container(bundle);
-            if (holder != null) {
-                stopManagement(holder.getBundle());
+            logger.debug("Scanning {}", bundle.getSymbolicName());
+            if (managed.get(bundle.getBundleId()) != null) {
+                stopManagement(bundle);
             }
         }
     }
@@ -96,7 +100,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     public void bundleChanged(BundleEvent event) {
         switch (event.getType()) {
             case BundleEvent.STARTED:
-                logger.debug("Bundle {} started",  event.getBundle().getSymbolicName());
+                logger.debug("Bundle {} started", event.getBundle().getSymbolicName());
                 if (started.get())
                     startManagement(event.getBundle());
                 break;
@@ -113,7 +117,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             ServiceReference[] refs = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
             if (ServiceEvent.REGISTERED == event.getType()) {
                 if (!started.get() && refs != null && refs.length > 0) {
-                    logger.debug("CDI container factory service found");
+                    logger.info("CDI container factory service found");
                     factoryRef = refs[0];
                     startCDIOSGi();
                 }
@@ -130,7 +134,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     private void startManagement(Bundle bundle) {
-        logger.debug("Managing " + bundle.getSymbolicName());
+        logger.debug("Managing {}", bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         CDIContainer holder = factory().createContainer(bundle);
@@ -160,10 +164,11 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 regs.add(bundleContext.registerService(BeanManager.class.getName(), holder.getBeanManager(), null));
                 regs.add(bundleContext.registerService(Instance.class.getName(), holder.getInstance(), null));
             } catch (Throwable t) {// Ignore
-                logger.warn("Unable to register a utility service", t);
+                logger.debug("Unable to register a utility service {}", t.getCause());
             }
             holder.setRegistrations(regs);
             factory().addContainer(holder);
+            managed.put(bundle.getBundleId(),holder);
             logger.debug("Bundle {} is managed", bundle.getSymbolicName());
         } else {
             logger.debug("Bundle {} is not a bean bundle", bundle.getSymbolicName());
@@ -177,16 +182,18 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
         logger.debug("Unmanaging {}", bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-        CDIContainer holder = factory().container(bundle);
+        CDIContainer holder = managed.get(bundle.getBundleId());
         if (holder != null) {
             logger.debug("Bundle {} got a CDI container", bundle.getSymbolicName());
-            factory().removeContainer(bundle);
+            if(started.get()) {
+                factory().removeContainer(bundle);
+            }
             Collection<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
                 try {
                     reg.unregister();
                 } catch (IllegalStateException e) {// Ignore
-                    //logger.warn("Unable to unregister a service", e);
+                    //logger.warn("Unable to unregister a service" + e.getCause());
                 }
             }
             try {
@@ -211,7 +218,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 holder.getBeanManager().fireEvent(new Invalid());
             }
             holder.shutdown();
-            logger.debug("Bundle {}  is unmanaged", bundle.getSymbolicName());
+            managed.remove(bundle.getBundleId());
+            logger.debug("Bundle {} is unmanaged", bundle.getSymbolicName());
         } else {
             logger.debug("Bundle {} is not a bean bundle", bundle.getSymbolicName());
         }
