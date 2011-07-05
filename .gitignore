@@ -4,4 +4,4 @@ target
 *.iws
 *.ipr
 .DS_Store
-*.log
+*.log*
