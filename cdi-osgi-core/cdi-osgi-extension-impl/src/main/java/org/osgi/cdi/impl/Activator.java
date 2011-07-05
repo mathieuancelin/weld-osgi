@@ -39,17 +39,17 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        logger.info("CDI-OSGi is starting ...");
+        logger.debug("CDI-OSGi is starting ...");
         extension.start(context);
         integration.start(context);
-        logger.info("CDI-OSGi STARTED");
+        logger.debug("CDI-OSGi STARTED");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        logger.info("CDI-OSGi is stopping ...");
+        logger.debug("CDI-OSGi is stopping ...");
         integration.stop(context);
         extension.stop(context);
-        logger.info("CDI-OSGi STOPPED");
+        logger.debug("CDI-OSGi STOPPED");
     }
 }

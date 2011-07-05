@@ -43,7 +43,7 @@ public class ServicePublisher {
     private final Set<String> blackList;
 
     public ServicePublisher(Collection<String> classes, Bundle bundle, Instance<Object> instance, Set<String> blackList) {
-        logger.debug("Create a new ServicePublisher for bundle " + bundle.getSymbolicName());
+        logger.debug("Create a new ServicePublisher for bundle {}", bundle.getSymbolicName());
         this.classes = classes;
         this.bundle = bundle;
         this.instance = instance;
@@ -53,11 +53,11 @@ public class ServicePublisher {
     public void registerAndLaunchComponents() {
         Class<?> clazz;
         for (String className : classes) {
-            logger.debug("Scanning class " + className);
+            logger.debug("Scanning class {}", className);
             try {
                 clazz = bundle.loadClass(className);
             } catch (Exception e) {//inaccessible class
-                logger.warn("Class " + className + " is inaccessible");
+                logger.warn("Class {} is inaccessible", className);
                 continue;
             }
             //is an auto-publishable class?
@@ -71,8 +71,7 @@ public class ServicePublisher {
                     service = instance.get();
                     logger.debug("Service instance generated");
                 } catch (Throwable e) {
-                    logger.error("Unable to instantiate the service, CDI return this error: " + e.getMessage());
-                    logger.error(e.getCause().toString());
+                    logger.error("Unable to instantiate the service, CDI return this error: ", e);
                     throw new RuntimeException(e);
                 }
                 publish(clazz, service, qualifiers);
@@ -81,7 +80,7 @@ public class ServicePublisher {
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
-        logger.debug("Publishing a new service " + clazz.getSimpleName());
+        logger.debug("Publishing a new service {}", clazz.getSimpleName());
         ServiceRegistration registration = null;
         Publish publish = clazz.getAnnotation(Publish.class);
         Class[] contracts = publish.contracts();
@@ -159,5 +158,4 @@ public class ServicePublisher {
         }
         return qualifiers;
     }
-
 }

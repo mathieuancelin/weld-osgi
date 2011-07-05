@@ -105,7 +105,7 @@ public class CDIOSGiExtension implements Extension {
                     .getBundle().getBundleContext();
             activator = new ExtensionActivator();
             try {
-                logger.warn("Starting the extension assuming the bundle is " + bc.getBundle().getSymbolicName());
+                logger.warn("Starting the extension assuming the bundle is {}", bc.getBundle().getSymbolicName());
                 activator.start(bc);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -150,7 +150,7 @@ public class CDIOSGiExtension implements Extension {
             Type type =  iterator.next();
             if (!(type instanceof Class)) {
                 //TODO: need to handle Instance<Class>. This fails currently
-                logger.error("Unknown type:" + type);
+                logger.error("Unknown type: {}", type);
                 event.addDefinitionError(
                     new UnsupportedOperationException("Injection target type " + type + "not supported"));
                 break;
