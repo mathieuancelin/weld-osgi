@@ -46,6 +46,8 @@ public class MetaFilterTest {
         if (test != null) {
             PropertyService serv1 = test.getService();
             PropertyService serv2 = test.getService2();
+            Assert.assertNotNull(serv1.whoAmI());
+            Assert.assertNotNull(serv2.whoAmI());
             Assert.assertTrue(serv1.whoAmI().equals(serv2.whoAmI()));
         } else {
             Assert.fail("No test bean available");
