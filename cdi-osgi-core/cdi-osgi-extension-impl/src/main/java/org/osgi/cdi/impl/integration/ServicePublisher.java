@@ -51,6 +51,7 @@ public class ServicePublisher {
     }
 
     public void registerAndLaunchComponents() {
+        logger.info("Registering/Starting OSGi Service for bundle {}", bundle.getSymbolicName());
         Class<?> clazz;
         for (String className : classes) {
             logger.debug("Scanning class {}", className);
@@ -89,6 +90,7 @@ public class ServicePublisher {
             String[] names = new String[contracts.length];
             for(int i = 0;i < contracts.length;i++) {
                 names[i] = contracts[i].getName();
+                logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
             }
             registration = bundle.getBundleContext().registerService(names, service, properties);
         } else {
@@ -105,13 +107,16 @@ public class ServicePublisher {
                 String[] names = new String[contracts.length];
                 for(int i = 0;i < contracts.length;i++) {
                     names[i] = contracts[i].getName();
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
                 }
                 registration = bundle.getBundleContext().registerService(names, service, properties);
             } else {
                 Class superClass = clazz.getClass().getSuperclass();
                 if(superClass != null && superClass != Object.class) {// if there is a superclass
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), superClass.getName());
                     registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
                 } else {// publish directly with the implementation type
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), clazz.getName());
                     registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 }
             }

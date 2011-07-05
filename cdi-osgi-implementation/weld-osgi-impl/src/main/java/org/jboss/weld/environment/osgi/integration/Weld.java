@@ -58,7 +58,7 @@ public class Weld {
             if (beansXml == null) {
                 return started;
             }
-            System.out.println("Starting Weld container for bundle " + bundle.getSymbolicName());
+            LOGGER.info("Starting Weld container for bundle " + bundle.getSymbolicName());
             bootstrap = new WeldBootstrap();
             deployment = createDeployment(bootstrap);
             // Set up the container
@@ -91,7 +91,7 @@ public class Weld {
         if (started) {
             synchronized (this) {
                 if (!hasShutdownBeenCalled) {
-                    System.out.println("Stopping Weld container for bundle " + bundle.getSymbolicName());
+                    LOGGER.info("Stopping Weld container for bundle " + bundle.getSymbolicName());
                     hasShutdownBeenCalled = true;
                     try {
                         bootstrap.shutdown();
@@ -123,5 +123,4 @@ public class Weld {
     public Collection<String> getBeanClasses() {
         return beanClasses;
     }
-
 }
