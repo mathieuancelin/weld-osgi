@@ -1,7 +1,6 @@
 package org.osgi.cdi.test;
 
 import com.sample.osgi.bundle1.api.PropertyService;
-import com.sample.osgi.bundle1.api.TestPublished;
 import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.test.util.Environment;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 

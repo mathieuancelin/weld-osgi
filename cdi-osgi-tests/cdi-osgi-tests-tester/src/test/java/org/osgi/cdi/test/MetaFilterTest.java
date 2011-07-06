@@ -1,25 +1,18 @@
 package org.osgi.cdi.test;
 
-import com.sample.osgi.bundle1.api.*;
-import com.sample.osgi.bundle1.util.EventListener;
-import com.sample.osgi.bundle1.util.ServiceProvider;
+import com.sample.osgi.bundle1.api.PropertyService;
+import com.sample.osgi.bundle1.api.TestPublished;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.cdi.api.extension.Service;
-import org.osgi.cdi.api.integration.CDIContainer;
-import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.test.util.Environment;
-import org.osgi.framework.*;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import java.io.Serializable;
-import java.util.Collection;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
