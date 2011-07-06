@@ -22,6 +22,14 @@ public class CDIOSGIAnnotatedParameter<T> implements AnnotatedParameter<T> {
     public CDIOSGIAnnotatedParameter(AnnotatedParameter parameter) {
         this.parameter = parameter;
         filter = parameter.getAnnotation(Filter.class);
+        if (filter == null) {
+            for (Annotation annotation : parameter.getAnnotations()) {
+                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                    filter = (Filter) annotation.annotationType().getAnnotation(Filter.class);
+                    break;
+                }
+            }
+        }
         filter = FilterGenerator.makeFilter(filter,parameter.getAnnotations());
         annotations.add(filter);
         annotations.add(new AnnotationLiteral<OSGiService>() {});
@@ -59,7 +67,7 @@ public class CDIOSGIAnnotatedParameter<T> implements AnnotatedParameter<T> {
     public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
         for(Annotation annotation : annotations) {
             if(annotation.annotationType().equals(annotationType)) {
-                return (T)annotation;
+                return (T) annotation;
             }
         }
         return null;

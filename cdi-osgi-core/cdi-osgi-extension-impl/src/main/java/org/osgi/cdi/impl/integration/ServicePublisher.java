@@ -17,6 +17,8 @@ import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.impl.extension.services.RegistrationsHolderImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.Nonbinding;
@@ -24,7 +26,6 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes.
@@ -34,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class ServicePublisher {
 
-    private static Logger logger = Logger.getLogger("CDI-OSGi");
+    private static Logger logger = LoggerFactory.getLogger(ServicePublisher.class);
 
     private final Collection<String> classes;
     private final Bundle bundle;
@@ -42,7 +43,7 @@ public class ServicePublisher {
     private final Set<String> blackList;
 
     public ServicePublisher(Collection<String> classes, Bundle bundle, Instance<Object> instance, Set<String> blackList) {
-        logger.fine("Create a new ServicePublisher for bundle " + bundle.getSymbolicName());
+        logger.debug("Create a new ServicePublisher for bundle {}", bundle.getSymbolicName());
         this.classes = classes;
         this.bundle = bundle;
         this.instance = instance;
@@ -50,28 +51,28 @@ public class ServicePublisher {
     }
 
     public void registerAndLaunchComponents() {
+        logger.info("Registering/Starting OSGi Service for bundle {}", bundle.getSymbolicName());
         Class<?> clazz;
         for (String className : classes) {
-            logger.finest("Scanning class " + className);
+            logger.debug("Scanning class {}", className);
             try {
                 clazz = bundle.loadClass(className);
             } catch (Exception e) {//inaccessible class
-                logger.warning("Class " + className + " is inaccessible");
+                logger.warn("Class {} is inaccessible", className);
                 continue;
             }
             //is an auto-publishable class?
             if (clazz.isAnnotationPresent(Publish.class)) {
-                logger.finest("Found a new auto-publicated service");
+                logger.debug("Found a new auto-publicated service");
                 Object service = null;
                 InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                 List<Annotation> qualifiers = getQualifiers(clazz);
                 try {
                     Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                     service = instance.get();
-                    logger.finest("Service instance generated");
+                    logger.debug("Service instance generated");
                 } catch (Throwable e) {
-                    logger.severe("Unable to instantiate the service, CDI return this error: " + e.getMessage());
-                    logger.severe(e.getCause().toString());
+                    logger.error("Unable to instantiate the service, CDI return this error: ", e);
                     throw new RuntimeException(e);
                 }
                 publish(clazz, service, qualifiers);
@@ -80,7 +81,7 @@ public class ServicePublisher {
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
-        logger.fine("Publishing a new service " + clazz.getSimpleName());
+        logger.debug("Publishing a new service {}", clazz.getSimpleName());
         ServiceRegistration registration = null;
         Publish publish = clazz.getAnnotation(Publish.class);
         Class[] contracts = publish.contracts();
@@ -89,6 +90,7 @@ public class ServicePublisher {
             String[] names = new String[contracts.length];
             for(int i = 0;i < contracts.length;i++) {
                 names[i] = contracts[i].getName();
+                logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
             }
             registration = bundle.getBundleContext().registerService(names, service, properties);
         } else {
@@ -105,13 +107,16 @@ public class ServicePublisher {
                 String[] names = new String[contracts.length];
                 for(int i = 0;i < contracts.length;i++) {
                     names[i] = contracts[i].getName();
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
                 }
                 registration = bundle.getBundleContext().registerService(names, service, properties);
             } else {
                 Class superClass = clazz.getClass().getSuperclass();
                 if(superClass != null && superClass != Object.class) {// if there is a superclass
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), superClass.getName());
                     registration = bundle.getBundleContext().registerService(superClass.getName(), service, properties);
                 } else {// publish directly with the implementation type
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), clazz.getName());
                     registration = bundle.getBundleContext().registerService(clazz.getName(), service, properties);
                 }
             }
@@ -158,5 +163,4 @@ public class ServicePublisher {
         }
         return qualifiers;
     }
-
 }

@@ -23,6 +23,14 @@ public class CDIOSGiAnnotatedField<T> implements AnnotatedField<T> {
     public CDIOSGiAnnotatedField(final AnnotatedField<? super T> field) {
         this.field = field;
         filter = field.getAnnotation(Filter.class);
+        if (filter == null) {
+            for (Annotation annotation : field.getAnnotations()) {
+                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                    filter = (Filter) annotation.annotationType().getAnnotation(Filter.class);
+                    break;
+                }
+            }
+        }
         filter = FilterGenerator.makeFilter(filter,field.getAnnotations());
         annotations.add(filter);
         annotations.add(new AnnotationLiteral<OSGiService>() {});
