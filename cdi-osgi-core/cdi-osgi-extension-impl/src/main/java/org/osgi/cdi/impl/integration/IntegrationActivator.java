@@ -122,10 +122,17 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                     startCDIOSGi();
                 }
             } else if (ServiceEvent.UNREGISTERING == event.getType()) {
-                if (started.get() && (refs == null || refs.length == 0)) {
+                if (started.get() && (event.getServiceReference().compareTo(factoryRef) == 0)) {
                     logger.warn("CDI container factory service unregistered");
-                    factoryRef = null;
-                    stopCDIOSGi();
+                    if (refs == null || refs.length == 0) {
+                        factoryRef = null;
+                        stopCDIOSGi();
+                    } else { //switch to the next factory service
+                        logger.info("Switching to the next factory service");
+                        stopCDIOSGi();
+                        factoryRef = refs[0];
+                        startCDIOSGi();
+                    }
                 }
             }
         } catch (Exception ex) {

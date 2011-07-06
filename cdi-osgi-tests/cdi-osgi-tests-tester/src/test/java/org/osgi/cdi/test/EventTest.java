@@ -1,8 +1,6 @@
 package org.osgi.cdi.test;
 
 import com.sample.osgi.bundle1.api.MovingService;
-import com.sample.osgi.bundle1.api.PropertyService;
-import com.sample.osgi.bundle1.api.TestPublished;
 import com.sample.osgi.bundle1.util.EventListener;
 import org.junit.Assert;
 import org.junit.Test;

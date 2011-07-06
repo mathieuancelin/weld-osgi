@@ -1,15 +1,11 @@
 package org.osgi.cdi.test;
 
-import com.sample.osgi.bundle1.api.*;
-import com.sample.osgi.bundle1.util.EventListener;
-import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.integration.CDIContainer;
 import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.test.util.Environment;
@@ -18,7 +14,6 @@ import org.osgi.framework.*;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
-import java.io.Serializable;
 import java.util.Collection;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
