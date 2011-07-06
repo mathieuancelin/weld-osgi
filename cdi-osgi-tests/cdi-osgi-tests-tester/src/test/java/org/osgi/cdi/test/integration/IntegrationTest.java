@@ -1,6 +1,7 @@
-package org.osgi.cdi.test;
+package org.osgi.cdi.test.integration;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
 @RunWith(JUnit4TestRunner.class)
-public class InfrastrutureTest {
+public class IntegrationTest {
 
     @Configuration
     public static Option[] configure() {
@@ -27,43 +28,7 @@ public class InfrastrutureTest {
     }
 
     @Test
-    public void launchTest(BundleContext context) throws InterruptedException, BundleException {
-        Environment.waitForEnvironment(context);
-
-        Bundle extAPI = null, intAPI = null, extImpl = null, intImpl = null, mand = null;
-        for(Bundle b : context.getBundles()) {
-            if(b.getSymbolicName().equals("org.osgi.cdi.osgi-extension-api")) {
-                extAPI=b;
-            } else if(b.getSymbolicName().equals("org.osgi.cdi.osgi-integration-api")) {
-                intAPI=b;
-            } else if(b.getSymbolicName().equals("org.osgi.cdi.osgi-extension-impl")) {
-                extImpl=b;
-            } else if(b.getSymbolicName().equals("org.jboss.weld.osgi.weld-osgi-impl")) {
-                intImpl=b;
-            } else if(b.getSymbolicName().equals("org.osgi.cdi.osgi-mandatory")) {
-                mand=b;
-            }
-        }
-        Assert.assertNotNull("Extension API bundle is not present",extAPI);
-        Assert.assertNotNull("Integration API bundle is not present",intAPI);
-        Assert.assertNotNull("Extension Impl bundle is not present",extImpl);
-        Assert.assertNotNull("Integration Impl bundle is not present",intImpl);
-        Assert.assertNotNull("Mandatory bundle is not present",mand);
-
-        Assert.assertEquals("Extension API bundle is not ACTIVE",Bundle.ACTIVE,extAPI.getState());
-        Assert.assertEquals("Integration API bundle is not ACTIVE",Bundle.ACTIVE,intAPI.getState());
-        Assert.assertEquals("Extension Impl bundle is not ACTIVE",Bundle.ACTIVE,extImpl.getState());
-        Assert.assertEquals("Integration Impl bundle is not ACTIVE",Bundle.ACTIVE,intImpl.getState());
-        Assert.assertEquals("Mandatory bundle is not ACTIVE",Bundle.ACTIVE,mand.getState());
-
-        ServiceReference factoryReference = context.getServiceReference(CDIContainerFactory.class.getName());
-        Assert.assertNotNull("CDI container factory service is not available",factoryReference);
-        CDIContainerFactory factory = (CDIContainerFactory) context.getService(factoryReference);
-        Assert.assertNotNull("CDI container factory is not available",factory);
-
-    }
-
-    @Test
+    //@Ignore
     public void CDIContainerFactoryTest(BundleContext context) throws InterruptedException {
         Environment.waitForEnvironment(context);
 
@@ -98,6 +63,7 @@ public class InfrastrutureTest {
     }
 
     @Test
+    //@Ignore
     public void CDIContainerTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
