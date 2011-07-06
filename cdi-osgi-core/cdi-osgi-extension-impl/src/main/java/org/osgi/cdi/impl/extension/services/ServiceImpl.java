@@ -5,6 +5,7 @@ import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.FilterGenerator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
@@ -57,17 +58,22 @@ public class ServiceImpl<T> implements Service<T> {
         if (filter != null && !filter.value().equals("")) {
             filterString = filter.value();
         }
-        ServiceReference[] refs = registry.getServiceReferences(serviceName, filterString);
-        if (refs != null) {
-            for (ServiceReference ref : refs) {
-                if (!serviceClass.isInterface()) {
-                    services.add((T) registry.getService(ref));
-                } else {
-                    services.add((T) Proxy.newProxyInstance(
-                            getClass().getClassLoader(),
-                            new Class[]{(Class) serviceClass},
-                            new ServiceReferenceHandler(ref, registry)));
-                }
+        ServiceTracker tracker = new ServiceTracker(registry, registry.createFilter(
+                "(&(objectClass=" + serviceName + ")" + filterString + ")"), null);
+        tracker.open();
+//        ServiceReference[] refs = registry.getServiceReferences(serviceName, filterString);
+        Object[] instances = tracker.getServices();
+        if (instances != null) {
+            for (Object ref : instances) {
+                services.add((T) ref);
+//                if (!serviceClass.isInterface()) {
+//                    services.add((T) registry.getService(ref));
+//                } else {
+//                    services.add((T) Proxy.newProxyInstance(
+//                            getClass().getClassLoader(),
+//                            new Class[]{(Class) serviceClass},
+//                            new ServiceReferenceHandler(ref, registry)));
+//                }
             }
         }
         service = services.size() > 0 ? services.get(0) : null;
