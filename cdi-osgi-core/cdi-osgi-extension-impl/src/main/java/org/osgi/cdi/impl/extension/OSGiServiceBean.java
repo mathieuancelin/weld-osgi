@@ -16,6 +16,8 @@ import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.services.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -29,9 +31,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
@@ -39,6 +39,9 @@ import java.util.Set;
  */
 public class OSGiServiceBean implements Bean {
 
+    private final static Logger logger = LoggerFactory.getLogger(OSGiServiceBean.class);
+    private final Map<Object, DynamicServiceHandler> handlers
+            = new HashMap<Object, DynamicServiceHandler>();
     private final InjectionPoint injectionPoint;
     private Filter filter;
     private Set<Annotation> qualifiers;
@@ -106,10 +109,13 @@ public class OSGiServiceBean implements Bean {
     public Object create(CreationalContext ctx) {
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
-            return Proxy.newProxyInstance(
+            DynamicServiceHandler handler = new DynamicServiceHandler(bundle, ((Class)type).getName(), filter);
+            Object proxy = Proxy.newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[]{getBeanClass()},
-                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter));
+                    handler);
+            handlers.put(proxy, handler);
+            return proxy;
         } catch (Exception e) {
             throw new CreationException(e);
         }
@@ -118,6 +124,13 @@ public class OSGiServiceBean implements Bean {
     @Override
     public void destroy(Object instance, CreationalContext creationalContext) {
         // Nothing to do, services are unget after each call.
+        DynamicServiceHandler handler = handlers.get(instance);
+        if (handler != null) {
+            handler.closeHandler();
+            handlers.remove(instance);
+        } else {
+            logger.info("Can't close tracker for bean {}", this.toString());
+        }
     }
 
     @Override

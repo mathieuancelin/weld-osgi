@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
  */
 public class ServiceReferenceHandler implements InvocationHandler {
 
-    // TODO : don't hold reference
     private final ServiceReference ref;
     private final BundleContext registry;
 
