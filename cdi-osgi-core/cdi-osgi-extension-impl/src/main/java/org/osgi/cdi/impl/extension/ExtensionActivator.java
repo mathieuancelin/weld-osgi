@@ -18,6 +18,8 @@ import org.osgi.cdi.api.extension.events.AbstractServiceEvent;
 import org.osgi.cdi.api.extension.events.BundleEvents;
 import org.osgi.cdi.api.extension.events.ServiceEvents;
 import org.osgi.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -40,10 +42,13 @@ import java.util.Set;
  */
 public class ExtensionActivator implements BundleActivator, BundleListener, ServiceListener {
 
+    private static Logger logger = LoggerFactory.getLogger(ExtensionActivator.class);
+
     private BundleContext context;
 
     @Override
     public void start(BundleContext context) throws Exception {
+        logger.debug("Extension part starts");
         this.context = context;
         context.addBundleListener(this);
         context.addServiceListener(this);
@@ -51,6 +56,7 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        logger.debug("Extension part stops");
     }
 
     @Override
@@ -62,33 +68,43 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
             AbstractBundleEvent bundleEvent = null;
             switch (event.getType()) {
                 case BundleEvent.INSTALLED:
+                    logger.debug("Receiving a new OSGi bundle event INSTALLED");
                     bundleEvent = new BundleEvents.BundleInstalled(bundle);
                     break;
                 case BundleEvent.LAZY_ACTIVATION:
+                    logger.debug("Receiving a new OSGi bundle event LAZY_ACTIVATION");
                     bundleEvent = new BundleEvents.BundleLazyActivation(bundle);
                     break;
                 case BundleEvent.RESOLVED:
+                    logger.debug("Receiving a new OSGi bundle event RESOLVED");
                     bundleEvent = new BundleEvents.BundleResolved(bundle);
                     break;
                 case BundleEvent.STARTED:
+                    logger.debug("Receiving a new OSGi bundle event STARTED");
                     bundleEvent = new BundleEvents.BundleStarted(bundle);
                     break;
                 case BundleEvent.STARTING:
+                    logger.debug("Receiving a new OSGi bundle event STARTING");
                     bundleEvent = new BundleEvents.BundleStarting(bundle);
                     break;
                 case BundleEvent.STOPPED:
+                    logger.debug("Receiving a new OSGi bundle event STOPPED");
                     bundleEvent = new BundleEvents.BundleStopped(bundle);
                     break;
                 case BundleEvent.STOPPING:
+                    logger.debug("Receiving a new OSGi bundle event STOPPING");
                     bundleEvent = new BundleEvents.BundleStopping(bundle);
                     break;
                 case BundleEvent.UNINSTALLED:
+                    logger.debug("Receiving a new OSGi bundle event UNINSTALLED");
                     bundleEvent = new BundleEvents.BundleUninstalled(bundle);
                     break;
                 case BundleEvent.UNRESOLVED:
+                    logger.debug("Receiving a new OSGi bundle event UNRESOLVED");
                     bundleEvent = new BundleEvents.BundleUnresolved(bundle);
                     break;
                 case BundleEvent.UPDATED:
+                    logger.debug("Receiving a new OSGi bundle event UPDATED");
                     bundleEvent = new BundleEvents.BundleUpdated(bundle);
                     break;
             }
@@ -122,16 +138,16 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
             AbstractServiceEvent serviceEvent = null;
             switch (event.getType()) {
                 case ServiceEvent.MODIFIED:
-                    serviceEvent =
-                            new ServiceEvents.ServiceChanged(ref, context);
+                    logger.debug("Receiving a new OSGi service event MODIFIED");
+                    serviceEvent = new ServiceEvents.ServiceChanged(ref, context);
                     break;
                 case ServiceEvent.REGISTERED:
-                    serviceEvent =
-                            new ServiceEvents.ServiceArrival(ref, context);
+                    logger.debug("Receiving a new OSGi service event REGISTERED");
+                    serviceEvent = new ServiceEvents.ServiceArrival(ref, context);
                     break;
                 case ServiceEvent.UNREGISTERING:
-                    serviceEvent =
-                            new ServiceEvents.ServiceDeparture(ref, context);
+                    logger.debug("Receiving a new OSGi service event UNREGISTERING");
+                    serviceEvent = new ServiceEvents.ServiceDeparture(ref, context);
                     break;
             }
             for (ServiceReference reference : references) { //broadcast event

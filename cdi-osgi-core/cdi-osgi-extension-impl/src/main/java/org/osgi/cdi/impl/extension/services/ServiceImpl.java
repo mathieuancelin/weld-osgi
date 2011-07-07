@@ -1,22 +1,37 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.osgi.cdi.impl.extension.services;
 
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.FilterGenerator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ * Implementation of {@link Service}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class ServiceImpl<T> implements Service<T> {
+
+    private static Logger logger = LoggerFactory.getLogger(ServiceImpl.class);
 
     private final Class serviceClass;
     private final BundleContext registry;
@@ -27,6 +42,7 @@ public class ServiceImpl<T> implements Service<T> {
     private Filter filter;
 
     public ServiceImpl(Type t, BundleContext registry) {
+        logger.debug("Creation of a new service provider for bundle {} as {} with no filter", registry.getBundle(), t);
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         this.registry = registry;
@@ -34,6 +50,7 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     public ServiceImpl(Type t, BundleContext registry, Filter filter) {
+        logger.debug("Creation of a new service provider for bundle {} as {} with filter {}", new Object[] {registry.getBundle(), t, filter});
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         this.registry = registry;
@@ -53,6 +70,7 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     private void populateServices() throws Exception {
+        logger.trace("Scanning matching service for service provider {}", this);
         services.clear();
         String filterString = null;
         if (filter != null && !filter.value().equals("")) {
@@ -125,5 +143,12 @@ public class ServiceImpl<T> implements Service<T> {
             services = Collections.emptyList();
         }
         return services.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceImpl{ Service class " +
+               serviceName + " with filter " +
+               filter.value() + '}';
     }
 }

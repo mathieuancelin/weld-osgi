@@ -334,14 +334,11 @@ public class MyServiceQualifiedImpl implements MyService {
                     <para>Processes annotated types</para>
                 </listitem>
                 <listitem>
-                    <para>Wraps every  <code>OSGiService</code> annotated or
-                            <code>Service&lt;T></code> typed injection point</para>
+                    <para>Wraps every <code>OSGiService</code> annotated injection point</para>
                 </listitem>
             </itemizedlist></para>
         <para><code>OSGiService</code> annotated injection points are wrapped
             as:<programlisting>@Inject @OSGiService @Filter(<emphasis role="italic">Calculated_filter</emphasis>) <emphasis role="italic">Type</emphasis> <emphasis role="italic">var_name</emphasis>;</programlisting></para>
-        <para><code>Service&lt;T></code> typed injection points are wrapped
-            as:<programlisting>@Inject @Filter(<emphasis role="italic">Calculated_filter</emphasis>) Service&lt;<emphasis role="italic">Type</emphasis>> <emphasis role="italic">var_name</emphasis>;</programlisting></para>
         <para>The global OSGi LDAP filter of the final <code>Filter</code> qualifier is calculated from:<itemizedlist>
                 <listitem>
                     <para>The original set of qualifiers (except <code>OSGiService</code> and
@@ -366,10 +363,6 @@ public class MyServiceQualifiedImpl implements MyService {
                 <listitem>
                     <para><programlisting>@Inject @OSGiService <emphasis role="bold">@AnyQualifier</emphasis> MyService qualifiedService;</programlisting>will
                         become:<programlisting>@Inject @OSGiService <emphasis role="bold">@Filter("(anyqualifier=*)")</emphasis> MyService qualifiedService;</programlisting></para>
-                </listitem>
-                <listitem>
-                    <para><programlisting>@Inject <emphasis role="bold">@AnyQualifier</emphasis> Service&lt;MyService> qualifiedServices;</programlisting>will
-                        become:<programlisting>@Inject <emphasis role="bold">@Filter("(anyqualifier=*)")</emphasis> Service&lt;MyService> qualifiedService;</programlisting></para>
                 </listitem>
                 <listitem>
                     <para><programlisting>@Inject <emphasis role="bold">@OSGiService</emphasis> @AnyQualifier <emphasis role="bold">Service&lt;</emphasis>MyService<emphasis role="bold">></emphasis> qualifiedServices;</programlisting>will

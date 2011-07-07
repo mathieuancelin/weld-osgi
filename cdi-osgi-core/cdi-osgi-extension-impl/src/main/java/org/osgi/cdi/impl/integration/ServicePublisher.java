@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes.
+ * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes within a bean bundle.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
@@ -54,7 +54,7 @@ public class ServicePublisher {
         logger.info("Registering/Starting OSGi Service for bundle {}", bundle.getSymbolicName());
         Class<?> clazz;
         for (String className : classes) {
-            logger.debug("Scanning class {}", className);
+            logger.trace("Scanning class {}", className);
             try {
                 clazz = bundle.loadClass(className);
             } catch (Exception e) {//inaccessible class
@@ -63,14 +63,14 @@ public class ServicePublisher {
             }
             //is an auto-publishable class?
             if (clazz.isAnnotationPresent(Publish.class)) {
-                logger.debug("Found a new auto-publicated service");
+                logger.debug("Found a new auto-published service class {}", clazz);
                 Object service = null;
                 InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
                 List<Annotation> qualifiers = getQualifiers(clazz);
                 try {
                     Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
                     service = instance.get();
-                    logger.debug("Service instance generated");
+                    logger.trace("Service instance generated");
                 } catch (Throwable e) {
                     logger.error("Unable to instantiate the service for class {}, CDI return this error: {}", clazz, e);
                     throw new RuntimeException(e);
@@ -81,7 +81,7 @@ public class ServicePublisher {
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {
-        logger.debug("Publishing a new service {}", clazz.getSimpleName());
+        logger.debug("Publishing a new service implementation {}", clazz.getSimpleName());
         ServiceRegistration registration = null;
         Publish publish = clazz.getAnnotation(Publish.class);
         Class[] contracts = publish.contracts();

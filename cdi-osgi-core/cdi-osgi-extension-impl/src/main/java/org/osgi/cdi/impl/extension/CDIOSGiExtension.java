@@ -9,7 +9,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.Service;
@@ -18,6 +17,10 @@ import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.api.extension.annotation.Required;
 import org.osgi.cdi.impl.extension.services.*;
 import org.osgi.cdi.impl.integration.InstanceHolder;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -26,15 +29,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Weld OSGi extension.
  *
- * Contains copy/paste parts from the GlasFish OSGI-CDI extension.
+ * Contains copy/paste parts from the GlassFish OSGI-CDI extension.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class CDIOSGiExtension implements Extension {
 
-    private Logger logger = LoggerFactory.getLogger(CDIOSGiExtension.class);
+    private static Logger logger = LoggerFactory.getLogger(CDIOSGiExtension.class);
 
     // hack for weld integration
     public static ThreadLocal<Long> currentBundle = new ThreadLocal<Long>();

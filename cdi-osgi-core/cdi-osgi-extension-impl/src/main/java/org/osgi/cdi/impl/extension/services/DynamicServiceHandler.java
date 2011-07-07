@@ -1,3 +1,14 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.osgi.cdi.impl.extension.services;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
@@ -5,15 +16,21 @@ import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
+ * Handler for OSGi dynamic service in use by {@link org.osgi.cdi.impl.extension.OSGiServiceBean}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class DynamicServiceHandler implements InvocationHandler {
+
+    private static Logger logger = LoggerFactory.getLogger(DynamicServiceHandler.class);
 
     private static final long SERVICE_TIMEOUT = 1000;
     private final Bundle bundle;
@@ -22,6 +39,7 @@ public class DynamicServiceHandler implements InvocationHandler {
     private final ServiceTracker tracker;
 
     public DynamicServiceHandler(Bundle bundle, String name, Filter filter) {
+        logger.debug("Creation of a new DynamicServiceHandler for bundle {} as a {} with filter {}", new Object[] {bundle, name, filter.value()});
         this.bundle = bundle;
         this.name = name;
         this.filter = filter;
@@ -36,9 +54,9 @@ public class DynamicServiceHandler implements InvocationHandler {
             } else {
                 reference = bundle.getBundleContext().getServiceReference(name);
             }
-            this.tracker = new ServiceTracker(bundle.getBundleContext(),
-                    reference, null);
+            this.tracker = new ServiceTracker(bundle.getBundleContext(), reference, null);
         } catch (Exception e) {
+            logger.error("Unable to create the DynamicServiceHandler.",e);
             throw new RuntimeException(e);
         }
         this.tracker.open();
@@ -50,11 +68,13 @@ public class DynamicServiceHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        logger.trace("Call on the DynamicServiceHandler {} for method {}", this, method);
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         Object instanceToUse = this.tracker.waitForService(SERVICE_TIMEOUT);
         try {
             return method.invoke(instanceToUse, args);
         } catch(Throwable t) {
+            logger.error("Unable to find a matching service.", t);
             throw new RuntimeException(t);
         } finally {
             CDIOSGiExtension.currentBundle.remove();
