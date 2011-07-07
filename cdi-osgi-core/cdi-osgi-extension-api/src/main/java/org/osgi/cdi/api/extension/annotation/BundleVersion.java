@@ -17,6 +17,7 @@
 
 package org.osgi.cdi.api.extension.annotation;
 
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -52,5 +53,5 @@ public @interface BundleVersion {
      *
      * @return the bundle version.
      */
-    String value();
+    @Nonbinding String value();
 }

@@ -6,9 +6,7 @@ import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.api.extension.annotation.Publish;
-import org.osgi.cdi.api.extension.events.BundleContainerEvents;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @Publish

@@ -1,4 +1,4 @@
-package org.osgi.cdi.test;
+package org.osgi.cdi.test.event;
 
 import com.sample.osgi.bundle1.api.MovingService;
 import com.sample.osgi.bundle1.util.EventListener;
@@ -29,6 +29,7 @@ public class EventTest {
     }
 
     @Test
+    //@Ignore
     public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 

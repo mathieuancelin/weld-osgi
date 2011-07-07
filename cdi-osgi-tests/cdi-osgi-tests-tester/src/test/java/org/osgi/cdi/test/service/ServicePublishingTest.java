@@ -1,13 +1,13 @@
-package org.osgi.cdi.test;
+package org.osgi.cdi.test.service;
 
 import com.sample.osgi.bundle1.api.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.cdi.api.integration.CDIContainerFactory;
 import org.osgi.cdi.test.util.Environment;
 import org.osgi.framework.*;
 
@@ -30,14 +30,12 @@ public class ServicePublishingTest {
         );
     }
 
-@Test
+    @Test
+    //@Ignore
     public void servicePublishingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
         Bundle bundle1 = null, bundle2 = null, bundle3 = null;
-
-        ServiceReference factoryReference = context.getServiceReference(CDIContainerFactory.class.getName());
-        CDIContainerFactory factory = (CDIContainerFactory) context.getService(factoryReference);
 
         for(Bundle b : context.getBundles()) {
             Assert.assertEquals("Bundle " + b.getSymbolicName() + " is not ACTIVE but " + Environment.state(b.getState()), Bundle.ACTIVE, b.getState());

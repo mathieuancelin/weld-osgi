@@ -1,6 +1,7 @@
-package org.osgi.cdi.test;
+package org.osgi.cdi.test.framework;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -34,6 +35,7 @@ public class UsageTest {
     }
 
     @Test
+    //@Ignore
     public void launchTest(BundleContext context) throws InterruptedException, BundleException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
         

@@ -1,8 +1,9 @@
-package org.osgi.cdi.test;
+package org.osgi.cdi.test.service;
 
 import com.sample.osgi.bundle1.api.PropertyService;
 import com.sample.osgi.bundle1.api.TestPublished;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -32,6 +33,7 @@ public class MetaFilterTest {
     }
 
     @Test
+    //@Ignore
     public void metaFilterTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
         ServiceReference ref = context.getServiceReference(TestPublished.class.getName());
