@@ -13,6 +13,7 @@
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
+import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.impl.extension.services.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -46,12 +47,19 @@ public class OSGiServiceBean implements Bean {
     private Filter filter;
     private Set<Annotation> qualifiers;
     private Type type;
+    private OSGiService annotation;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
         filter = FilterGenerator.makeFilter(injectionPoint);
+        for (Annotation anno : injectionPoint.getQualifiers()) {
+            if (anno.annotationType().equals(OSGiService.class)) {
+                annotation = (OSGiService) anno;
+                break;
+            }
+        }
     }
 
     @Override
@@ -109,7 +117,8 @@ public class OSGiServiceBean implements Bean {
     public Object create(CreationalContext ctx) {
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
-            DynamicServiceHandler handler = new DynamicServiceHandler(bundle, ((Class)type).getName(), filter);
+            DynamicServiceHandler handler =
+                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter, annotation);
             Object proxy = Proxy.newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[]{getBeanClass()},

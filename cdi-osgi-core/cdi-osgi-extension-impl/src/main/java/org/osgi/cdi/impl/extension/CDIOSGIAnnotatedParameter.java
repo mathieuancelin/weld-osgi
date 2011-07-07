@@ -32,7 +32,8 @@ public class CDIOSGIAnnotatedParameter<T> implements AnnotatedParameter<T> {
         }
         filter = FilterGenerator.makeFilter(filter,parameter.getAnnotations());
         annotations.add(filter);
-        annotations.add(new AnnotationLiteral<OSGiService>() {});
+        //annotations.add(new AnnotationLiteral<OSGiService>() {});
+        annotations.add(new OSGiServiceQualifier(parameter.getAnnotation(OSGiService.class).value()));
         if(parameter.getAnnotation(Required.class) != null) {
             annotations.add(new AnnotationLiteral<Required>() {});
         }
