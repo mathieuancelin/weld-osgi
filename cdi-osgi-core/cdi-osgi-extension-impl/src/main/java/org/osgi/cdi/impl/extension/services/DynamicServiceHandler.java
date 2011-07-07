@@ -28,22 +28,14 @@ public class DynamicServiceHandler implements InvocationHandler {
         this.filter = filter;
         timeout = anno.value();
         try {
-//            ServiceReference reference = null;
             if (filter != null && filter.value() != null && filter.value().length() > 0) {
-//                ServiceReference[] refs =
-//                            bundle.getBundleContext().getServiceReferences(name, filter.value());
-//                if (refs != null && refs.length > 0) {
-//                    reference = refs[0];
-//                }
                 this.tracker = new ServiceTracker(bundle.getBundleContext(),
                     bundle.getBundleContext().createFilter(
                         "(&(objectClass=" + name + ")" + filter.value() + ")"),
                     null);
             } else {
-//                reference = bundle.getBundleContext().getServiceReference(name);
                 this.tracker = new ServiceTracker(bundle.getBundleContext(), name, null);
             }
-//            this.tracker = new ServiceTracker(bundle.getBundleContext(), reference, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
