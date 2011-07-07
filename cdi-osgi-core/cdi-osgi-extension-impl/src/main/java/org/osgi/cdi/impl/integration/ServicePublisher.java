@@ -151,6 +151,9 @@ public class ServicePublisher {
                 properties.setProperty(property.name(), property.value());
             }
         }
+        if (publish.rank() != 0) {
+            properties.setProperty("service.rank", publish.rank() + "");
+        }
         return properties;
     }
 

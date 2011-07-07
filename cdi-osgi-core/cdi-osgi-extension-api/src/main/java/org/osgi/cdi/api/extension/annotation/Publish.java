@@ -69,4 +69,11 @@ public @interface Publish {
      */
     public Property[] properties() default {};
 
+    /**
+     * The rank of the service to find the best available service on lookups.
+     *
+     * @return the rank of the service. Default is 0.
+     */
+    public int rank() default 0;
+
 }
