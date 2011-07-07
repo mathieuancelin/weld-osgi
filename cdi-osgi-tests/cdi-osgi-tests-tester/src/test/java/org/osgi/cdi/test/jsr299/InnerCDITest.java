@@ -1,5 +1,9 @@
 package org.osgi.cdi.test.jsr299;
 
+import org.junit.Test;
+
 public class InnerCDITest {
-    //TODO
+
+    @Test
+    public void dummyTest() {}
 }
