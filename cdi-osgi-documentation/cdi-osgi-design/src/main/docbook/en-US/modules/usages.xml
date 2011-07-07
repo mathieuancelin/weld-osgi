@@ -525,11 +525,6 @@ public class MyServiceImpl implements MyService {
                         <para>A specific current bundle resource
                             file<programlisting>@Inject @BundleDataFile("test.txt") File file;</programlisting></para>
                     </listitem>
-                    <listitem>
-                        <para>The same object of a specified bundle by symbolic name and (optional)
-                            version<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;
-@Inject @BundleName("com.sample.gui") bundle;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
-                    </listitem>
                 </itemizedlist></para>
             <para>It is possible to precise an external bundle by bundle symbolic name and
                 (optional)
