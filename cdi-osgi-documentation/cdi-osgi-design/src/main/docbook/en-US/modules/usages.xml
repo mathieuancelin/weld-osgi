@@ -65,8 +65,9 @@
     <section>
         <title>OSGi service auto-publication with <code>Publish</code> annotation </title>
         <para>Annotate a CDI bean class with a <code>Publish</code> annotation makes CDI-OSGi
-            register this bean as a OSGi service. Then the service is accessible through CDI-OSGi
-            service injection and OSGi classic mechanisms.</para>
+            register this bean as a OSGi service. </para>
+        <para>Such a service is accessible through CDI-OSGi service injection and OSGi classic
+            mechanisms.</para>
         <para>Automatically publish a new service implementation:
             <programlisting>@Publish
 public class MyServiceImpl implements MyService {
@@ -158,6 +159,14 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
             set.</para>
         <para>Service provider allows to instantiate the first service implementation matching the
             (possibly) over-specified injection point.</para>
+        <para>Service implementation are search into the OSGi service registry, it may be:<itemizedlist>
+                <listitem>
+                    <para>An CDI-OSGi auto-published service</para>
+                </listitem>
+                <listitem>
+                    <para>An regular OSGi service</para>
+                </listitem>
+            </itemizedlist></para>
     </section>
     <section>
         <title>Clearly specify a service implementation</title>
@@ -225,6 +234,20 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
             </itemizedlist>
             <para>It is discourage to use the <code>Filter</code> qualifier on a bean that might be
                 use as a regular CDI bean.</para>
+        </section>
+        <section>
+            <title>Filter stereotype</title>
+            <para>An annotation annoted with a <code>Filter</code> qualifier is considered similar
+                to the <code>Filter</code> qualifier alone.</para>
+            <para>Only one <code>Filter</code> may be taken into account to auto-published services
+                and service injection points, priority to the actual <code>Filter</code>
+                qualifier.</para>
+            <para>Declaring a filter
+                stereotype:<programlisting>@Filter("Name.value=1")
+public @Interface Name1 {
+}</programlisting><programlisting>@Inject @Name1 Service&lt;MyService> named1Services;</programlisting>is
+                similar
+                to:<programlisting>@Inject @Filter("Name.value=1") Service&lt;MyService> named1Services;</programlisting></para>
         </section>
         <section>
             <title>Final LDAP filter</title>
@@ -501,11 +524,6 @@ public class MyServiceImpl implements MyService {
                     <listitem>
                         <para>A specific current bundle resource
                             file<programlisting>@Inject @BundleDataFile("test.txt") File file;</programlisting></para>
-                    </listitem>
-                    <listitem>
-                        <para>The same object of a specified bundle by symbolic name and (optional)
-                            version<programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") bundle;
-@Inject @BundleName("com.sample.gui") bundle;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeaders Map&lt;String,String>metadata;</programlisting><programlisting>@Inject @BundleName("com.sample.gui") @BundleVersion("4.2.1") @BundleHeader("Bundle-SymbolicName") String symbolicName;</programlisting></para>
                     </listitem>
                 </itemizedlist></para>
             <para>It is possible to precise an external bundle by bundle symbolic name and

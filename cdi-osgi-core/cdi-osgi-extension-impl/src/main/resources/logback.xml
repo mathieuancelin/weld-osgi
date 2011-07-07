@@ -2,7 +2,7 @@
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>info</level>
+            <level>trace</level>
         </filter>
         <encoder>
             <pattern>
@@ -15,7 +15,7 @@
         <file>cdi-osgi.log</file>
         <append>false</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>debug</level>
+            <level>trace</level>
         </filter>
         <encoder>
             <pattern>

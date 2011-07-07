@@ -72,7 +72,7 @@ public class ServicePublisher {
                     service = instance.get();
                     logger.debug("Service instance generated");
                 } catch (Throwable e) {
-                    logger.error("Unable to instantiate the service, CDI return this error: ", e);
+                    logger.error("Unable to instantiate the service for class {}, CDI return this error: {}", clazz, e);
                     throw new RuntimeException(e);
                 }
                 publish(clazz, service, qualifiers);

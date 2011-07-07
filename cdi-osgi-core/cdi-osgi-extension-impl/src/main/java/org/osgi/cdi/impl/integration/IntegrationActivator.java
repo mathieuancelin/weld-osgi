@@ -125,6 +125,7 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 if (started.get() && (event.getServiceReference().compareTo(factoryRef) == 0)) {
                     logger.warn("CDI container factory service unregistered");
                     if (refs == null || refs.length == 0) {
+                        logger.info("CDI container factory service found");
                         factoryRef = null;
                         stopCDIOSGi();
                     } else { //switch to the next factory service
