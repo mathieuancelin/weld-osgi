@@ -219,14 +219,21 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
                         property</para>
                 </listitem>
                 <listitem>
+                    <para><code>Default</code> qualifier will not generate any service
+                        property</para>
+                </listitem>
+                <listitem>
+                    <para><code>Any</code> qualifier will not generate any service property</para>
+                </listitem>
+                <listitem>
                     <para><code>Filter</code> qualifier undergoes a special processing: <itemizedlist>
                             <listitem>
                                 <para>Its value element value is reused as it is as a supposedly
                                     valid OSGi service LDAP filter</para>
                             </listitem>
                             <listitem>
-                                <para>Its each of the string of its properties element (an array of
-                                    string)  is reused as it is as a supposedly valid OSGi service
+                                <para>Every string of its properties element (an array of string) is
+                                    reused as it is as a supposedly valid OSGi service
                                     property</para>
                             </listitem>
                         </itemizedlist></para>
