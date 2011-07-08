@@ -55,7 +55,8 @@ public class CDIOSGiAnnotatedField<T> implements AnnotatedField<T> {
         }
         filter = FilterGenerator.makeFilter(filter,field.getAnnotations());
         annotations.add(filter);
-        annotations.add(new AnnotationLiteral<OSGiService>() {});
+        //annotations.add(new AnnotationLiteral<OSGiService>() {});
+        annotations.add(new OSGiServiceQualifier(field.getJavaMember().getAnnotation(OSGiService.class).value()));
         if(field.getAnnotation(Required.class) != null) {
             annotations.add(new AnnotationLiteral<Required>() {});
         }
