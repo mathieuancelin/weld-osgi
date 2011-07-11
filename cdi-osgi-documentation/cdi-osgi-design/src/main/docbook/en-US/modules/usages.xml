@@ -219,14 +219,21 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
                         property</para>
                 </listitem>
                 <listitem>
+                    <para><code>Default</code> qualifier will not generate any service
+                        property</para>
+                </listitem>
+                <listitem>
+                    <para><code>Any</code> qualifier will not generate any service property</para>
+                </listitem>
+                <listitem>
                     <para><code>Filter</code> qualifier undergoes a special processing: <itemizedlist>
                             <listitem>
                                 <para>Its value element value is reused as it is as a supposedly
                                     valid OSGi service LDAP filter</para>
                             </listitem>
                             <listitem>
-                                <para>Its each of the string of its properties element (an array of
-                                    string)  is reused as it is as a supposedly valid OSGi service
+                                <para>Every string of its properties element (an array of string) is
+                                    reused as it is as a supposedly valid OSGi service
                                     property</para>
                             </listitem>
                         </itemizedlist></para>
@@ -334,14 +341,11 @@ public class MyServiceQualifiedImpl implements MyService {
                     <para>Processes annotated types</para>
                 </listitem>
                 <listitem>
-                    <para>Wraps every  <code>OSGiService</code> annotated or
-                            <code>Service&lt;T></code> typed injection point</para>
+                    <para>Wraps every <code>OSGiService</code> annotated injection point</para>
                 </listitem>
             </itemizedlist></para>
         <para><code>OSGiService</code> annotated injection points are wrapped
             as:<programlisting>@Inject @OSGiService @Filter(<emphasis role="italic">Calculated_filter</emphasis>) <emphasis role="italic">Type</emphasis> <emphasis role="italic">var_name</emphasis>;</programlisting></para>
-        <para><code>Service&lt;T></code> typed injection points are wrapped
-            as:<programlisting>@Inject @Filter(<emphasis role="italic">Calculated_filter</emphasis>) Service&lt;<emphasis role="italic">Type</emphasis>> <emphasis role="italic">var_name</emphasis>;</programlisting></para>
         <para>The global OSGi LDAP filter of the final <code>Filter</code> qualifier is calculated from:<itemizedlist>
                 <listitem>
                     <para>The original set of qualifiers (except <code>OSGiService</code> and
@@ -366,10 +370,6 @@ public class MyServiceQualifiedImpl implements MyService {
                 <listitem>
                     <para><programlisting>@Inject @OSGiService <emphasis role="bold">@AnyQualifier</emphasis> MyService qualifiedService;</programlisting>will
                         become:<programlisting>@Inject @OSGiService <emphasis role="bold">@Filter("(anyqualifier=*)")</emphasis> MyService qualifiedService;</programlisting></para>
-                </listitem>
-                <listitem>
-                    <para><programlisting>@Inject <emphasis role="bold">@AnyQualifier</emphasis> Service&lt;MyService> qualifiedServices;</programlisting>will
-                        become:<programlisting>@Inject <emphasis role="bold">@Filter("(anyqualifier=*)")</emphasis> Service&lt;MyService> qualifiedService;</programlisting></para>
                 </listitem>
                 <listitem>
                     <para><programlisting>@Inject <emphasis role="bold">@OSGiService</emphasis> @AnyQualifier <emphasis role="bold">Service&lt;</emphasis>MyService<emphasis role="bold">></emphasis> qualifiedServices;</programlisting>will

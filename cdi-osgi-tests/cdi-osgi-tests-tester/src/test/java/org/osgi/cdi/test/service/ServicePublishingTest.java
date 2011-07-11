@@ -2,7 +2,6 @@ package org.osgi.cdi.test.service;
 
 import com.sample.osgi.bundle1.api.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
