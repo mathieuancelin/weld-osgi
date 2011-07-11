@@ -9,13 +9,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.services.ServiceImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -33,11 +34,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * This the bean class for all beans generated from a {@link Service} typed {@link InjectionPoint}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class OSGiServiceProducerBean<Service> implements Bean<Service> {
+
+    private static Logger logger = LoggerFactory.getLogger(OSGiServiceProducerBean.class);
 
     private final InjectionPoint injectionPoint;
     private Filter filter;
@@ -45,6 +49,7 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
     private Type type;
 
     protected OSGiServiceProducerBean(InjectionPoint injectionPoint) {
+        logger.debug("Creation of a new OSGiServiceProducerBean for injection point: {}",injectionPoint);
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
@@ -104,6 +109,7 @@ public class OSGiServiceProducerBean<Service> implements Bean<Service> {
 
     @Override
     public Service create(CreationalContext creationalContext) {
+        logger.debug("Instantiation of an {}", this);
         BundleContext registry = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass()).getBundleContext();
         return (Service) new ServiceImpl(((ParameterizedType) type).getActualTypeArguments()[0], registry, filter);
     }

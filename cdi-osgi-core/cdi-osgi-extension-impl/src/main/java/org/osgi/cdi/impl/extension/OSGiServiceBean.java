@@ -9,7 +9,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
@@ -35,14 +34,16 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ * This the bean class for all beans generated from a {@link org.osgi.cdi.api.extension.annotation.OSGiService} annotated {@link InjectionPoint}.
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class OSGiServiceBean implements Bean {
 
     private final static Logger logger = LoggerFactory.getLogger(OSGiServiceBean.class);
-    private final Map<Object, DynamicServiceHandler> handlers
-            = new HashMap<Object, DynamicServiceHandler>();
+
+    private final Map<Object, DynamicServiceHandler> handlers = new HashMap<Object, DynamicServiceHandler>();
     private final InjectionPoint injectionPoint;
     private Filter filter;
     private Set<Annotation> qualifiers;
@@ -50,6 +51,7 @@ public class OSGiServiceBean implements Bean {
     private OSGiService annotation;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
+        logger.debug("Creation of a new OSGiServiceBean for injection point: {}",injectionPoint);
         this.injectionPoint = injectionPoint;
         type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
@@ -115,6 +117,7 @@ public class OSGiServiceBean implements Bean {
 
     @Override
     public Object create(CreationalContext ctx) {
+        logger.debug("Instantiation of an {}", this);
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             DynamicServiceHandler handler =
@@ -126,6 +129,7 @@ public class OSGiServiceBean implements Bean {
             handlers.put(proxy, handler);
             return proxy;
         } catch (Exception e) {
+            logger.error("Unable to instantiate {} due to {}",this,e);
             throw new CreationException(e);
         }
     }

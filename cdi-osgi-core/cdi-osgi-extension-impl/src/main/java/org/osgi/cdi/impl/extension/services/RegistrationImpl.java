@@ -1,31 +1,39 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.osgi.cdi.impl.extension.services;
 
 import org.osgi.cdi.api.extension.Registration;
 import org.osgi.cdi.api.extension.RegistrationHolder;
 import org.osgi.cdi.api.extension.Service;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.cdi.impl.extension.FilterGenerator;
+import org.osgi.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
+ * Implementation of {@link Registration}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
- * @author Matthieu Clochard - SERLI (matthieu.clochard@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class RegistrationImpl<T> implements Registration<T> {
+
+    private static Logger logger = LoggerFactory.getLogger(RegistrationImpl.class);
 
     private final Class<T> contract;
     private final BundleContext registry;
@@ -60,7 +68,7 @@ public class RegistrationImpl<T> implements Registration<T> {
         if (qualifiers == null) {
             throw new IllegalArgumentException("You can't pass null array of qualifiers");
         }
-        String filter = constructFilter(qualifiers);
+        String filter = FilterGenerator.makeFilter(Arrays.asList(qualifiers)).value();
         return null;
     }
 
@@ -102,40 +110,6 @@ public class RegistrationImpl<T> implements Registration<T> {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    private String constructFilter(Annotation... qualifiers) {
-        Map<String, String> properties = new HashMap<String, String>();
-        String key = "";
-        String value = "";
-        for(Annotation qualifier : qualifiers) {
-            Class<?> qualifierClass = qualifier.annotationType();
-            if(qualifierClass.getAnnotation(Qualifier.class) == null) {
-                throw new IllegalArgumentException("You should only provide @Qualifier annotation");
-            }
-            try {
-                Method getValue = qualifierClass.getMethod("value", qualifierClass);
-                value = (String) getValue.invoke(qualifier);
-            } catch (NoSuchMethodException e) {
-                value = "";
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException("Qualifier value inaccessible : " + e.getClass().getSimpleName() + " " + e.getMessage());
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Qualifier value inaccessible : " + e.getClass().getSimpleName() + " " + e.getMessage());
-            }
-            key = qualifier.annotationType().getSimpleName();
-            properties.put(key,value);
-        }
-        String result = "(&";
-        for (Map.Entry<String,String> propertie : properties.entrySet()) {
-            result += "(";
-            result += propertie.getKey();
-            result += " = ";
-            result += propertie.getValue();
-            result += ")";
-        }
-        result += ")";
-        return result;
     }
 
 }

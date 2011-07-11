@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 
 /**
- * It allows a bean bundle to retrieve any of is bean using an {@link Instance}.
+ * It allows a bean bundle to retrieve any of its bean using an {@link Instance}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
