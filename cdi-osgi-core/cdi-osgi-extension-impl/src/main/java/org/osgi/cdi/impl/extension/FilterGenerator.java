@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,28 +57,8 @@ public class FilterGenerator {
         return new OSGiFilterQualifierType(filter);
     }
 
-    public static Filter makeFilter(List<Annotation> annotations) {
-        return make(tokenize(annotations));
-    }
-
-    public static Filter normalize(Filter filter) {
-        return make(tokenize(filter));
-    }
-
     public static Filter makeFilter(Properties properties) {
         return make(tokenize(properties));
-    }
-
-    public static Filter makeFilter(InjectionPoint injectionPoint) {
-        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
-        Filter filter = null;
-        for(Annotation qualifier : qualifiers) {
-            if(qualifier.annotationType().equals(Filter.class)) {
-                filter = (Filter)qualifier;
-                break;
-            }
-        }
-        return FilterGenerator.makeFilter(filter, qualifiers);
     }
 
     public static Filter makeFilter(Collection<Annotation> annotations) {
@@ -87,17 +66,28 @@ public class FilterGenerator {
         tokens.addAll(tokenize(annotations));
         return make(tokens);
     }
-    
+
+    public static Filter makeFilter(InjectionPoint injectionPoint) {
+        Set<Annotation> qualifiers = injectionPoint.getQualifiers();
+        return FilterGenerator.makeFilter(qualifiers);
+    }
+
     public static Filter makeFilter(Filter old, String filter) {
         Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(old));
-        tokens.add(filter);
+        if(old != null && old.value() != null && old.value().length() > 0) {
+            tokens.add(old.value());
+        }
+        if (filter != null && filter.length() > 0) {
+            tokens.add(filter);
+        }
         return make(tokens);
     }
 
     public static Filter makeFilter(Filter old, Collection<Annotation> annotations) {
         Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(old));
+        if(old != null && old.value() != null && old.value().length() > 0) {
+            tokens.add(old.value());
+        }
         tokens.addAll(tokenize(annotations));
         return make(tokens);
     }
@@ -110,21 +100,16 @@ public class FilterGenerator {
         return result;
     }
 
-    private static Set<String> tokenize(Filter filter) {
-        Set<String> result = new HashSet<String>();
-        if(filter != null && filter.value() != null && filter.value().length() > 0) {
-            result.add(filter.value());
-        }
-        return result;
-    }
-
     private static Set<String> tokenize(Collection<Annotation> annotations) {
         Set<String> result = new HashSet<String>();
         String current = "";
         for (Annotation annotation : annotations) {
             if(annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
                 if (annotation.annotationType().equals(Filter.class)) {
-                    result.addAll(tokenize((Filter)annotation));
+                    Filter old = (Filter)annotation;
+                    if (old.value() != null && old.value().length() > 0) {
+                        result.add(old.value());
+                    }
                 } else if(annotation.annotationType().equals(Properties.class)) {
                     result.addAll(tokenize((Properties)annotation));
                 } else if(!annotation.annotationType().equals(Required.class)
