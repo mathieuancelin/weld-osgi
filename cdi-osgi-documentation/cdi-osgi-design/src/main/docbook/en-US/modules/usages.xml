@@ -258,12 +258,6 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
                 to the <code>Filter</code> qualifier alone.</para>
             <para>An annotation annotated with a <code>Properties</code> qualifier is considered
                 similar to the <code>Properties</code> qualifier alone.</para>
-            <para>Only one <code>Filter</code> may be taken into account on service injection
-                points. If multiple <code>Filter</code> are applied CDI-OSGi detects the problem and
-                treats it as an error.</para>
-            <para>Only one <code>Properties</code> may be taken into account on auto-published
-                service classes . If multiple <code>Properties</code> are applied CDI-OSGi detects
-                the problem and treats it as an error.</para>
             <para>Declaring a filter
                 stereotype:<programlisting>@Filter("name=1")
 public @Interface Name1 {

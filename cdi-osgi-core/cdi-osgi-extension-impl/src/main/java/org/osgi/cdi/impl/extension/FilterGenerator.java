@@ -140,6 +140,15 @@ public class FilterGenerator {
                         result.add(current);
                     }
                 }
+            } else {
+                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                    Filter old = annotation.annotationType().getAnnotation(Filter.class);
+                    result.add(old.value());
+                }
+                if (annotation.annotationType().isAnnotationPresent(Properties.class)) {
+                    Properties properties = annotation.annotationType().getAnnotation(Properties.class);
+                    result.addAll(tokenize(properties));
+                }
             }
         }
         return result;
