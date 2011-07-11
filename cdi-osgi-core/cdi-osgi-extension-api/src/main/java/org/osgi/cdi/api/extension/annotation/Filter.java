@@ -40,7 +40,7 @@ import static java.lang.annotation.ElementType.*;
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
-@Target({ METHOD, PARAMETER, FIELD })
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier

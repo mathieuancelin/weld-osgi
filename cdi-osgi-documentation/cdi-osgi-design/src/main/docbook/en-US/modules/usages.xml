@@ -205,61 +205,89 @@ public class MyServiceImpl extends AbstractClass implements MyService, OtherInte
                             template:<programlisting><emphasis role="italic">decapitalized_qualifier_name</emphasis>=*</programlisting><programlisting>@MyQualifier()</programlisting>will
                             generate:<programlisting>(myqualifier=*)</programlisting></para>
                     </listitem>
+                    <listitem>
+                        <para>Some qualifiers follow a specific processing:<itemizedlist>
+                                <listitem>
+                                    <para><code>OSGiService</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Required</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Default</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Any</code> qualifier will not generate any service
+                                        property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Filter</code> and <code>Properties</code> qualifiers
+                                        processing is described below</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </listitem>
                 </itemizedlist></para>
         </section>
         <section>
-            <title>Special qualifiers</title>
-            <itemizedlist>
-                <listitem>
-                    <para><code>OSGiService</code> qualifier will not generate any service
-                        property</para>
-                </listitem>
-                <listitem>
-                    <para><code>Required</code> qualifier will not generate any service
-                        property</para>
-                </listitem>
-                <listitem>
-                    <para><code>Default</code> qualifier will not generate any service
-                        property</para>
-                </listitem>
-                <listitem>
-                    <para><code>Any</code> qualifier will not generate any service property</para>
-                </listitem>
-                <listitem>
-                    <para><code>Filter</code> qualifier undergoes a special processing: <itemizedlist>
-                            <listitem>
-                                <para>Its value element value is reused as it is as a supposedly
-                                    valid OSGi service LDAP filter</para>
-                            </listitem>
-                            <listitem>
-                                <para>Every string of its properties element (an array of string) is
-                                    reused as it is as a supposedly valid OSGi service
-                                    property</para>
-                            </listitem>
-                        </itemizedlist></para>
-                </listitem>
-            </itemizedlist>
-            <para>It is discourage to use the <code>Filter</code> qualifier on a bean that might be
-                use as a regular CDI bean.</para>
+            <title><code>Filter</code> and <code>Properties</code> qualifiers</title>
+            <para><code>Filter</code> qualifier allows to specify a OSGi LDAP filter for a
+                    <code>OSGiServiceBean</code> or a <code>OSGiServiceProducerBean</code> injection
+                point.</para>
+            <para>A <code>Filter</code> qualifier generate a "as it is" OSGi LDAP filter.</para>
+            <para><code>Properties</code> qualifier allows to specify OSGi LDAP properties for a
+                auto-published service class or for a <code>OSGiServiceBean</code> or a
+                    <code>OSGiServiceProducerBean</code> injection point.</para>
+            <para>A <code>Properties</code> qualifier generate a property for every one of its
+                    <code>Property</code> annotation with this
+                template:<programlisting><emphasis role="italic">Property.name()</emphasis>=<emphasis role="italic">Property.value()</emphasis></programlisting><programlisting>@Properties({@Property(name = "lang", value = "EN")
+             @Property(name = "country", value = "US"
+})</programlisting>will
+                generate:<programlisting>(lang=EN)
+(country=US)</programlisting></para>
+            <para>If a <code>Filter</code> qualifier is used on a bean class CDI-OSGi detects the
+                problem and treats it as an error.</para>
+            <para>It is discourage to use the <code>Properties</code> qualifier on a bean that might
+                be use as a regular CDI bean.</para>
         </section>
         <section>
-            <title>Filter stereotype</title>
-            <para>An annotation annoted with a <code>Filter</code> qualifier is considered similar
+            <title><code>Filter</code> and <code>Properties</code> stereotypes</title>
+            <para>An annotation annotated with a <code>Filter</code> qualifier is considered similar
                 to the <code>Filter</code> qualifier alone.</para>
-            <para>Only one <code>Filter</code> may be taken into account to auto-published services
-                and service injection points, priority to the actual <code>Filter</code>
-                qualifier.</para>
+            <para>An annotation annotated with a <code>Properties</code> qualifier is considered
+                similar to the <code>Properties</code> qualifier alone.</para>
+            <para>Only one <code>Filter</code> may be taken into account on service injection
+                points. If multiple <code>Filter</code> are applied CDI-OSGi detects the problem and
+                treats it as an error.</para>
+            <para>Only one <code>Properties</code> may be taken into account on auto-published
+                service classes . If multiple <code>Properties</code> are applied CDI-OSGi detects
+                the problem and treats it as an error.</para>
             <para>Declaring a filter
-                stereotype:<programlisting>@Filter("Name.value=1")
+                stereotype:<programlisting>@Filter("name=1")
 public @Interface Name1 {
 }</programlisting><programlisting>@Inject @Name1 Service&lt;MyService> named1Services;</programlisting>is
                 similar
-                to:<programlisting>@Inject @Filter("Name.value=1") Service&lt;MyService> named1Services;</programlisting></para>
+                to:<programlisting>@Inject @Filter("name=1") Service&lt;MyService> named1Services;</programlisting>Declaring
+                a properties
+                stereotype:<programlisting>@Properties({@Property(name = "name", value = "1")})
+public @Interface Name1 {
+}</programlisting><programlisting>@Publish
+@Name1 
+public class MyServiceImpl implements MyService {
+}</programlisting>is
+                similar
+                to:<programlisting>@Publish
+@Properties({@Property(name = "name", value = "1")})
+public class MyServiceImpl implements MyService {
+}</programlisting></para>
         </section>
         <section>
             <title>Final LDAP filter</title>
-            <para>CDI-OSGi processes all the OSGi LDAP properties and provided OSGi LDAP filter to
-                generate a global OSGi LDAP filter as:<itemizedlist>
+            <para>CDI-OSGi processes all the OSGi LDAP properties (from regular qualifiers and
+                    <code>Properties</code> qualifier) and provided OSGi LDAP filter (from
+                    <code>Filter</code> qualifier) to generate a global OSGi LDAP filter as:<itemizedlist>
                     <listitem>
                         <para>With multiple OSGi LDAP properties and a provided OSGi LDAP
                             filter<programlisting>(&amp; <emphasis role="italic">provided_ldap_filter</emphasis> (<emphasis role="italic">ldap_property_1</emphasis>) (<emphasis role="italic">ldap_property_2</emphasis>) ... (<emphasis role="italic">ldap_property_i</emphasis>) )</programlisting></para>
@@ -316,17 +344,25 @@ public class MyServiceQualifiedImpl implements MyService {
                         property (anyqualifier=*).</para>
                 </listitem>
                 <listitem>
-                    <para>Using the special <code>Filter</code>
+                    <para>Using the special <code>Properties</code>
                         qualifier:<programlisting>@Publish
-@Filter(value="(lang=EN)",
-        properties = {"country=US",
-                      "currency=*")
-        })
+@Properties({@Property(name = "country", value = "US")
+             @Property(name = "lang", value = "EN")
+})
 public class MyServiceQualifiedImpl implements MyService {
 }</programlisting>Will
-                        generate an <code>Filter(...)</code> qualified regular CDI bean and register
-                        an OSGi service with the properties (lang=EN) [as a complete OSGi service
-                        LDAP filter], (country=US) and (currency=*). </para>
+                        generate an <code>Properties(...)</code> qualified regular CDI bean and
+                        register an OSGi service with the properties (lang=EN) and
+                        (country=US).</para>
+                </listitem>
+                <listitem>
+                    <para>Using the special <code>Filter</code>
+                        qualifier:<programlisting>@Inject @OSGiService @Filter("(&amp;(lang=EN)(country=US))") MyService qualifiedService;
+@Inject @Filter("(&amp;(lang=EN)(country=US))") Service&lt;MyService> qualifiedServices;</programlisting>Will
+                        generate an <code>OSGiServiceBean</code> and an
+                            <code>OSGiServiceProducerBean</code> looking up for OSGi services
+                        matching the OSGi LDAP filter <emphasis role="italic"
+                            >(&amp;(lang=EN)(country=US))</emphasis>.</para>
                 </listitem>
             </itemizedlist>
         </section>
@@ -334,7 +370,7 @@ public class MyServiceQualifiedImpl implements MyService {
     <section>
         <title>Bean disambiguation and annotated type processing</title>
         <para>CDI-OSGi ensures that every <code>OSGiService</code> annotated or
-                <code>Serive&lt;T></code> typed injection point matches an unique
+                <code>Service&lt;T></code> typed injection point matches an unique
                 <code>OSGiServiceBean</code> or <code>OSGiServiceProviderBean</code>.</para>
         <para>Therefore, for every bean bundle CDI-OSGi:<itemizedlist>
                 <listitem>
@@ -457,7 +493,7 @@ public class MyServiceImpl implements MyService {
     </section>
     <section>
         <title>Required services</title>
-        <para>A <code>OSGiService</code> annotated or <code>Serive&lt;T></code> typed injection
+        <para>A <code>OSGiService</code> annotated or <code>Service&lt;T></code> typed injection
             point might be annotated <code>Required</code><itemizedlist>
                 <listitem>
                     <para>with no influence on this injection point</para>

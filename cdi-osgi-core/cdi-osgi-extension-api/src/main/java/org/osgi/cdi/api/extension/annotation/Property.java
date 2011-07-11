@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */
-@Target({  })
+@Target({})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Property {
