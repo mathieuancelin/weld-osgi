@@ -66,8 +66,8 @@ public class FilterGenerator {
         return make(tokenize(filter));
     }
 
-    public static Filter makeFilter(Publish publish) {
-        return make(tokenize(publish));
+    public static Filter makeFilter(Properties properties) {
+        return make(tokenize(properties));
     }
 
     public static Filter makeFilter(InjectionPoint injectionPoint) {
@@ -82,9 +82,8 @@ public class FilterGenerator {
         return FilterGenerator.makeFilter(filter, qualifiers);
     }
 
-    public static Filter makeFilter(Publish publish, Collection<Annotation> annotations) {
+    public static Filter makeFilter(Collection<Annotation> annotations) {
         Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(publish));
         tokens.addAll(tokenize(annotations));
         return make(tokens);
     }
@@ -103,9 +102,9 @@ public class FilterGenerator {
         return make(tokens);
     }
 
-    private static Set<String> tokenize(Publish publish) {
+    private static Set<String> tokenize(Properties properties) {
         Set<String> result = new HashSet<String>();
-        for(Property property : publish.properties()) {
+        for(Property property : properties.value()) {
             result.add("(" + property.name().toLowerCase() + "=" + property.value() + ")");
         }
         return result;
@@ -126,6 +125,8 @@ public class FilterGenerator {
             if(annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
                 if (annotation.annotationType().equals(Filter.class)) {
                     result.addAll(tokenize((Filter)annotation));
+                } else if(annotation.annotationType().equals(Properties.class)) {
+                    result.addAll(tokenize((Properties)annotation));
                 } else if(!annotation.annotationType().equals(Required.class)
                         && !annotation.annotationType().equals(OSGiService.class)
                         && !annotation.annotationType().equals(Default.class)
