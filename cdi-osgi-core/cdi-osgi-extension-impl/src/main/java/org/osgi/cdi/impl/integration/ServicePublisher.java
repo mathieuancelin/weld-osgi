@@ -11,7 +11,8 @@
  */
 package org.osgi.cdi.impl.integration;
 
-import org.osgi.cdi.api.extension.annotation.*;
+import org.osgi.cdi.api.extension.annotation.Property;
+import org.osgi.cdi.api.extension.annotation.Publish;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.impl.extension.services.RegistrationsHolderImpl;
 import org.osgi.framework.Bundle;
@@ -25,7 +26,6 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.Properties;
 
 /**
  * This is a class scanner that auto-publishes OSGi services from @Publish annotated classes within a bean bundle.
