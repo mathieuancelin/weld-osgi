@@ -29,9 +29,13 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * Scan the installed bundles.
+ * Factory for {@link BeanDeploymentArchive} used by {@link BundleDeployment}.
+ * <p/>
+ * It scans bundle in order to verify it is a CDI manageable bundle and to create a complete {@link
+ * BeanDeploymentArchive}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class BundleBeanDeploymentArchiveFactory {
 
@@ -54,6 +58,8 @@ public class BundleBeanDeploymentArchiveFactory {
                     discoveredClasses.add(clazz);
                 }
             }
+        } else {
+            return null;
         }
         BundleBeanDeploymentArchive archive = new BundleBeanDeploymentArchive("bundle-bean-deployment-archive-" +
                                                                               bundle.getBundleId());

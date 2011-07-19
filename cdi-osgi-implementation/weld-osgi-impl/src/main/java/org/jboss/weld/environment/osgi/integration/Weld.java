@@ -1,29 +1,45 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.weld.environment.osgi.integration;
 
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Bootstrap;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.jboss.weld.manager.api.WeldManager;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+ * Weld container used for bean bundles by {@link org.jboss.weld.environment.osgi.WeldCDIContainer}.
+ * <p/>
+ * It is responsible for initialization of a Weld container requested by CDI-OSGi using the {@link
+ * org.jboss.weld.environment.osgi.WeldCDIContainerFactory}.
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class Weld {
 
-    private final static Logger LOGGER = Logger.getLogger(Weld.class.getName());
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(Weld.class);
+
     private final Bundle bundle;
-    private BundleDeployment deployment;
     private boolean started = false;
     private Bootstrap bootstrap;
     private boolean hasShutdownBeenCalled = false;
@@ -32,6 +48,7 @@ public class Weld {
     private Collection<String> beanClasses;
 
     public Weld(Bundle bundle) {
+        logger.debug("Creation of a new Weld instance for bundle {}", bundle);
         this.bundle = bundle;
         factory = new BundleBeanDeploymentArchiveFactory();
     }
@@ -40,11 +57,8 @@ public class Weld {
         return started;
     }
 
-    /**
-     * Boots Weld and creates and returns a CDIContainerImpl instance, through which beans and events can be accessed
-     * .
-     */
     public boolean initialize() {
+        logger.debug("Initialization of a Weld instance for bundle {}", bundle);
         started = false;
         // ugly hack to make jboss interceptors works.
         // thank you Thread.currentThread().getContextClassLoader().loadClass()
@@ -54,13 +68,14 @@ public class Weld {
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         try {
-            Enumeration beansXml = bundle.findEntries("META-INF", "beans.xml", true);
-            if (beansXml == null) {
+            bootstrap = new WeldBootstrap();
+            BundleDeployment deployment = createDeployment(bootstrap);
+            BeanDeploymentArchive beanDeploymentArchive = deployment.getBeanDeploymentArchive();
+            if (beanDeploymentArchive == null) {
+                logger.debug("Unable to generate a BeanDeploymentArchive");
                 return started;
             }
-            LOGGER.info("Starting Weld container for bundle " + bundle.getSymbolicName());
-            bootstrap = new WeldBootstrap();
-            deployment = createDeployment(bootstrap);
+            logger.info("Starting Weld instance for bundle {}", bundle);
             // Set up the container
             bootstrap.startContainer(new OSGiEnvironment(), deployment);
             // Start the container
@@ -69,10 +84,11 @@ public class Weld {
             bootstrap.validateBeans();
             bootstrap.endInitialization();
             // Get this Bundle BeanManager
-            manager = bootstrap.getManager(deployment.getBeanDeploymentArchive());
-            beanClasses = deployment.getBeanDeploymentArchive().getBeanClasses();
+            manager = bootstrap.getManager(beanDeploymentArchive);
+            beanClasses = beanDeploymentArchive.getBeanClasses();
             started = true;
         } catch (Throwable t) {
+            logger.error("Initialization of Weld instance for bundle {} caused an error: {}", bundle, t);
             t.printStackTrace();
         } finally {
             if (!set) {
@@ -91,16 +107,17 @@ public class Weld {
         if (started) {
             synchronized (this) {
                 if (!hasShutdownBeenCalled) {
-                    LOGGER.info("Stopping Weld container for bundle " + bundle.getSymbolicName());
+                    logger.info("Stopping Weld instance for bundle {}", bundle);
                     hasShutdownBeenCalled = true;
                     try {
                         bootstrap.shutdown();
                     } catch (Throwable t) {
+                        logger.error("Shutdown of Weld instance for bundle {} caused an error: {}", bundle, t);
                     }
                     started = false;
                     return true;
                 } else {
-                    LOGGER.log(Level.INFO, "Skipping spurious call to shutdown");
+                    logger.warn("Skipping spurious call to shutdown Weld instance for bundle {}", bundle);
                     return false;
                 }
             }
