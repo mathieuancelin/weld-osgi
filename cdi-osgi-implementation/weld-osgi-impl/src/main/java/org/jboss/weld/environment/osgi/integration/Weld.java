@@ -72,7 +72,7 @@ public class Weld {
             BundleDeployment deployment = createDeployment(bootstrap);
             BeanDeploymentArchive beanDeploymentArchive = deployment.getBeanDeploymentArchive();
             if (beanDeploymentArchive == null) {
-                logger.debug("Unable to generate a BeanDeploymentArchive");
+                logger.debug("Unable to generate a BeanDeploymentArchive for bundle {}", bundle);
                 return started;
             }
             logger.info("Starting Weld instance for bundle {}", bundle);

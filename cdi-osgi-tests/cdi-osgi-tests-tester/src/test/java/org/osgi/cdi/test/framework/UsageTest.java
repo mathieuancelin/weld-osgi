@@ -40,7 +40,7 @@ public class UsageTest {
         
         Bundle bundle1 = null, bundle2 = null, bundle3 = null;
         for(Bundle b : context.getBundles()) {
-            Assert.assertEquals("Bundle" + b.getSymbolicName() + "is not ACTIVE", Bundle.ACTIVE, b.getState());
+            Assert.assertEquals("Bundle" + b.getSymbolicName() + " is not ACTIVE", Bundle.ACTIVE, b.getState());
             if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle1")) {
                 bundle1=b;
             }
