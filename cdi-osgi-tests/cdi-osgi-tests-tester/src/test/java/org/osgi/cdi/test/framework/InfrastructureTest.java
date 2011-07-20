@@ -1,6 +1,7 @@
 package org.osgi.cdi.test.framework;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
