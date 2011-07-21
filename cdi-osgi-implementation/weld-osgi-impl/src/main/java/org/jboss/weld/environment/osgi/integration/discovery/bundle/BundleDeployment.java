@@ -18,27 +18,38 @@ package org.jboss.weld.environment.osgi.integration.discovery.bundle;
 
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.environment.osgi.integration.Weld;
 import org.jboss.weld.environment.osgi.integration.discovery.AbstractWeldOSGiDeployment;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.osgi.framework.Bundle;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Weld Deployment for OSGi environment.
+ * <p/>
+ * It allows to create a complete {@link org.jboss.weld.bootstrap.spi.Deployment} for CDI manageable OSGi {@link
+ * Bundle}.
  *
  * @author Peter Royle
+ * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class BundleDeployment extends AbstractWeldOSGiDeployment {
+
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(Weld.class);
 
     private final BeanDeploymentArchive beanDeploymentArchive;
 
     public BundleDeployment(Bundle bundle, Bootstrap bootstrap, BundleBeanDeploymentArchiveFactory factory) {
         super(bootstrap);
         this.beanDeploymentArchive = factory.scan(bundle, bootstrap);
-        ResourceLoader loader = new BundleResourceLoader(bundle);
-        this.beanDeploymentArchive.getServices().add(ResourceLoader.class, loader);
+        if (beanDeploymentArchive != null) {
+            ResourceLoader loader = new BundleResourceLoader(bundle);
+            this.beanDeploymentArchive.getServices().add(ResourceLoader.class, loader);
+        }
     }
 
     @Override
