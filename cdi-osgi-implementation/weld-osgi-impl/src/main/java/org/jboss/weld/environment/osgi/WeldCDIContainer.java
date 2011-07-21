@@ -1,3 +1,14 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.weld.environment.osgi;
 
 import org.jboss.weld.environment.osgi.integration.Weld;
@@ -7,6 +18,8 @@ import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.cdi.impl.extension.ExtensionActivator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -15,15 +28,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * This is the {@link CDIContainer} implementation using Weld.
+ *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
+ * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 public class WeldCDIContainer implements CDIContainer {
+
+    private Logger logger = LoggerFactory.getLogger(WeldCDIContainer.class);
 
     private final Bundle bundle;
     private Weld container;
     private Collection<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
 
     public WeldCDIContainer(Bundle bundle) {
+        logger.debug("Creation of a new Weld CDI container for bundle {}", bundle);
         this.bundle = bundle;
         container = new Weld(bundle);
     }
@@ -45,11 +64,13 @@ public class WeldCDIContainer implements CDIContainer {
 
     @Override
     public boolean shutdown() {
+        logger.debug("Weld CDI container is shutting down for bundle {}", bundle);
         return container.shutdown();
     }
 
     @Override
     public void fire(InterBundleEvent event) {
+        logger.debug("Weld CDI container for bundle {} is firing an inter bundle event: {}", bundle, event);
         Long set = CDIOSGiExtension.currentBundle.get();
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         container.getEvent().select(InterBundleEvent.class,

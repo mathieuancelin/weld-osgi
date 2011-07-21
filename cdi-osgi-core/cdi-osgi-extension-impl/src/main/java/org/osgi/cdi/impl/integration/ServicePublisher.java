@@ -85,7 +85,10 @@ public class ServicePublisher {
         ServiceRegistration registration = null;
         Publish publish = clazz.getAnnotation(Publish.class);
         Class[] contracts = publish.contracts();
-        Properties properties = getServiceProperties(publish, qualifiers);
+        Properties properties = getServiceProperties(qualifiers);
+        if (publish.rank() != 0) {
+            properties.setProperty("service.rank", publish.rank() + "");
+        }
         if(contracts.length > 0) {// if there are contracts
             String[] names = new String[contracts.length];
             for(int i = 0;i < contracts.length;i++) {
@@ -127,32 +130,31 @@ public class ServicePublisher {
         }
     }
 
-    private static Properties getServiceProperties(Publish publish, List<Annotation> qualifiers) {
+    private static Properties getServiceProperties(List<Annotation> qualifiers) {
         Properties properties = new Properties();
         if (!qualifiers.isEmpty()) {
             for (Annotation qualifier : qualifiers) {
-                for (Method m : qualifier.annotationType().getDeclaredMethods()) {
-                    if (!m.isAnnotationPresent(Nonbinding.class)) {
-                        try {
-                            String key = qualifier.annotationType().getSimpleName() + "." + m.getName();
-                            Object value = m.invoke(qualifier);
-                            if (value == null) {
-                                value = m.getDefaultValue();
+                if (qualifier.annotationType().equals(org.osgi.cdi.api.extension.annotation.Properties.class)) {
+                    for (Property property : ((org.osgi.cdi.api.extension.annotation.Properties) qualifier).value()) {
+                        properties.setProperty(property.name(), property.value());
+                    }
+                } else {
+                    for (Method m : qualifier.annotationType().getDeclaredMethods()) {
+                        if (!m.isAnnotationPresent(Nonbinding.class)) {
+                            try {
+                                String key = qualifier.annotationType().getSimpleName() + "." + m.getName();
+                                Object value = m.invoke(qualifier);
+                                if (value == null) {
+                                    value = m.getDefaultValue();
+                                }
+                                properties.setProperty(key, value.toString());
+                            } catch (Throwable t) {// ignore
                             }
-                            properties.setProperty(key, value.toString());
-                        } catch (Throwable t) {// ignore
                         }
                     }
                 }
+
             }
-        }
-        if (publish.properties().length > 0) {
-            for (Property property : publish.properties()) {
-                properties.setProperty(property.name(), property.value());
-            }
-        }
-        if (publish.rank() != 0) {
-            properties.setProperty("service.rank", publish.rank() + "");
         }
         return properties;
     }
