@@ -18,12 +18,25 @@
     </section>
     <section>
         <title>CDI usage in bean bundles</title>
+        <para>CDI-OSGi detects a bundle as a bean bundle if:<itemizedlist>
+                <listitem>
+                    <para>it possesses a META-INF/beans.xml file at its root path</para>
+                </listitem>
+                <listitem>
+                    <para>or/and it possesses one or more inner jar or zip files that possesses a
+                        META-INF/beans.xml file at their root paths</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>The managed set of bean classes of a bean class contains all the class file under all
+            META-INF/beans.xml root paths.</para>
+        <para>CDI and CDI-OSGi features are enabled for all these manageable paths.</para>
         <para>Everything possible in CDI application is possible in bean bundle. They can take
             advantage of injection, producers, interceptors, decorators and alternative. But
-            influence boundary of the CDI compliant container stay within the bean bundle for
-            classic CDI usages. So external dependencies cannot be injected and interceptor,
-            decorator or alternative of another bean bundle cannot be used (yet interceptors,
-            decorators and alternatives still need to be declares in the bean bundle bean.xml file). </para>
+            influence boundary of the CDI compliant container stay within the bean bundle managed
+            paths for classic CDI usages. So external dependencies cannot be injected and
+            interceptor, decorator or alternative of another bean bundle cannot be used (yet
+            interceptors, decorators and alternatives still need to be declares in the bean bundle
+            bean.xml file). </para>
         <para>That is all we will say about classic CDI usages, please report to CDI documentation
             for more information.</para>
     </section>
