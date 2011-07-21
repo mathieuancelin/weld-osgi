@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,63 +57,45 @@ public class FilterGenerator {
         return new OSGiFilterQualifierType(filter);
     }
 
-    public static Filter makeFilter(List<Annotation> annotations) {
-        return make(tokenize(annotations));
+    public static Filter makeFilter(Properties properties) {
+        return make(tokenize(properties));
     }
 
-    public static Filter normalize(Filter filter) {
-        return make(tokenize(filter));
-    }
-
-    public static Filter makeFilter(Publish publish) {
-        return make(tokenize(publish));
+    public static Filter makeFilter(Collection<Annotation> annotations) {
+        Set<String> tokens = new HashSet<String>();
+        tokens.addAll(tokenize(annotations));
+        return make(tokens);
     }
 
     public static Filter makeFilter(InjectionPoint injectionPoint) {
         Set<Annotation> qualifiers = injectionPoint.getQualifiers();
-        Filter filter = null;
-        for(Annotation qualifier : qualifiers) {
-            if(qualifier.annotationType().equals(Filter.class)) {
-                filter = (Filter)qualifier;
-                break;
-            }
-        }
-        return FilterGenerator.makeFilter(filter, qualifiers);
+        return FilterGenerator.makeFilter(qualifiers);
     }
 
-    public static Filter makeFilter(Publish publish, Collection<Annotation> annotations) {
-        Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(publish));
-        tokens.addAll(tokenize(annotations));
-        return make(tokens);
-    }
-    
     public static Filter makeFilter(Filter old, String filter) {
         Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(old));
-        tokens.add(filter);
+        if(old != null && old.value() != null && old.value().length() > 0) {
+            tokens.add(old.value());
+        }
+        if (filter != null && filter.length() > 0) {
+            tokens.add(filter);
+        }
         return make(tokens);
     }
 
     public static Filter makeFilter(Filter old, Collection<Annotation> annotations) {
         Set<String> tokens = new HashSet<String>();
-        tokens.addAll(tokenize(old));
+        if(old != null && old.value() != null && old.value().length() > 0) {
+            tokens.add(old.value());
+        }
         tokens.addAll(tokenize(annotations));
         return make(tokens);
     }
 
-    private static Set<String> tokenize(Publish publish) {
+    private static Set<String> tokenize(Properties properties) {
         Set<String> result = new HashSet<String>();
-        for(Property property : publish.properties()) {
+        for(Property property : properties.value()) {
             result.add("(" + property.name().toLowerCase() + "=" + property.value() + ")");
-        }
-        return result;
-    }
-
-    private static Set<String> tokenize(Filter filter) {
-        Set<String> result = new HashSet<String>();
-        if(filter != null && filter.value() != null && filter.value().length() > 0) {
-            result.add(filter.value());
         }
         return result;
     }
@@ -125,7 +106,12 @@ public class FilterGenerator {
         for (Annotation annotation : annotations) {
             if(annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
                 if (annotation.annotationType().equals(Filter.class)) {
-                    result.addAll(tokenize((Filter)annotation));
+                    Filter old = (Filter)annotation;
+                    if (old.value() != null && old.value().length() > 0) {
+                        result.add(old.value());
+                    }
+                } else if(annotation.annotationType().equals(Properties.class)) {
+                    result.addAll(tokenize((Properties)annotation));
                 } else if(!annotation.annotationType().equals(Required.class)
                         && !annotation.annotationType().equals(OSGiService.class)
                         && !annotation.annotationType().equals(Default.class)
@@ -153,6 +139,15 @@ public class FilterGenerator {
                         current = "(" + annotation.annotationType().getSimpleName().toLowerCase() + "=*)";
                         result.add(current);
                     }
+                }
+            } else {
+                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                    Filter old = annotation.annotationType().getAnnotation(Filter.class);
+                    result.add(old.value());
+                }
+                if (annotation.annotationType().isAnnotationPresent(Properties.class)) {
+                    Properties properties = annotation.annotationType().getAnnotation(Properties.class);
+                    result.addAll(tokenize(properties));
                 }
             }
         }

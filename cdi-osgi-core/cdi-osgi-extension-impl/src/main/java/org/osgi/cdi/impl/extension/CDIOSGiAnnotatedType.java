@@ -11,6 +11,7 @@
  */
 package org.osgi.cdi.impl.extension;
 
+import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +39,29 @@ public class CDIOSGiAnnotatedType<T> implements AnnotatedType<T> {
     Set<AnnotatedField<? super T>> fields = new HashSet<AnnotatedField<? super T>>();
 
 
-    public CDIOSGiAnnotatedType(AnnotatedType<T> annotatedType) {
+    public CDIOSGiAnnotatedType(AnnotatedType<T> annotatedType) throws Exception {
         logger.debug("Creation of a new CDIOSGiAnnotatedType wrapping {}", annotatedType);
         this.annotatedType = annotatedType;
         process();
     }
 
-    private void process() {
+    private void process() throws Exception {
+        if(getJavaClass().getAnnotation(Filter.class) != null) {
+            StringBuilder msg = new StringBuilder();
+            msg.append("Filter qualifier: ").append(getAnnotation(Filter.class))
+               .append(", does not apply to bean class (").append(getBaseType()).append(')');
+            logger.error(msg.toString());
+            throw new Exception(msg.toString());
+        }
+        for (Annotation annotation : getJavaClass().getAnnotations()) {
+                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                    StringBuilder msg = new StringBuilder();
+                    msg.append("Filter stereotype: ").append(annotation).append(", does not apply to bean class (")
+                       .append(getBaseType()).append(')');
+                    logger.error(msg.toString());
+                    throw new Exception(msg.toString());
+                }
+        }
         for(AnnotatedConstructor<T> constructor : annotatedType.getConstructors()) {
             logger.trace("Processing constructor {}", constructor);
             if(isCDIOSGiConstructor(constructor)) {

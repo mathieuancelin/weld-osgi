@@ -26,22 +26,17 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 
 /**
- * <p>This annotation qualifies an injection point that represents a LDAP filtered
- * service.</p>
- * <p>It allows to specify the LDAP filter, as a required
- * {@link String}.</p>
- * <p>It may be coupled with a {@link OSGiService} or a {@link Publish}
- * annotation in order to filter the injected or published service
- * implementations. The LDAP filtering acts on
- * {@link Qualifier} or {@link Property} annotations or regular OSGi
- * properties used in service publishing.</p>
+ * <p>This annotation qualifies an injection point that represents a LDAP filtered service.</p>
+ * <p>It allows to specify the LDAP filter, as a required {@link String}.</p>
+ * <p>It may be coupled with a {@link OSGiService} annotation in order to filter the injected service implementations.
+ * The LDAP filtering acts on {@link Qualifier} or {@link Properties} annotations or regular OSGi LDAP properties used in
+ * service publishing.</p>
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
+ * @see Properties
  * @see Qualifier
- * @see Property
  * @see OSGiService
- * @see Publish
  * @see org.osgi.cdi.api.extension.Service
  * @see org.osgi.cdi.api.extension.ServiceRegistry
  */

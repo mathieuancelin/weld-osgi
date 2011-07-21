@@ -33,6 +33,11 @@
             <artifactId>javassist</artifactId>
             <version>3.14.0-GA</version>
         </dependency>
+        <dependency>
+            <groupId>org.osgi.cdi</groupId>
+            <artifactId>cdi-osgi-extension-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

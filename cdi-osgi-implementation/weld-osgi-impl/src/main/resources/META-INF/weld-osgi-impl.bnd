@@ -1,7 +1,6 @@
-Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-integration-api|cdi-osgi-extension-impl|jboss-interceptor-api|javax.inject|jsr250-api|cdi-api|el-api, \
-                 slf4j-jdk14; inline=true
+Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-integration-api|cdi-osgi-extension-impl|jboss-interceptor-api|javax.inject|jsr250-api|cdi-api|el-api
 
-Import-Package javax.annotation; org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.5.10; resolution:=optional, \
+Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resolution:=optional, \
                ch.qos.cal10n; version=0.7.2; resolution:=optional,
                org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \

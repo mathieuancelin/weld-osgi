@@ -63,13 +63,6 @@ public @interface Publish {
     public Class[] contracts() default {};
 
     /**
-     * The properties of the annotated class as OSGi service properties (for LDAP filtering).
-     *
-     * @return the properties of the service implementation as an array of {@link Property}.
-     */
-    public Property[] properties() default {};
-
-    /**
      * The rank of the service to find the best available service on lookups.
      *
      * @return the rank of the service. Default is 0.
