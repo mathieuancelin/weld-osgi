@@ -65,5 +65,8 @@ public class BundleScannerTest  {
         Assert.assertNotNull("The bean class collection for bundleScannerInner was null", classScannerInner);
         Assert.assertEquals("The bean class collection size for bundleScanner was wrong",2,classScanner.size());
         Assert.assertEquals("The bean class collection size for bundleScannerInner was wrong",1,classScannerInner.size());
+        Assert.assertTrue("The class com.sample.ScannerClass was not registered for bundleScanner", classScanner.contains("com.sample.ScannerClass"));
+        Assert.assertTrue("The class com.sample.ScannerInnerClass was not registered for bundleScanner", classScanner.contains("com.sample.ScannerInnerClass"));
+        Assert.assertTrue("The class com.sample.ScannerInnerClass was not registered for bundleScanner",classScannerInner.contains("com.sample.ScannerInnerClass"));
     }
 }
