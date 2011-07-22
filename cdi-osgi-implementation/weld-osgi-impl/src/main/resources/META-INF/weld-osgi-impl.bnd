@@ -1,7 +1,7 @@
 Embed-Dependency *; scope=compile; inline=true; artifactId=!cdi-osgi-integration-api|cdi-osgi-extension-impl|jboss-interceptor-api|javax.inject|jsr250-api|cdi-api|el-api
 
 Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resolution:=optional, \
-               ch.qos.cal10n; version=0.7.2; resolution:=optional,
+               ch.qos.cal10n; version=0.7.2; resolution:=optional, \
                org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \
                org.osgi.cdi.api.extension.events; \
@@ -11,7 +11,6 @@ Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resol
                javax.decorator; \
                javax.annotation; \
                javax.interceptor; \
-               javax.enterprise; \
                javax.enterprise.context; \
                javax.enterprise.context.spi; \
                javax.enterprise.event; \

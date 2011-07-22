@@ -1,9 +1,10 @@
+Import-Package:  !javassist.*, !com.sun.*
+
 Export-Package javax.el; \
                javax.inject; \
                javax.decorator; \
                javax.annotation; \
                javax.interceptor; \
-               javax.enterprise; \
                javax.enterprise.context; \
                javax.enterprise.context.spi; \
                javax.enterprise.event; \
