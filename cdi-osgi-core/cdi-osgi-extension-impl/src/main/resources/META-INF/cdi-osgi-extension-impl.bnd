@@ -7,16 +7,16 @@ Import-Package org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \
                org.osgi.cdi.api.extension.events; \
                org.osgi.cdi.api.integration;version=${pom.version}, \
-               javax.inject; \
+               javax.el;version=2.2.0, \
+               javax.inject;version=1.0.0, \
                javax.decorator; \
-               javax.annotation; \
-               javax.interceptor; \
                javax.enterprise.context; \
                javax.enterprise.context.spi; \
-               javax.enterprise.event;, \
+               javax.enterprise.event; \
                javax.enterprise.inject; \
                javax.enterprise.inject.spi; \
-               javax.enterprise.util; \
+               javax.enterprise.util; version=1.0.0-SP4, \
+               javax.interceptor; version=1.1.0, \
                org.osgi.framework
 
 DynamicImport-Package *

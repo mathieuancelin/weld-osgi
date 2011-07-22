@@ -178,7 +178,7 @@ public abstract class AbstractServiceEvent {
     /**
      * Get the class that are the firing service implementations.
      *
-     * @param type
+     * @param type the class from which the service will be loaded
      * @return all the firing service implementation classes.
      */
     public List<Class<?>> getServiceClasses(Class<?> type) {
