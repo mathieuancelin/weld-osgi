@@ -127,7 +127,7 @@ public class ServiceRegistryImpl implements ServiceRegistry {
     }
 
     private void checkForValidDependencies(AbstractServiceEvent event) {
-        if (event == null || applicable(event.getServiceClasses())) {
+        if (event == null || applicable(event.getServiceClasses(getClass()))) {
             boolean valid = true;
             if (!osgiServiceDependencies.isEmpty()) {
                 invalid:

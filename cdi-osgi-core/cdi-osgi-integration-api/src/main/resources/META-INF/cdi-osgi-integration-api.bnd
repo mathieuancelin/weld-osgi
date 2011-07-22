@@ -1,3 +1,3 @@
-Export-Package org.osgi.cdi.api.integration;
+Export-Package org.osgi.cdi.api.integration;version=${pom.version}
 
 DynamicImport-Package *

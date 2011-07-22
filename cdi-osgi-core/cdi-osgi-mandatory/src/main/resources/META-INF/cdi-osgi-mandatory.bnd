@@ -1,5 +1,3 @@
-Import-Package:  !javassist.*, !com.sun.*
-
 Export-Package javax.el; \
                javax.inject; \
                javax.decorator; \

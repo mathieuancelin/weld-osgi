@@ -182,7 +182,7 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
     }
 
     private void fireAllEvent(AbstractServiceEvent event, Event broadcaster, Instance<Object> instance) {
-        List<Class<?>> classes = event.getServiceClasses();
+        List<Class<?>> classes = event.getServiceClasses(getClass());
         Class eventClass = event.getClass();
         for (Class<?> clazz : classes) {
             try {

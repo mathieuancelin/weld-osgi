@@ -5,7 +5,7 @@ Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resol
                org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \
                org.osgi.cdi.api.extension.events; \
-               org.osgi.cdi.api.integration; \
+               org.osgi.cdi.api.integration;version=${pom.version}, \
                javax.el; \
                javax.inject; \
                javax.decorator; \
