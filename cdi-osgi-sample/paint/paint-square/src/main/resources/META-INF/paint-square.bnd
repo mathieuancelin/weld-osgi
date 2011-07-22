@@ -1,1 +1,1 @@
-Export-Package com.sample.osgi.paint.square
+Export-Package com.sample.osgi.paint.square;version=${pom.version}
