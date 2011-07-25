@@ -25,6 +25,7 @@
         <module>cdi-osgi-tests-bundle3</module>
         <module>cdi-osgi-tests-scanner</module>
         <module>cdi-osgi-tests-scanner-inner</module>
+        <module>cdi-osgi-tests-extension</module>
         <!--<module>cdi-osgi-tests-arquillian</module>-->
     </modules>
     

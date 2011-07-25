@@ -56,10 +56,12 @@ public class UsageTest {
         Assert.assertNotNull("The bundle2 was not retrieved",bundle2);
         Assert.assertNotNull("The bundle3 was not retrieved",bundle3);
 
-        ServiceReference factoryReference = context.getServiceReference(CDIContainerFactory.class.getName());
-        CDIContainerFactory factory = (CDIContainerFactory) context.getService(factoryReference);
+        ServiceReference[] factoryReferences = context.getServiceReferences(CDIContainerFactory.class.getName(), null);
+        Assert.assertNotNull("The container factory service reference array was null",factoryReferences);
+        Assert.assertTrue("There was no container factory service available",factoryReferences.length > 0);
+        CDIContainerFactory factory = (CDIContainerFactory) context.getService(factoryReferences[0]);
+        Assert.assertNotNull("The container factory service was null",factory);
         Collection<CDIContainer> containers = factory.containers();
-
         Assert.assertEquals("The container collection had the wrong number of containers",2,containers.size());
 
         CDIContainer container1 = factory.container(bundle1);
