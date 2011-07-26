@@ -1,9 +1,9 @@
 package org.osgi.cdi.test.service;
 
+import com.sample.osgi.bundle1.api.PersonalizedHashCodeService;
 import com.sample.osgi.bundle1.api.PropertyService;
 import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -213,5 +213,22 @@ public class ServiceConsumingTest {
         PropertyService initializerOtherFilteredServiceProviderGet = initializerOtherFilteredServiceProvider.get();
         Assert.assertNotNull("The initializer other filtered service provider instance was null", initializerOtherFilteredServiceProviderGet);
         Assert.assertEquals("The initializer other filtered service provider method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",initializerOtherFilteredServiceProviderGet.whoAmI());
+    }
+
+    @Test
+    //@Ignore
+    public void hashCodeCallTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
+        Environment.waitForEnvironment(context);
+
+        ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
+        Assert.assertNotNull("The service provider reference array was null",serviceProviderReferences);
+        Assert.assertEquals("The number of service provider implementations was wrong", 1,serviceProviderReferences.length);
+        ServiceProvider provider = (ServiceProvider)context.getService(serviceProviderReferences[0]);
+        Assert.assertNotNull("The service provider was null", provider);
+
+
+        PersonalizedHashCodeService hashCodeService = provider.getPersonalizedHashCodeService();
+        Assert.assertNotNull("The hashCode service was null",hashCodeService);
+        Assert.assertEquals("The hashCode service method result was wrong",42,hashCodeService.hashCode());
     }
 }

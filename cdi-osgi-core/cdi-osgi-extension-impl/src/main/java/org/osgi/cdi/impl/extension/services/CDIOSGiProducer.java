@@ -108,7 +108,11 @@ public class CDIOSGiProducer {
             logger.warn("The data file path was empty");
             return null;
         }
-        return getSpecificContext(holder,p).getDataFile(file.value());
+        BundleContext context = getSpecificContext(holder,p);
+        if(context == null) {
+            return null;
+        }
+        return context.getDataFile(file.value());
     }
 
     @Produces
@@ -125,6 +129,9 @@ public class CDIOSGiProducer {
     public Map<String, String> getBundleHeaders(BundleHolder holder, InjectionPoint p) {
         logger.debug("Bundle headers from bundle {} producer", holder.getBundle());
         Dictionary dict = getSpecificBundle(holder,p).getHeaders();
+        if(dict == null) {
+            return null;
+        }
         Map<String, String> headers = new HashMap<String, String>();
         Enumeration<String> keys = dict.keys();
         while(keys.hasMoreElements()) {
@@ -150,7 +157,11 @@ public class CDIOSGiProducer {
             logger.error("You must specify a header name. {}", e);
             throw e;
         }
-        return (String) getSpecificBundle(holder,p).getHeaders().get(header.value());
+        Dictionary dict = getSpecificBundle(holder,p).getHeaders();
+        if(dict == null) {
+            return null;
+        }
+        return (String) dict.get(header.value());
     }
 
     private static class BundleHandler implements InvocationHandler {

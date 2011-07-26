@@ -48,7 +48,7 @@ public class OSGiServiceBean implements Bean {
     private Filter filter;
     private Set<Annotation> qualifiers;
     private Type type;
-    private OSGiService annotation;
+    private long timeout;
 
     protected OSGiServiceBean(InjectionPoint injectionPoint) {
         logger.debug("Creation of a new OSGiServiceBean for injection point: {}",injectionPoint);
@@ -56,9 +56,9 @@ public class OSGiServiceBean implements Bean {
         type = injectionPoint.getType();
         qualifiers = injectionPoint.getQualifiers();
         filter = FilterGenerator.makeFilter(injectionPoint);
-        for (Annotation anno : injectionPoint.getQualifiers()) {
-            if (anno.annotationType().equals(OSGiService.class)) {
-                annotation = (OSGiService) anno;
+        for (Annotation annotation : injectionPoint.getQualifiers()) {
+            if (annotation.annotationType().equals(OSGiService.class)) {
+                timeout = ((OSGiService) annotation).value();
                 break;
             }
         }
@@ -121,12 +121,17 @@ public class OSGiServiceBean implements Bean {
         try {
             Bundle bundle = FrameworkUtil.getBundle(injectionPoint.getMember().getDeclaringClass());
             DynamicServiceHandler handler =
-                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter, annotation);
+                    new DynamicServiceHandler(bundle, ((Class)type).getName(), filter, qualifiers, timeout);
             Object proxy = Proxy.newProxyInstance(
                     getClass().getClassLoader(),
                     new Class[]{getBeanClass()},
                     handler);
-            handlers.put(proxy, handler);
+            if(handlers.containsKey(proxy)) {
+                handler.setStored(true);
+            } else {
+                handlers.put(proxy, handler);
+                handler.setStored(true);
+            }
             return proxy;
         } catch (Exception e) {
             logger.error("Unable to instantiate {} due to {}",this,e);

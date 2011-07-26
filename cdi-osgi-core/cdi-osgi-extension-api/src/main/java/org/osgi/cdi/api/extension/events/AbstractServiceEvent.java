@@ -74,8 +74,7 @@ public abstract class AbstractServiceEvent {
      * @param reference the {@link ServiceReference} that changes of state.
      * @param context   the service {@link BundleContext}.
      */
-    public AbstractServiceEvent(
-            ServiceReference reference, BundleContext context) {
+    public AbstractServiceEvent(ServiceReference reference, BundleContext context) {
         this.reference = reference;
         this.context = context;
     }
@@ -97,23 +96,6 @@ public abstract class AbstractServiceEvent {
     }
 
     /**
-     * TODO
-     *
-     * @param type
-     * @param <T>
-     * @return
-     */
-    public <T> TypedService<T> type(Class<T> type) {
-        if (isTyped(type)) {
-            return TypedService.create(type, context, reference);
-        } else {
-            throw new RuntimeException("the type " + type
-               + " isn't supported for the service. Supported types are "
-               + getServiceClasses());
-        }
-    }
-
-    /**
      * Get a service instance of the firing service.
      *
      * @return the service instance of the firing service.
@@ -131,26 +113,6 @@ public abstract class AbstractServiceEvent {
      */
     public boolean ungetService() {
         return context.ungetService(reference);
-    }
-
-    /**
-     * If the specified type is a implementation of the firing service.
-     *
-     * @param type the tested type for being a firing service implementation.
-     * @return true if the specified type is assignable for the firing service, false otherwise.
-     */
-    public boolean isTyped(Class<?> type) {
-        boolean typed = false;
-        if (!assignable.containsKey(type)) {
-            for (Class clazz : getServiceClasses()) {
-                if (type.isAssignableFrom(clazz)) {
-                    typed = true;
-                    break;
-                }
-            }
-            assignable.put(type, typed);
-        }
-        return assignable.get(type);
     }
 
     /**
@@ -176,17 +138,55 @@ public abstract class AbstractServiceEvent {
     }
 
     /**
+     * Get a service instance of the firing service with the specific type.
+     *
+     * @param type the wanted class for the service instance
+     * @param <T> the wanted type for the service instance
+     * @return the service instance of the firing service with the given type.
+     * @see BundleContext#getService(org.osgi.framework.ServiceReference)
+     */
+    public <T> T getService(Class<T> type) {
+        if (isTyped(type)) {
+            return type.cast(getService());
+        } else {
+            throw new RuntimeException("the type " + type
+               + " isn't supported for the service. Supported types are "
+               + getServiceClasses(type));
+        }
+    }
+
+    /**
+     * If the specified type is a implementation of the firing service.
+     *
+     * @param type the tested type for being a firing service implementation.
+     * @return true if the specified type is assignable for the firing service, false otherwise.
+     */
+    public boolean isTyped(Class<?> type) {
+        boolean typed = false;
+        if (!assignable.containsKey(type)) {
+            for (Class clazz : getServiceClasses(type)) {
+                if (type.isAssignableFrom(clazz)) {
+                    typed = true;
+                    break;
+                }
+            }
+            assignable.put(type, typed);
+        }
+        return assignable.get(type);
+    }
+
+    /**
      * Get the class that are the firing service implementations.
      *
+     * @param type the class from which the service will be loaded
      * @return all the firing service implementation classes.
      */
-    public List<Class<?>> getServiceClasses() {
+    public List<Class<?>> getServiceClasses(Class<?> type) {
         if (classes == null) {
             classes = new ArrayList<Class<?>>();
             for (String className : getServiceClassNames()) {
                 try {
-                    classes.add(getClass()
-                                        .getClassLoader().loadClass(className));
+                    classes.add(type.getClassLoader().loadClass(className));
                 } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                     return Collections.emptyList();
@@ -194,37 +194,5 @@ public abstract class AbstractServiceEvent {
             }
         }
         return classes;
-    }
-
-    /**
-     * TODO
-     *
-     * @param <T>
-     */
-    public static class TypedService<T> {
-
-        private final BundleContext context;
-        private final ServiceReference ref;
-        private final Class<T> type;
-
-        TypedService(BundleContext context,
-                     ServiceReference ref, Class<T> type) {
-            this.context = context;
-            this.ref = ref;
-            this.type = type;
-        }
-
-        static <T> TypedService<T> create(Class<T> type
-                , BundleContext context, ServiceReference ref) {
-            return new TypedService<T>(context, ref, type);
-        }
-
-        public T getService() {
-            return type.cast(context.getService(ref));
-        }
-
-        public boolean ungetService() {
-            return context.ungetService(ref);
-        }
     }
 }

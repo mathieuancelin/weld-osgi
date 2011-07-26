@@ -3,6 +3,7 @@ package org.osgi.cdi.test.event;
 import com.sample.osgi.bundle1.api.MovingService;
 import com.sample.osgi.bundle1.util.EventListener;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -35,6 +36,7 @@ public class EventTest {
 
         Bundle bundle1 = null, bundle2 = null, bundle3 = null;
         for(Bundle b : context.getBundles()) {
+            Assert.assertEquals("Bundle" + b.getSymbolicName() + " is not ACTIVE", Bundle.ACTIVE, b.getState());
             if(b.getSymbolicName().equals("com.sample.osgi.cdi-osgi-tests-bundle1")) {
                 bundle1=b;
             }

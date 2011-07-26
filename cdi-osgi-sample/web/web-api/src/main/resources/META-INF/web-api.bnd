@@ -1,1 +1,1 @@
-Export-Package com.sample.web.api
+Export-Package com.sample.web.api;version=${pom.version}
