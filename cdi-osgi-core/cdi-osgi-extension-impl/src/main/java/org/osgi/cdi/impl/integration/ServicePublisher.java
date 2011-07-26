@@ -52,13 +52,15 @@ public class ServicePublisher {
 
     public void registerAndLaunchComponents() {
         logger.info("Registering/Starting OSGi Service for bundle {}", bundle.getSymbolicName());
+
         Class<?> clazz;
         for (String className : classes) {
             logger.trace("Scanning class {}", className);
+
             try {
                 clazz = bundle.loadClass(className);
             } catch (Exception e) {//inaccessible class
-                logger.warn("Class {} is inaccessible", className);
+                logger.warn("Class {} cannot be load", className);
                 continue;
             }
             //is an auto-publishable class?
@@ -78,6 +80,44 @@ public class ServicePublisher {
                 publish(clazz, service, qualifiers);
             }
         }
+
+// TODO Use javassist in order to reduce the number of loaded class
+// Currently unable to use javassist: if javassist is accessible in class path, Weld returns a java.lang.ClassCastException
+//        ClassPool classPool = new ClassPool();
+//        CtClass ctClass = null;
+//        Class<?> clazz;
+//        for (String className : classes) {
+//            logger.trace("Scanning class {}", className);
+
+//            try {
+//                ctClass = classPool.get(className);
+//                if(ctClass.getAnnotation(Publish.class) != null) {
+//                    logger.debug("Found a new auto-published service class {}", className);
+//                    clazz = bundle.loadClass(className);
+//                    Object service = null;
+//                    InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
+//                    List<Annotation> qualifiers = getQualifiers(clazz);
+//                    try {
+//                        Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
+//                        service = instance.get();
+//                        logger.trace("Service instance generated");
+//                    } catch (Throwable e) {
+//                        logger.error("Unable to instantiate the service for class {}, CDI return this error: {}", clazz, e);
+//                        throw new RuntimeException(e);
+//                    }
+//                    publish(clazz, service, qualifiers);
+//                }
+//            } catch (NotFoundException e) {//inaccessible class
+//                logger.warn("Class file {} is inaccessible", className);
+//            } catch (ClassNotFoundException e) {
+//                logger.warn("Class file {} cannot be read/load", className);
+//            } finally {
+//                if (ctClass != null) {
+//                    ctClass.detach();
+//                    ctClass = null;
+//                }
+//            }
+//        }
     }
 
     private void publish(Class<?> clazz, Object service, List<Annotation> qualifiers) {

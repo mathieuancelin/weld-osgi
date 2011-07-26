@@ -88,7 +88,7 @@ public class CalculatorGUI extends JFrame {
     }
 
     public void bindService(@Observes @Specification(Operator.class) ServiceEvents.ServiceArrival arrival) {
-        Operator o = arrival.type(Operator.class).getService();
+        Operator o = arrival.getService(Operator.class);
         if (!registeredOperators.containsKey(o.label())) {
             registeredOperators.put(o.label(), new OperatorListener(o));
         }
@@ -96,7 +96,7 @@ public class CalculatorGUI extends JFrame {
     }
 
     public void unbindService(@Observes @Specification(Operator.class) ServiceEvents.ServiceDeparture departure) {
-        Operator o = departure.type(Operator.class).getService();
+        Operator o = departure.getService(Operator.class);
         if (registeredOperators.containsKey(o.label())) {
             registeredOperators.remove(o.label());
         }

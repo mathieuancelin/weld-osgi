@@ -1,14 +1,16 @@
-package com.sample.osgi.bundle1.impl;
+package com.sample.osgi.extension;
 
+import com.sample.osgi.bundle1.api.Name;
 import com.sample.osgi.bundle1.api.PropertyService;
 import org.osgi.cdi.api.extension.annotation.Publish;
 
 @Publish
-public class PropertyServiceImpl1 implements PropertyService {
+@Name("extension")
+public class ServiceExtension implements PropertyService {
 
     private String name;
 
-    public PropertyServiceImpl1() {
+    public ServiceExtension() {
         name = getClass().getName();
     }
 

@@ -1,5 +1,3 @@
 Export-Package org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \
-               org.osgi.cdi.api.extension.events;
-
-DynamicImport-Package *
+               org.osgi.cdi.api.extension.events;version=${pom.version}

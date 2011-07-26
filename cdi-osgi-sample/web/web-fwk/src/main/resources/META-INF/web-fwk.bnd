@@ -11,7 +11,7 @@ Import-Package !com.sun.grizzly.*,\
 
 Export-Package com.sample.web.fwk; \
                com.sample.web.fwk.api; \
-               com.sample.web.fwk.view
+               com.sample.web.fwk.view;version=${pom.version}
 
 -exportcontents com.sun.jersey.*; \
                 com.sun.ws.*; \

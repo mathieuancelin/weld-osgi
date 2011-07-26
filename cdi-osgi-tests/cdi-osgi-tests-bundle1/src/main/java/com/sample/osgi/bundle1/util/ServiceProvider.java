@@ -1,6 +1,7 @@
 package com.sample.osgi.bundle1.util;
 
 import com.sample.osgi.bundle1.api.Name;
+import com.sample.osgi.bundle1.api.PersonalizedHashCodeService;
 import com.sample.osgi.bundle1.api.PropertyService;
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
@@ -321,5 +322,13 @@ public class ServiceProvider {
 
     public Service<PropertyService> getOtherFilteredServiceProvider() {
         return otherFilteredServiceProvider;
+    }
+
+    @Inject
+    @OSGiService
+    private PersonalizedHashCodeService personalizedHashCodeService;
+
+    public PersonalizedHashCodeService getPersonalizedHashCodeService() {
+        return personalizedHashCodeService;
     }
 }

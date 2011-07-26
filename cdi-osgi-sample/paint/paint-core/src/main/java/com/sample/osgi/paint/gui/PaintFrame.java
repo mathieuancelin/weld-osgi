@@ -72,12 +72,12 @@ public class PaintFrame extends JFrame implements MouseListener {
 
     public void bindService(@Observes @Specification(ShapeProvider.class) ServiceEvents.ServiceArrival event) {
         System.out.println("bind : " + event.getServiceClassNames());
-        addShape(event.type(ShapeProvider.class).getService());
+        addShape(event.getService(ShapeProvider.class));
     }
 
     public void unbindService(@Observes @Specification(ShapeProvider.class) ServiceEvents.ServiceDeparture event) {
         System.out.println("unbind : " + event.getServiceClassNames());
-        removeShape(event.type(ShapeProvider.class).getService().getId());
+        removeShape(event.getService(ShapeProvider.class).getId());
     }
 
     private void addShape(ShapeProvider provider) {
