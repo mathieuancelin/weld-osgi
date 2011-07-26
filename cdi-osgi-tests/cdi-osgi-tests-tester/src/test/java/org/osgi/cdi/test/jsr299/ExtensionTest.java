@@ -2,7 +2,6 @@ package org.osgi.cdi.test.jsr299;
 
 import com.sample.osgi.extension.ServiceExtensionProvider;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -28,7 +27,7 @@ public class ExtensionTest {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 

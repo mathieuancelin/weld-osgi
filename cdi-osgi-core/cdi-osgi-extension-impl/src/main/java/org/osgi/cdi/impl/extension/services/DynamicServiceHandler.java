@@ -12,15 +12,16 @@
 package org.osgi.cdi.impl.extension.services;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
-import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * Handler for OSGi dynamic service in use by {@link org.osgi.cdi.impl.extension.OSGiServiceBean}.
@@ -37,13 +38,16 @@ public class DynamicServiceHandler implements InvocationHandler {
     private Filter filter;
     private final ServiceTracker tracker;
     private final long timeout;
+    private Set<Annotation> qualifiers;
+    boolean stored = false;
 
-    public DynamicServiceHandler(Bundle bundle, String name, Filter filter, OSGiService anno) {
+    public DynamicServiceHandler(Bundle bundle, String name, Filter filter, Set<Annotation> qualifiers, long timeout) {
 		logger.debug("Creation of a new DynamicServiceHandler for bundle {} as a {} with filter {}", new Object[] {bundle, name, filter.value()});        
 		this.bundle = bundle;
         this.name = name;
         this.filter = filter;
-        timeout = anno.value();
+        this.timeout = timeout;
+        this.qualifiers = qualifiers;
         try {
             if (filter != null && filter.value() != null && filter.value().length() > 0) {
                 this.tracker = new ServiceTracker(bundle.getBundleContext(),
@@ -64,11 +68,21 @@ public class DynamicServiceHandler implements InvocationHandler {
         this.tracker.close();
     }
 
+    public void setStored(boolean stored) {
+        this.stored = stored;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.trace("Call on the DynamicServiceHandler {} for method {}", this, method);
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
         Object instanceToUse = this.tracker.waitForService(timeout);
+        if(!stored && method.getName().equals("hashCode")) { //intercept hashCode method
+            int result = name.hashCode();
+            result = 31 * result + filter.value().hashCode();
+            result = 31 * result + qualifiers.hashCode();
+            return result;
+        }
         try {
             return method.invoke(instanceToUse, args);
         } catch(Throwable t) {
