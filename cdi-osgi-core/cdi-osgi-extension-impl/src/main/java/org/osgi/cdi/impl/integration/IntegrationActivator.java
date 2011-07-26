@@ -1,4 +1,9 @@
-/**
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat Middleware LLC, and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -9,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.osgi.cdi.impl.integration;
 
 import org.osgi.cdi.api.extension.BundleState;
@@ -144,6 +150,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     private void startManagement(Bundle bundle) {
+        if (bundle.getHeaders().get("Embedded-CDIContainer") != null
+                && bundle.getHeaders().get("Embedded-CDIContainer").equals("true")) {
+            return;
+        }
         logger.debug("Managing {}", bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());

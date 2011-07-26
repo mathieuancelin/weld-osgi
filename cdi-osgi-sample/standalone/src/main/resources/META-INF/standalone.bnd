@@ -1,0 +1,5 @@
+Export-Package com.sample.osgi.standalone;version=${pom.version}
+
+Bundle-Activator com.sample.osgi.standalone.StandaloneActivator
+
+Embedded-CDIContainer true

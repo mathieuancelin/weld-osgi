@@ -40,3 +40,11 @@ Private-Package !javax.interceptor.*, \
 
 DynamicImport-Package *
 Bundle-Activator org.jboss.weld.environment.osgi.Activator
+
+Export-Package org.jboss.weld.environment.osgi.embedded; \
+               org.jboss.weld.environment.osgi.integration; \
+               org.jboss.weld.environment.osgi.integration.discovery; \
+               org.jboss.weld.environment.osgi.integration.discovery.bundle; \
+               org.jboss.weld.environment.osgi; version=${pom.version}, \
+               org.jboss.weld.environment.se; \
+               org.jboss.weld.environment.se.beans
