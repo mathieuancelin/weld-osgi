@@ -19,6 +19,7 @@
 
     <modules>
         <!-- <module>cdi-osgi-design</module> -->
+		<!-- <module>cdi-osgi-user</module> -->
     </modules>
 
 </project>
