@@ -57,37 +57,6 @@ public class ServicePublisher {
     public void registerAndLaunchComponents() {
         logger.info("Registering/Starting OSGi Service for bundle {}", bundle.getSymbolicName());
 
-//        Class<?> clazz;
-//        for (String className : classes) {
-//            logger.trace("Scanning class {}", className);
-//
-//            try {
-//                clazz = bundle.loadClass(className);
-//            } catch (Exception e) {//inaccessible class
-//                logger.warn("Class {} cannot be load", className);
-//                continue;
-//            }
-//            //is an auto-publishable class?
-//            if (clazz.isAnnotationPresent(Publish.class)) {
-//                logger.debug("Found a new auto-published service class {}", clazz);
-//                Object service = null;
-//                InstanceHolder instanceHolder = instance.select(InstanceHolder.class).get();
-//                List<Annotation> qualifiers = getQualifiers(clazz);
-//                try {
-//                    Instance instance = instanceHolder.select(clazz, qualifiers.toArray(new Annotation[qualifiers.size()]));
-//                    service = instance.get();
-//                    logger.trace("Service instance generated");
-//                } catch (Throwable e) {
-//                    logger.error("Unable to instantiate the service for class {}, CDI return this error: {}", clazz, e);
-//                    throw new RuntimeException(e);
-//                }
-//                publish(clazz, service, qualifiers);
-//            }
-//        }
-
-// TODO Use javassist in order to reduce the number of loaded class
-// Currently unable to use javassist: if javassist is accessible in class path, Weld returns a java.lang.ClassCastException
-
         if (!classes.isEmpty()) {
             ClassPool classPool = new ClassPool();
             try {
