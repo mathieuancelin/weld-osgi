@@ -17,7 +17,24 @@ Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resol
                javax.enterprise.event; \
                javax.enterprise.inject; \
                javax.enterprise.inject.spi; \
-               javax.enterprise.util
+               javax.enterprise.util; \
+               javassist; \
+               javassist.bytecode; \
+               javassist.bytecode.analysis; \
+               javassist.bytecode.annotation; \
+               javassist.bytecode.stackmap; \
+               javassist.compiler; \
+               javassist.compiler.ast; \
+               javassist.convert; \
+               javassist.expr; \
+               javassist.runtime; \
+               javassist.scopedpool; \
+               javassist.util; \
+               javassist.util.proxy; \
+               javassist.tools; \
+               javassist.tools.reflect; \
+               javassist.tools.rmi; \
+               javassist.tools.web
 
 Private-Package !javax.interceptor.*, \
                 org.slf4j.*; -split-package:=merge-first, \

@@ -1,3 +1,7 @@
+DynamicImport-Package *
+
+Import-Package org.osgi.framework
+
 Export-Package javax.el; \
                javax.inject; \
                javax.decorator; \
@@ -9,4 +13,23 @@ Export-Package javax.el; \
                javax.enterprise.event; \
                javax.enterprise.inject; \
                javax.enterprise.inject.spi; \
-               javax.enterprise.util
+               javax.enterprise.util; \
+               javassist; \
+               javassist.bytecode; \
+               javassist.bytecode.analysis; \
+               javassist.bytecode.annotation; \
+               javassist.bytecode.stackmap; \
+               javassist.compiler; \
+               javassist.compiler.ast; \
+               javassist.convert; \
+               javassist.expr; \
+               javassist.runtime; \
+               javassist.scopedpool; \
+               javassist.util; \
+               javassist.util.proxy; \
+               javassist.tools; \
+               javassist.tools.reflect; \
+               javassist.tools.rmi; \
+               javassist.tools.web; \
+               com.sun.jdi
+
