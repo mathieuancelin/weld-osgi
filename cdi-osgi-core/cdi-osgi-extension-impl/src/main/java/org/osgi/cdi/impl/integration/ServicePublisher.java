@@ -24,7 +24,7 @@ import javassist.NotFoundException;
 import org.osgi.cdi.api.extension.annotation.Property;
 import org.osgi.cdi.api.extension.annotation.Publish;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
-import org.osgi.cdi.impl.extension.services.RegistrationsHolderImpl;
+import org.osgi.cdi.impl.extension.beans.RegistrationsHolderImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;

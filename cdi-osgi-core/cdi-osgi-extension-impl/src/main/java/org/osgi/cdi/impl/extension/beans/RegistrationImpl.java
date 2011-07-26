@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
 import org.osgi.cdi.api.extension.Registration;
 import org.osgi.cdi.api.extension.RegistrationHolder;

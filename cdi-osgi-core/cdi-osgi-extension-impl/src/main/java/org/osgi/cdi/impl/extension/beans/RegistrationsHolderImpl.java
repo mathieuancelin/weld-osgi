@@ -15,38 +15,44 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.cdi.api.extension.RegistrationHolder;
+import org.osgi.framework.ServiceRegistration;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import javax.enterprise.context.ApplicationScoped;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @deprecated
- * {@link DynamicServiceHandler}
+ * Implementation of {@link RegistrationHolder}.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-public class ServiceReferenceHandler implements InvocationHandler {
+@ApplicationScoped
+public class RegistrationsHolderImpl implements RegistrationHolder {
 
-    private final ServiceReference ref;
-    private final BundleContext registry;
+    private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
 
-    public ServiceReferenceHandler(ServiceReference ref, BundleContext registry) {
-        this.ref = ref;
-        this.registry = registry;
+    @Override public List<ServiceRegistration> getRegistrations() {
+        return registrations;
     }
 
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Object instanceToUse = registry.getService(ref);
-        try {
-            return method.invoke(instanceToUse, args);
-        } finally {
-            registry.ungetService(ref);
-        }
+    @Override public void addRegistration(ServiceRegistration reg) {
+        registrations.add(reg);
     }
+
+    @Override public void removeRegistration(ServiceRegistration reg) {
+        registrations.remove(reg);
+    }
+
+    @Override public void clear() {
+        registrations.clear();
+    }
+
+    @Override public int size() {
+        return registrations.size();
+    }
+
 }

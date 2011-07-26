@@ -21,7 +21,7 @@ import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.api.extension.annotation.Required;
-import org.osgi.cdi.impl.extension.services.*;
+import org.osgi.cdi.impl.extension.beans.*;
 import org.osgi.cdi.impl.integration.InstanceHolder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
