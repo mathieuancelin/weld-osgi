@@ -18,7 +18,7 @@
     <name>CDI-OSGi :: Documentation</name>
 
     <modules>
-        <module>cdi-osgi-design</module>
+        <!-- <module>cdi-osgi-design</module> -->
     </modules>
 
 </project>

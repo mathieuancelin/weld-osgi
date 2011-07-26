@@ -15,7 +15,24 @@ Import-Package org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=1.6.1; resol
                javax.enterprise.inject; \
                javax.enterprise.inject.spi; \
                javax.enterprise.util; version=1.0.0, \
-               javax.interceptor; version=1.1.0
+               javax.interceptor; version=1.1.0, \
+               javassist; \
+               javassist.bytecode; \
+               javassist.bytecode.analysis; \
+               javassist.bytecode.annotation; \
+               javassist.bytecode.stackmap; \
+               javassist.compiler; \
+               javassist.compiler.ast; \
+               javassist.convert; \
+               javassist.expr; \
+               javassist.runtime; \
+               javassist.scopedpool; \
+               javassist.util; \
+               javassist.util.proxy; \
+               javassist.tools; \
+               javassist.tools.reflect; \
+               javassist.tools.rmi; \
+               javassist.tools.web; version=3.14.0
 
 Private-Package !javax.interceptor.*, \
                 org.slf4j.*; -split-package:=merge-first, \

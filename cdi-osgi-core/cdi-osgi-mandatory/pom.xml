@@ -38,6 +38,11 @@
             <artifactId>cdi-api</artifactId>
             <version>1.0-SP4</version>
         </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.14.0-GA</version>
+        </dependency>
     </dependencies>
 
     <build>
