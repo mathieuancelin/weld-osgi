@@ -15,7 +15,6 @@ import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +72,7 @@ public class DynamicServiceHandler implements InvocationHandler {
         try {
             return method.invoke(instanceToUse, args);
         } catch(Throwable t) {
-            logger.error("Unable to find a matching service.", t);
+            logger.error("Unable to find a matching service for {} with filter {} due to {}", new Object[] {name, filter.value(), t});
             throw new RuntimeException(t);
         } finally {
             CDIOSGiExtension.currentBundle.remove();

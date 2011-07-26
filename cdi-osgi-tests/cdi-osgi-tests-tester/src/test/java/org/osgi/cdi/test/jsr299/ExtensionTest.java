@@ -1,16 +1,15 @@
 package org.osgi.cdi.test.jsr299;
 
+import com.sample.osgi.extension.ServiceExtensionProvider;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.cdi.test.util.Environment;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.*;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -29,7 +28,7 @@ public class ExtensionTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void eventTest(BundleContext context) throws InterruptedException, InvalidSyntaxException, BundleException {
         Environment.waitForEnvironment(context);
 
@@ -45,5 +44,25 @@ public class ExtensionTest {
         }
         Assert.assertNotNull("The bundle1 was not retrieved", bundle1);
         Assert.assertNotNull("The bundleExtension was not retrieved",bundleExtension);
+
+        ServiceReference[] serviceExtensionProviderReferences = context.getServiceReferences(ServiceExtensionProvider.class.getName(),null);
+        Assert.assertNotNull("The extension service provider reference array was null",serviceExtensionProviderReferences);
+        Assert.assertEquals("The number of extension service provider implementations was wrong", 1,serviceExtensionProviderReferences.length);
+        ServiceExtensionProvider provider = (ServiceExtensionProvider)context.getService(serviceExtensionProviderReferences[0]);
+        Assert.assertNotNull("The extension service provider was null",provider);
+
+//        PropertyService serviceExtension = provider.getServiceExtension();
+//        Assert.assertNotNull("The extension service was null",serviceExtension);
+//        Assert.assertEquals("The extension service method result was wrong","Hacked by extension !",serviceExtension.whoAmI());
+//        PropertyService serviceExtensionService = provider.getServiceExtensionService();
+//        Assert.assertNotNull("The extension service service was null",serviceExtensionService);
+//        Assert.assertEquals("The extension service service method result was wrong","Hacked by extension !",serviceExtensionService.whoAmI());
+//
+//        ServiceReference[] propertyServiceReferences = context.getServiceReferences(PropertyService.class.getName(), null);
+//        Assert.assertNotNull("The property service reference array was null",propertyServiceReferences);
+//        Assert.assertEquals("The number of property service implementations was wrong", 1,propertyServiceReferences.length);
+//        PropertyService propertyService = (PropertyService)context.getService(propertyServiceReferences[0]);
+//        Assert.assertNotNull("The extension service provider was null",propertyService);
+//        Assert.assertEquals("The property service method result was wrong","Hacked by extension !",propertyService.whoAmI());
     }
 }
