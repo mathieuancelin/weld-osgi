@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
 import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
@@ -91,9 +91,9 @@ public class ServiceImpl<T> implements Service<T> {
             for (Object ref : instances) {
                 services.add((T) ref);
 //                if (!serviceClass.isInterface()) {
-//                    services.add((T) registry.getService(ref));
+//                    beans.add((T) registry.getService(ref));
 //                } else {
-//                    services.add((T) Proxy.newProxyInstance(
+//                    beans.add((T) Proxy.newProxyInstance(
 //                            getClass().getClassLoader(),
 //                            new Class[]{(Class) serviceClass},
 //                            new ServiceReferenceHandler(ref, registry)));

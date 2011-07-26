@@ -15,44 +15,50 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
-import org.osgi.cdi.api.extension.RegistrationHolder;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.cdi.api.extension.BundleState;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Implementation of {@link RegistrationHolder}.
+ * Wrap OSGi {@link Bundle} for CDI-OSGi usages.
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
 @ApplicationScoped
-public class RegistrationsHolderImpl implements RegistrationHolder {
+public class BundleHolder {
 
-    private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+    private BundleState state = BundleState.INVALID;
 
-    @Override public List<ServiceRegistration> getRegistrations() {
-        return registrations;
+    private Bundle bundle;
+    
+    private BundleContext context;
+
+    public Bundle getBundle() {
+        return bundle;
     }
 
-    @Override public void addRegistration(ServiceRegistration reg) {
-        registrations.add(reg);
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
-    @Override public void removeRegistration(ServiceRegistration reg) {
-        registrations.remove(reg);
+    public BundleContext getContext() {
+        return context;
     }
 
-    @Override public void clear() {
-        registrations.clear();
+    public void setContext(BundleContext context) {
+        this.context = context;
     }
 
-    @Override public int size() {
-        return registrations.size();
+    public BundleState getState() {
+        return state;
     }
 
+    public void setState(BundleState state) {
+        this.state = state;
+    }
 }

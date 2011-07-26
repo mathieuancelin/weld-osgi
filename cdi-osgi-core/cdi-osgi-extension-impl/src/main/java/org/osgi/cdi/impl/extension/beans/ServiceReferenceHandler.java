@@ -15,50 +15,38 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
-import org.osgi.cdi.api.extension.BundleState;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
- * Wrap OSGi {@link Bundle} for CDI-OSGi usages.
+ * @deprecated
+ * {@link DynamicServiceHandler}
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-@ApplicationScoped
-public class BundleHolder {
+public class ServiceReferenceHandler implements InvocationHandler {
 
-    private BundleState state = BundleState.INVALID;
+    private final ServiceReference ref;
+    private final BundleContext registry;
 
-    private Bundle bundle;
-    
-    private BundleContext context;
-
-    public Bundle getBundle() {
-        return bundle;
+    public ServiceReferenceHandler(ServiceReference ref, BundleContext registry) {
+        this.ref = ref;
+        this.registry = registry;
     }
 
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-    }
-
-    public BundleContext getContext() {
-        return context;
-    }
-
-    public void setContext(BundleContext context) {
-        this.context = context;
-    }
-
-    public BundleState getState() {
-        return state;
-    }
-
-    public void setState(BundleState state) {
-        this.state = state;
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Object instanceToUse = registry.getService(ref);
+        try {
+            return method.invoke(instanceToUse, args);
+        } finally {
+            registry.ungetService(ref);
+        }
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osgi.cdi.impl.extension.services;
+package org.osgi.cdi.impl.extension.beans;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
