@@ -68,7 +68,7 @@ import java.util.Collection;
  * @see ServiceRegistration
  * @see InterBundleEvent
  */
-public interface CDIContainer {
+public interface CDIContainer extends EmbeddedCDIContainer {
 
     /**
      * Initialize the CDI container.

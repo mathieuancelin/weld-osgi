@@ -19,6 +19,8 @@ package org.jboss.weld.environment.osgi.embedded;
 
 import org.jboss.weld.environment.osgi.WeldCDIContainer;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.osgi.cdi.api.extension.events.InterBundleEvent;
+import org.osgi.cdi.api.integration.EmbeddedCDIContainer;
 import org.osgi.framework.BundleContext;
 
 import javax.enterprise.event.Event;
