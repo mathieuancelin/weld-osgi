@@ -28,6 +28,7 @@
                 <include>com.sample.osgi:web-france</include>
                 <include>com.sample.osgi:web-spain</include>
                 <include>com.sample.osgi:web-england</include>
+                <include>com.sample.osgi:standalone</include>
                 <include>org.jboss.weld.osgi:weld-osgi-impl</include>
                 <include>org.osgi.cdi:cdi-osgi-extension-api</include>
                 <include>org.osgi.cdi:cdi-osgi-integration-api</include>

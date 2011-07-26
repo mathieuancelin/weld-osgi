@@ -144,6 +144,10 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     }
 
     private void startManagement(Bundle bundle) {
+        if (bundle.getHeaders().get("Embedded-CDIContainer") != null
+                && bundle.getHeaders().get("Embedded-CDIContainer").equals("true")) {
+            return;
+        }
         logger.debug("Managing {}", bundle.getSymbolicName());
         boolean set = CDIOSGiExtension.currentBundle.get() != null;
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
