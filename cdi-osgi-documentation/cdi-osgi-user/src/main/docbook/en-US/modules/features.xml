@@ -1,0 +1,19 @@
+<chapter>
+    <title>Weld-OSGi usages</title>
+    <section>
+        <title>Using Weld in your OSGi bundles</title>
+        <para>TODO</para>
+    </section>
+    <section>
+        <title>Publishing and consuming services is easy</title>
+        <para>TODO</para>
+    </section>
+    <section>
+        <title>Bundles are observing and communicating</title>
+        <para/>
+    </section>
+    <section>
+        <title>OSGi in annotations</title>
+        <para>TODO</para>
+    </section>
+</chapter>

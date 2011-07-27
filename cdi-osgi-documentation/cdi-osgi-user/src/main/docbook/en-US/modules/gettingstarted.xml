@@ -1,0 +1,254 @@
+<chapter>
+    <title>Getting started with Weld-OSGi</title>
+    <section>
+        <title>Setting up your environment</title>
+        <para>In order to use Weld-OSGi there few things to be done. First you will need a running
+            OSGi environment. In this documentation we will use Felix, but any other OSGi framework
+            will do the same. Next we will need to get Weld-OSGi and to deploy it into OSGi
+            environment.</para>
+        <para>Once these two steps are done you can start building up your Weld-OSGi
+            application.</para>
+        <section>
+            <title>Getting and starting the OSGi framework</title>
+            <para>Get the last version of Felix framework here: <ulink
+                    url="http://felix.apache.org/site/downloads.cgi"
+                    >http://felix.apache.org/site/downloads.cgi</ulink> and extract it anywhere you
+                want. Run the framework with <code>java -jar bin/felix.jar</code> (in the root
+                extracted directory).</para>
+            <para>You should see the new prompt for the configuration of the OSGi
+                environment:<programlisting>Welcome to Apache Felix Gogo
+
+g! </programlisting></para>
+            <para>The three main command you shoul know are:<itemizedlist>
+                    <listitem>
+                        <para><code>lb</code>, that lists all the bundles in the OSGi environment,
+                            with their id and state</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>start &lt;bundle_id></code>, that starts the corresponding
+                            bundle</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>stop &lt;bundle_id></code>, that stops the corresponding
+                            bundle</para>
+                    </listitem>
+                </itemizedlist></para>
+        </section>
+        <section>
+            <title>Getting and starting Weld-OSGi</title>
+            <para>Get the last version of Weld-OSGi framework here: <ulink url="">TODO</ulink> and
+                extract the five bundles in the <code>bundle</code> directory of the Felix
+                framework. Run the OSGi environment (<code>java -jar bin/felix.jar</code>) and
+                verify Weld-OSGi bundle are active (<code>lb</code>).</para>
+            <para>You should see this list of
+                bundle:<programlisting>g! lb    
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (3.2.2)
+    1|Active     |    1|Apache Felix Bundle Repository (1.6.2)
+    2|Active     |    1|Apache Felix Gogo Command (0.8.0)
+    3|Active     |    1|Apache Felix Gogo Runtime (0.8.0)
+    4|Active     |    1|Apache Felix Gogo Shell (0.8.0)
+    5|Active     |    1|CDI-OSGi :: Core :: Extension API (1.0.0.SNAPSHOT)
+    6|Active     |    1|CDI-OSGi :: Core :: Extension Impl (1.0.0.SNAPSHOT)
+    7|Active     |    1|CDI-OSGi :: Core :: Integration API (1.0.0.SNAPSHOT)
+    8|Active     |    1|CDI-OSGi :: Core :: Mandatory (1.0.0.SNAPSHOT)
+    9|Active     |    1|CDI OSGi :: Implementation :: Weld Integration (1.0.0.SNAPSHOT)</programlisting></para>
+        </section>
+    </section>
+    <section>
+        <title>Say hello to the World</title>
+        <para>Now we need to test our installation. Let's start with a CDI hello World within our
+            OSGi environment. This is how to construct your first bean bundle !</para>
+        <section>
+            <title>Prepare our bean bundle</title>
+            <para>We will use Maven to construct our bean bundle with the
+                    <code>maven-bundle-plugin</code>. This imply three files, the
+                    <code>pom.xml</code>, <code>beans.xml</code> and the
+                    <code>hello-world.bnd</code>. Let us see these files:<itemizedlist>
+                    <listitem>
+                        <para><code>pom.xml</code><programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    &lt;modelVersion>4.0.0&lt;/modelVersion>
+
+    &lt;groupId>com.sample&lt;/groupId>
+    &lt;artifactId>hello-world&lt;/artifactId>
+    &lt;version>1.0&lt;/version>
+    &lt;!-- Here we say that we want an OSGi bundle -->
+    &lt;packaging>bundle&lt;/packaging>
+
+    &lt;dependencies>
+        &lt;!-- We add CDI dependency -->
+        &lt;dependency>
+            &lt;groupId>javax.inject&lt;/groupId>
+            &lt;artifactId>javax.inject&lt;/artifactId>
+            &lt;version>1&lt;/version>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>javax.enterprise&lt;/groupId>
+            &lt;artifactId>cdi-api&lt;/artifactId>
+            &lt;version>1.0-SP4&lt;/version>
+        &lt;/dependency>
+        &lt;!-- We add Weld-OSGi dependency -->
+        &lt;dependency>
+            &lt;groupId>org.osgi.cdi&lt;/groupId>
+            &lt;artifactId>cdi-osgi-extension-api&lt;/artifactId>
+            &lt;version>1.0-SNAPSHOT&lt;/version>
+        &lt;/dependency>
+    &lt;/dependencies>
+
+    &lt;!-- Use of the maven-bundle-plugin -->
+    &lt;build>
+        &lt;plugins>
+            &lt;plugin>
+                &lt;groupId>org.apache.felix&lt;/groupId>
+                &lt;artifactId>maven-bundle-plugin&lt;/artifactId>
+                &lt;extensions>true&lt;/extensions>
+                &lt;configuration>
+                    &lt;instructions>
+                        &lt;!-- The OSGi information are provided using the bnd file -->
+                        &lt;_include>-target/classes/META-INF/${project.artifactId}.bnd&lt;/_include>
+                    &lt;/instructions>
+                &lt;/configuration>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build>
+
+&lt;/project></programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>META-INF\beans.xml</code><programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+    &lt;!-- Nothing special here, we just want CDI to be active in the bean bundle -->
+&lt;/beans></programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>hello-world.bnd</code><programlisting># Let bnd handle the MANIFEST.MF generation</programlisting></para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>As you can see this is pretty basic, the pom.xml file to package as a bundle, the
+                    <code>hello-world.bnd</code> file to provide OSGi information and the
+                    <code>beans.xml</code> marker file to activate CDI.</para>
+        </section>
+        <section>
+            <title>Write our classes</title>
+            <para>It's time to code. Let us do a pretty simple hello World using CDI (as if we want
+                to run it in a regular CDI environment). We do things right, a package for the
+                service interface, a package for its implementation class and the root package for
+                the bundle activator class:<itemizedlist>
+                    <listitem>
+                        <para>The <code>com.sample.api.HelloWorld.java</code>
+                            interface<programlisting>package com.sample.api;
+
+public interface HelloWorld {
+
+    void sayHello();
+    void sayGoodbye();
+}</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>The <code>com.sample.impl.HelloWorldImpl.java</code> implementation
+                            class<programlisting>package com.sample.impl;
+
+import com.sample.api.HelloWorld;
+
+public class HelloWorldImpl implements HelloWorld {
+
+    @Override
+    public void sayHello() {
+        System.out.println("Hello World!");
+    }
+
+    @Override
+    public void sayGoodbye() {
+        System.out.println("Good bye World!");
+    }
+}</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>The <code>com.sample.App.java</code> bundle activator
+                            class<programlisting>package com.sample;
+
+import com.sample.api.HelloWorld;
+import org.osgi.cdi.api.extension.events.BundleContainerEvents;
+
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+public class App {
+
+    //ask CDI for an injection
+    @Inject
+    HelloWorld helloWorld;
+
+    public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
+        //say hello when the bundle has initialized
+        helloWorld.sayHello();
+    }
+
+    public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
+        //say good bye when the bundle has shutdown
+        helloWorld.sayGoodbye();
+    }
+}</programlisting></para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>That is it for our very complex application. We will explain latter what realy
+                appens in the <code>onStartup</code> and <code>onShutdown</code> methods.</para>
+        </section>
+        <section>
+            <title>Put all that together and run</title>
+            <para>Now we have something like
+                that:<programlisting>hello-world
+    - src
+        - main
+            - java
+                - com.sample
+                  Activator.java
+                    - api
+                      HelloWorld.java
+                    - impl
+                      HelloWorldImpl.java
+            - resources
+                - META-INF
+                  beans.xml
+                  hello-world.bnd</programlisting></para>
+            <para>Build our bean bundle: <code>mvn clean install</code>, and get the resulting
+                    <code>hello-world-1.0.jar</code> file.</para>
+            <para>Now you just have to put the file into the <code>bundle</code> directory of your
+                Felix framework and launch it (<code>java -jar bin/felix.jar</code>). The bundles
+                are started immediately, you should see our bundle salute the
+                World:<programlisting>Welcome to Apache Felix Gogo
+
+g! Hello World!</programlisting>Verify
+                that all bundle are active with
+                <code>lb</code>:<programlisting>lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (3.2.2)
+    1|Active     |    1|CDI-OSGi :: Core :: Extension API (1.0.0.SNAPSHOT)
+    2|Active     |    1|CDI-OSGi :: Core :: Extension Impl (1.0.0.SNAPSHOT)
+    3|Active     |    1|CDI-OSGi :: Core :: Integration API (1.0.0.SNAPSHOT)
+    4|Active     |    1|CDI-OSGi :: Core :: Mandatory (1.0.0.SNAPSHOT)
+    5|Active     |    1|hello-world (1.0.0)
+    6|Active     |    1|Apache Felix Bundle Repository (1.6.2)
+    7|Active     |    1|Apache Felix Gogo Command (0.8.0)
+    8|Active     |    1|Apache Felix Gogo Runtime (0.8.0)
+    9|Active     |    1|Apache Felix Gogo Shell (0.8.0)
+   10|Active     |    1|CDI OSGi :: Implementation :: Weld Integration (1.0.0.SNAPSHOT)</programlisting></para>
+            <para>Now stop your bundle (<code>stop 5</code>) to see it say goog
+                bye:<programlisting>g! stop 5
+g! Good bye World!</programlisting></para>
+        </section>
+        <section>
+            <title>What is next ?</title>
+            <para>We just run our first bean bundle. We can use CDI in an OSGi environment. But
+                Weld-OSGi can do a lot of other thing. The next chapter continue the hello-world
+                application introducing most of Weld-OSGi features.</para>
+        </section>
+    </section>
+</chapter>
