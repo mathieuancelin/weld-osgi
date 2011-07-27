@@ -1,7 +1,7 @@
 Embed-Dependency *; scope=compile; inline=true; artifactId=!org.osgi.core|org.osgi.compendium|cdi-osgi-extension-api|cdi-osgi-integration-api
 
 Export-Package org.osgi.cdi.impl.extension; \
-               org.osgi.cdi.impl.extension.services;version=${pom.version}
+               org.osgi.cdi.impl.extension.beans;version=${pom.version}
 
 Import-Package org.osgi.cdi.api.extension; \
                org.osgi.cdi.api.extension.annotation; \

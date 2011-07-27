@@ -19,7 +19,7 @@ package org.osgi.cdi.impl.extension;
 
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.api.extension.annotation.OSGiService;
-import org.osgi.cdi.impl.extension.services.DynamicServiceHandler;
+import org.osgi.cdi.impl.extension.beans.DynamicServiceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;

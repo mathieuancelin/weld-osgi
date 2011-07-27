@@ -235,7 +235,7 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
         }
     }
 
-    private static class BundleNameAnnotation extends AnnotationLiteral<BundleName> implements BundleName {
+    public static class BundleNameAnnotation extends AnnotationLiteral<BundleName> implements BundleName {
 
         private final String value;
 
@@ -254,7 +254,7 @@ public class ExtensionActivator implements BundleActivator, BundleListener, Serv
         }
     }
 
-    private static class BundleVersionAnnotation extends AnnotationLiteral<BundleVersion> implements BundleVersion {
+    public static class BundleVersionAnnotation extends AnnotationLiteral<BundleVersion> implements BundleVersion {
 
         private final String value;
 
