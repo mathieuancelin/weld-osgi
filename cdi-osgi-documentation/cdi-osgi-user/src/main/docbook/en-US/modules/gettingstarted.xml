@@ -165,7 +165,7 @@ public class HelloWorldImpl implements HelloWorld {
 
     @Override
     public void sayGoodbye() {
-        System.out.println("Good bye World!");
+        System.out.println("Goodbye World!");
     }
 }</programlisting></para>
                     </listitem>
@@ -182,7 +182,7 @@ import javax.inject.Inject;
 public class App {
 
     //ask CDI for an injection
-    @Inject
+    @InjectGood bye
     HelloWorld helloWorld;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
@@ -191,7 +191,7 @@ public class App {
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
-        //say good bye when the bundle has shutdown
+        //say goodbye when the bundle has shutdown
         helloWorld.sayGoodbye();
     }
 }</programlisting></para>
@@ -242,7 +242,7 @@ START LEVEL 1
    10|Active     |    1|CDI OSGi :: Implementation :: Weld Integration (1.0.0.SNAPSHOT)</programlisting></para>
             <para>Now stop your bundle (<code>stop 5</code>) to see it say goog
                 bye:<programlisting>g! stop 5
-g! Good bye World!</programlisting></para>
+g! Goodbye World!</programlisting></para>
         </section>
         <section>
             <title>What is next ?</title>

@@ -1,10 +1,13 @@
 package com.sample.impl;
 
 import com.sample.api.HelloWorld;
+import com.sample.api.Language;
+import com.sample.api.Presentation;
 
-public class HelloWorldImpl implements HelloWorld {
+@Language("ENGLISH")
+public class HelloWorldEnglish implements HelloWorld {
 
-    @Override
+    @Override @Presentation
     public void sayHello() {
         System.out.println("Hello World!");
     }
