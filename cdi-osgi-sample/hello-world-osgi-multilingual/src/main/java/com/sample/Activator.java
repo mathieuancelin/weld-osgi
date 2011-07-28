@@ -16,9 +16,9 @@ public class Activator implements BundleActivator {
         //say hello when the bundle has initialized
 
         //first lookup the service using OSGi
-        ServiceReference helloWorldEnglishReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=english)")[0];
-        ServiceReference helloWorldFrenchReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=french)")[0];
-        ServiceReference helloWorldGermanReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=german)")[0];
+        ServiceReference helloWorldEnglishReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=ENGLISH)")[0];
+        ServiceReference helloWorldFrenchReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=FRENCH)")[0];
+        ServiceReference helloWorldGermanReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=GERMAN)")[0];
         //obtain the service
         helloWorldEnglish = (HelloWorld)context.getService(helloWorldEnglishReference);
         helloWorldFrench = (HelloWorld)context.getService(helloWorldFrenchReference);

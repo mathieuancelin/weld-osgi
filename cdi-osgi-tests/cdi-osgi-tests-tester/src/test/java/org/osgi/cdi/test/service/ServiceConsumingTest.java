@@ -51,7 +51,31 @@ public class ServiceConsumingTest {
 
     @Test
     //@Ignore
-    public void serviceConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
+    public void serviceOSGiConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
+        Environment.waitForEnvironment(context);
+
+        ServiceReference[] propertyServiceReferences = context.getServiceReferences(PropertyService.class.getName(),null);
+        Assert.assertNotNull("The property service reference array was null",propertyServiceReferences);
+        Assert.assertEquals("The number of service property service implementations was wrong", 3,propertyServiceReferences.length);
+
+        ServiceReference[] propertyService1References = context.getServiceReferences(PropertyService.class.getName(),"(name.value=1)");
+        Assert.assertNotNull("The property service 1 reference array was null",propertyService1References);
+        Assert.assertEquals("The number of service 1 property service implementations was wrong", 1,propertyService1References.length);
+        PropertyService service1 = (PropertyService)context.getService(propertyService1References[0]);
+        Assert.assertNotNull("The service 1 was null",service1);
+        Assert.assertEquals("The service 1 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl2",service1.whoAmI());
+
+        ServiceReference[] propertyService2References = context.getServiceReferences(PropertyService.class.getName(),"(name.value=2)");
+        Assert.assertNotNull("The property service 2 reference array was null",propertyService2References);
+        Assert.assertEquals("The number of service 2 property service implementations was wrong", 1,propertyService2References.length);
+        PropertyService service2 = (PropertyService)context.getService(propertyService2References[0]);
+        Assert.assertNotNull("The service 3 was null",service2);
+        Assert.assertEquals("The service 3 method result was wrong","com.sample.osgi.bundle1.impl.PropertyServiceImpl3",service2.whoAmI());
+    }
+
+    @Test
+    //@Ignore
+    public void serviceCDIConsumingTest(BundleContext context) throws InterruptedException, InvalidSyntaxException {
         Environment.waitForEnvironment(context);
 
         ServiceReference[] serviceProviderReferences = context.getServiceReferences(ServiceProvider.class.getName(),null);
