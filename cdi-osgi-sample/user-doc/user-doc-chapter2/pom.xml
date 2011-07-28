@@ -5,25 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.osgi.cdi</groupId>
-        <artifactId>cdi-osgi-parent</artifactId>
+        <groupId>com.sample</groupId>
+        <artifactId>user-doc</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.osgi.cdi</groupId>
-    <artifactId>cdi-osgi-sample</artifactId>
+    <groupId>com.sample</groupId>
+    <artifactId>user-doc-chapter2</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>CDI-OSGi :: Samples</name>
+    <name>CDI-OSGi :: User doc chapter 2 samples</name>
 
     <modules>
-        <module>container</module>
-        <module>paint</module>
-        <module>calculator</module>
-        <module>web</module>
-		<module>standalone</module>
-        <module>user-doc</module>
+        <module>hello-world-provider</module>
+        <module>hello-world-osgi</module>
+        <module>hello-world-osgi-multilingual</module>
     </modules>
-    
+
 </project>
