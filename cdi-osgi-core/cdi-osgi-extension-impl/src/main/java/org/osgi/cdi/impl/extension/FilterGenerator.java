@@ -109,51 +109,53 @@ public class FilterGenerator {
     private static Set<String> tokenize(Collection<Annotation> annotations) {
         Set<String> result = new HashSet<String>();
         String current = "";
-        for (Annotation annotation : annotations) {
-            if(annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
-                if (annotation.annotationType().equals(Filter.class)) {
-                    Filter old = (Filter)annotation;
-                    if (old.value() != null && old.value().length() > 0) {
-                        result.add(old.value());
-                    }
-                } else if(annotation.annotationType().equals(Properties.class)) {
-                    result.addAll(tokenize((Properties)annotation));
-                } else if(!annotation.annotationType().equals(Required.class)
-                        && !annotation.annotationType().equals(OSGiService.class)
-                        && !annotation.annotationType().equals(Default.class)
-                        && !annotation.annotationType().equals(Any.class)) {
-                    if (annotation.annotationType().getDeclaredMethods().length > 0) {
-                        for (Method m : annotation.annotationType().getDeclaredMethods()) {
-                            if (!m.isAnnotationPresent(Nonbinding.class)) {
-                                try {
-                                    Object value = m.invoke(annotation);
-                                    if (value == null) {
-                                        value = m.getDefaultValue();
-                                        if(value == null) {
-                                            value = "*";
+        if (!annotations.isEmpty()) {
+            for (Annotation annotation : annotations) {
+                if(annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
+                    if (annotation.annotationType().equals(Filter.class)) {
+                        Filter old = (Filter)annotation;
+                        if (old.value() != null && old.value().length() > 0) {
+                            result.add(old.value());
+                        }
+                    } else if(annotation.annotationType().equals(Properties.class)) {
+                        result.addAll(tokenize((Properties)annotation));
+                    } else if(!annotation.annotationType().equals(Required.class)
+                            && !annotation.annotationType().equals(OSGiService.class)
+                            && !annotation.annotationType().equals(Default.class)
+                            && !annotation.annotationType().equals(Any.class)) {
+                        if (annotation.annotationType().getDeclaredMethods().length > 0) {
+                            for (Method m : annotation.annotationType().getDeclaredMethods()) {
+                                if (!m.isAnnotationPresent(Nonbinding.class)) {
+                                    try {
+                                        Object value = m.invoke(annotation);
+                                        if (value == null) {
+                                            value = m.getDefaultValue();
+                                            if(value == null) {
+                                                value = "*";
+                                            }
                                         }
+                                        current = "(" + annotation.annotationType().getSimpleName().toLowerCase()
+                                                  + "." + m.getName().toLowerCase()
+                                                  + "=" + value.toString() + ")";
+                                        result.add(current);
+                                    } catch (Throwable t) {// inaccessible property, skip
                                     }
-                                    current = "(" + annotation.annotationType().getSimpleName().toLowerCase()
-                                              + "." + m.getName().toLowerCase()
-                                              + "=" + value + ")";
-                                    result.add(current);
-                                } catch (Throwable t) {// inaccessible property, skip
                                 }
                             }
+                        } else {
+                            current = "(" + annotation.annotationType().getSimpleName().toLowerCase() + "=*)";
+                            result.add(current);
                         }
-                    } else {
-                        current = "(" + annotation.annotationType().getSimpleName().toLowerCase() + "=*)";
-                        result.add(current);
                     }
-                }
-            } else {
-                if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
-                    Filter old = annotation.annotationType().getAnnotation(Filter.class);
-                    result.add(old.value());
-                }
-                if (annotation.annotationType().isAnnotationPresent(Properties.class)) {
-                    Properties properties = annotation.annotationType().getAnnotation(Properties.class);
-                    result.addAll(tokenize(properties));
+                } else {
+                    if (annotation.annotationType().isAnnotationPresent(Filter.class)) {
+                        Filter old = annotation.annotationType().getAnnotation(Filter.class);
+                        result.add(old.value());
+                    }
+                    if (annotation.annotationType().isAnnotationPresent(Properties.class)) {
+                        Properties properties = annotation.annotationType().getAnnotation(Properties.class);
+                        result.addAll(tokenize(properties));
+                    }
                 }
             }
         }

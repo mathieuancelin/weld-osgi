@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sample</groupId>
+    <artifactId>hello-world-osgi-multilingual</artifactId>
+    <version>1.0</version>
+    <!-- Here we say that we want an OSGi bundle -->
+    <packaging>bundle</packaging>
+
+    <dependencies>
+        <!-- We will use OSGi mechanisms for this bundle -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <!-- We need the HelloWorld services interface -->
+        <dependency>
+            <groupId>com.sample</groupId>
+            <artifactId>hello-world-provider</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Use of the maven-bundle-plugin -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- The OSGi information are provided using the bnd file -->
+                        <_include>-target/classes/META-INF/${project.artifactId}.bnd</_include>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

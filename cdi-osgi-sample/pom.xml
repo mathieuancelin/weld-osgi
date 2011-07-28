@@ -25,6 +25,9 @@
 		<module>standalone</module>
         <module>hello-world</module>
         <module>hello-world-multilingual</module>
+        <module>hello-world-provider</module>
+        <module>hello-world-osgi</module>
+        <module>hello-world-osgi-multilingual</module>
     </modules>
     
 </project>

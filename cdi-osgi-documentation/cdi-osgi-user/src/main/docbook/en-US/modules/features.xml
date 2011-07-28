@@ -83,17 +83,17 @@ public @interface Language {
 import com.sample.api.HelloWorld;
 import com.sample.api.Language;
 
-@Language("ENGLISH")
+<emphasis role="bold">@Language("ENGLISH")</emphasis>
 public class HelloWorldEnglish implements HelloWorld {
 
     @Override
     public void sayHello() {
-        System.out.println("Hello World!");
+        System.out.println("<emphasis role="bold">Hello World!</emphasis>");
     }
 
     @Override
     public void sayGoodbye() {
-        System.out.println("Goodbye World!");
+        System.out.println("<emphasis role="bold">Goodbye World!</emphasis>");
     }
 }
 </programlisting></para>
@@ -102,17 +102,17 @@ public class HelloWorldEnglish implements HelloWorld {
 import com.sample.api.HelloWorld;
 import com.sample.api.Language;
 
-@Language("FRENCH")
+<emphasis role="bold">@Language("FRENCH")</emphasis>
 public class HelloWorldFrench implements HelloWorld {
 
     @Override
     public void sayHello() {
-        System.out.println("Bonjour le Monde !");
+        System.out.println("<emphasis role="bold">Bonjour le Monde !</emphasis>");
     }
 
     @Override
     public void sayGoodbye() {
-        System.out.println("Au revoir le Monde !");
+        System.out.println("<emphasis role="bold">Au revoir le Monde !</emphasis>");
     }
 }
 </programlisting></para>
@@ -121,17 +121,17 @@ public class HelloWorldFrench implements HelloWorld {
 import com.sample.api.HelloWorld;
 import com.sample.api.Language;
 
-@Language("GERMAN")
+<emphasis role="bold">@Language("GERMAN")</emphasis>
 public class HelloWorldGerman implements HelloWorld {
     
     @Override
     public void sayHello() {
-        System.out.println("Hallo Welt!");
+        System.out.println("<emphasis role="bold">Hallo Welt!</emphasis>");
     }
 
     @Override
     public void sayGoodbye() {
-        System.out.println("Auf Wiedersehen Welt!");
+        System.out.println("<emphasis role="bold">Auf Wiedersehen Welt!</emphasis>");
     }
 }</programlisting></para>
                     </listitem>
@@ -155,7 +155,7 @@ import static java.lang.annotation.ElementType.*;
 public @interface Presentation {
 }</programlisting></para>
                         <para>Modifications in
-                            <code>com.sample.impl.HelloWorld*.java</code><programlisting>@Override @Presentation
+                            <code>com.sample.impl.HelloWorld*.java</code><programlisting>@Override <emphasis role="bold">@Presentation</emphasis>
 public void sayHello() {
     System.out.println("Hello World!");
 }</programlisting></para>
@@ -200,13 +200,13 @@ import javax.inject.Inject;
 
 public class App {
 
-    @Inject @Language()
+    @Inject <emphasis role="bold">@Language()</emphasis>
     HelloWorld helloWorldEnglish;
 
-    @Inject @Language("FRENCH")
+    @Inject <emphasis role="bold">@Language("FRENCH")</emphasis>
     HelloWorld helloWorldFrench;
 
-    @Inject @Language("GERMAN")
+    @Inject <emphasis role="bold">@Language("GERMAN")</emphasis>
     HelloWorld helloWorldGerman;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
@@ -252,10 +252,232 @@ Auf Wiedersehen Welt!</programlisting>CDI
             publishing and consuming OSGi service using CDI way.</para>
         <para>Let us take the hello-world-multilingual example from the previous section and view
             how this can help.</para>
+        <section>
+            <title>Allow another bundles to say hello</title>
+            <para>We see that you cannot inject CDI bean from a bean bundle into another one. Too
+                bad that would be handy ! However OSGi allows to publish services from a bundle and
+                consume them into another bundle, but it could be a bit cumbersome to do.</para>
+            <para>Happylly Weld-OSGi provides a CDI bean injection like OSGi service
+                management.</para>
+            <para>We will use it to allow a new bean bundle to use our hello-world service. First we
+                need to publish our beans as OSGi services through a very dificult operation: </para>
+            <para><code>com.sample.impl.HelloWorld*.java</code><programlisting>@Language("*")
+<emphasis role="bold">@Publish</emphasis>
+public class HelloWorld* implements HelloWorld { 
+    ...
+}</programlisting></para>
+            <para>Yeah that is all. Not so difficult actualy ! Weld-OSGi now automaticaly publish
+                our three implementation as OSGi services under the interface
+                    <code>HelloWorld</code>. Every bundle (even regular OSGi bundles) in the OSGi
+                environment can now access the <code>HelloWorld</code> service and its three
+                implementation.</para>
+            <para>Test this by creating a  regular OSGi bundle that says hello to the World using
+                our first bean bundle <code>HelloWorld</code> service:<itemizedlist>
+                    <listitem>
+                        <para><code>pom.xml</code><programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    &lt;modelVersion>4.0.0&lt;/modelVersion>
+
+    &lt;groupId>com.sample&lt;/groupId>
+    &lt;artifactId>hello-world-osgi&lt;/artifactId>
+    &lt;version>1.0&lt;/version>
+    &lt;!-- Here we say that we want an OSGi bundle -->
+    &lt;packaging>bundle&lt;/packaging>
+
+    &lt;dependencies>
+        &lt;!-- We will use OSGi mechanisms for this bundle -->
+        &lt;dependency>
+            &lt;groupId>org.osgi&lt;/groupId>
+            &lt;artifactId>org.osgi.core&lt;/artifactId>
+            &lt;version>4.2.0&lt;/version>
+        &lt;/dependency>
+        &lt;!-- We need the HelloWorld services interface -->
+        &lt;dependency>
+            &lt;groupId>com.sample&lt;/groupId>
+            &lt;artifactId>hello-world-provider&lt;/artifactId>
+            &lt;version>1.0&lt;/version>
+        &lt;/dependency>
+    &lt;/dependencies>
+
+    &lt;!-- Use of the maven-bundle-plugin -->
+    &lt;build>
+        &lt;plugins>
+            &lt;plugin>
+                &lt;groupId>org.apache.felix&lt;/groupId>
+                &lt;artifactId>maven-bundle-plugin&lt;/artifactId>
+                &lt;extensions>true&lt;/extensions>
+                &lt;configuration>
+                    &lt;instructions>
+                        &lt;!-- The OSGi information are provided using the bnd file -->
+                        &lt;_include>-target/classes/META-INF/${project.artifactId}.bnd&lt;/_include>
+                    &lt;/instructions>
+                &lt;/configuration>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build>
+    
+&lt;/project></programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>META-INF/hello-world-osgi.bnd</code><programlisting># Let bnd handle the MANIFEST.MF generation
+# Precise that this bundle as an activator
+Bundle-Activator com.sample.Activator</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>com.sample.Activator.java</code><programlisting>package com.sample;
+
+import com.sample.api.HelloWorld;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+public class Activator implements BundleActivator {
+
+    HelloWorld helloWorld;
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        //say hello when the bundle has initialized
+
+        //first lookup the service using OSGi
+        ServiceReference helloWorldReference = context.getServiceReference(HelloWorld.class.getName());
+        //obtain the service
+        helloWorld = (HelloWorld)context.getService(helloWorldReference);
+
+        helloWorld.sayHello();
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        //say goodbye when the bundle has shutdown
+        helloWorld.sayGoodbye();
+    }
+}</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>We do not need an <code>beans.xml</code> file since we want a regular
+                            OSGi bundle.</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>Compile, replace the <code>hello-world-multiligual.jar</code> bundle in the OSGi
+                environment by the <code>hello-world-provider.jar</code> and
+                    <code>hello-world-osgi.jar</code> bundles and run
+                it:<programlisting>ERROR: Bundle com.sample.hello-world-osgi [5] Error starting file:/home/matthieu/Documents/CDI-OSGi/felix-framework-3.2.2/bundle/hello-world-osgi-1.0.jar (org.osgi.framework.BundleException: Activator start error in bundle com.sample.hello-world-osgi [5].)
+java.lang.NullPointerException: Specified service reference cannot be null.
+	at org.apache.felix.framework.BundleContextImpl.getService(BundleContextImpl.java:401)
+	at com.sample.Activator.start(Activator.java:19)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:629)
+	at org.apache.felix.framework.Felix.activateBundle(Felix.java:1904)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1822)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:1192)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:266)
+	at java.lang.Thread.run(Thread.java:662)
+____________________________
+Welcome to Apache Felix Gogo
+
+g! Hello World!
+from hello-world-provider
+Bonjour le Monde !
+from hello-world-provider
+Hallo Welt!
+from hello-world-provider</programlisting></para>
+            <para>Hey ! We got an error, what happened ? The problem is that Felix framework start
+                all bundles immediatly. So our consumer bundle start at the same time that our
+                provider bundle, so the <code>HelloWorld</code> service is not avaiable soon enough.
+                In the same time the provider bundle has a normal behavior, publishing the
+                    <code>HelloWorld</code> service do not alter it.</para>
+            <para>Restart the consumer bundle to see the result of consuming an auto-published
+                service:<programlisting>g! start 5
+Hallo Welt!
+from hello-world-provider</programlisting>That
+                is better, it is greeting. But how did it choose its language. And why is it
+                thinking it is the <code>hello-world-provider</code>.</para>
+            <para>The first question will be asnwer in the next section. For the second one we need
+                to look what happen when Weld-OSGi publish a service. What is published is the Weld
+                contextual instance of the implementation bean, so when an external bundle obtain
+                the service instance it is actualy getting an CDI bean. For that reason obtaining an
+                Weld-OSGi auto-publicated service means:<itemizedlist>
+                    <listitem>
+                        <para>that the obtained instance is contextual</para>
+                    </listitem>
+                    <listitem>
+                        <para>that the obtained instance may be intercepted and decorated by
+                            interceptor and decorator from the publishing bean bundle</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>In our case the service is intercepted by the provider interceptor even if the
+                consumer bundle is not a bean bundle. When you are auto-publishing a service from a
+                bean bundle be aware that it will have the same behavior in all other
+                bundles.</para>
+        </section>
+        <section>
+            <title>Select the service instance</title>
+            <para>Now we need to decide what language our consumer bundle will speak. To do so we
+                cannot use CDI qualifier like in provider bundle because we are using OSGi
+                mechanisms to obtain the service instance. Weld-OSGi provide a bindind between CDI
+                service qualification and OSGi service properties.</para>
+            <para>Thus a CDI qualifier will generate an OSGi service property for each of its valued
+                element (an element with a default value is always considered valued) following
+                these rules:<itemizedlist>
+                    <listitem>
+                        <para>A valued element generate a property with this
+                            template:<programlisting><emphasis role="italic">decapitalized_qualifier_name</emphasis>.<emphasis role="italic">decapitalized_element_name</emphasis>=<emphasis role="italic">element_value.toString()</emphasis></programlisting><programlisting>@MyQualifier(lang="EN", country="US")</programlisting>will
+                            generate:<programlisting>(myqualifier.lang=EN)
+(myqualifier.country=US)</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>A non valued element with a default value generate a property with
+                            this
+                            template:<programlisting><emphasis role="italic">decapitalized_qualifier_name</emphasis>.<emphasis role="italic">decapitalized_element_name</emphasis>=<emphasis role="italic">element_default_value.toString()</emphasis></programlisting><programlisting>@MyQualifier(lang="EN")</programlisting>will
+                            generate:<programlisting>(myqualifier.lang=EN)
+(myqualifier.country=US) //admitting US is the default value for the element country</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>A non valued element with no default value generate a property with
+                            this
+                            template:<programlisting><emphasis role="italic">decapitalized_qualifier_name</emphasis>.<emphasis role="italic">decapitalized_element_name</emphasis>=*</programlisting><programlisting>@MyQualifier(lang="EN")</programlisting>will
+                            generate:<programlisting>(myqualifier.lang=EN)
+(myqualifier.country=*) //admitting there is no default value for the element country</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>A qualifier with no element generate a property with this
+                            template:<programlisting><emphasis role="italic">decapitalized_qualifier_name</emphasis>=*</programlisting><programlisting>@MyQualifier()</programlisting>will
+                            generate:<programlisting>(myqualifier=*)</programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>Some qualifiers follow a specific processing:<itemizedlist>
+                                <listitem>
+                                    <para><code>OSGiService</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Required</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Default</code> qualifier will not generate any
+                                        service property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Any</code> qualifier will not generate any service
+                                        property</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>Filter</code> and <code>Properties</code> qualifiers
+                                        processing is described below</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>Using these rules we can specify what language we want for our consumer
+                bundle:</para>
+        </section>
     </section>
     <section>
         <title>Bundles are observing and communicating</title>
-        <para/>
+        <para>TODO</para>
     </section>
     <section>
         <title>OSGi in annotations</title>
