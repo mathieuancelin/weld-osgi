@@ -266,6 +266,8 @@ Auf Wiedersehen Welt!</programlisting>CDI
 public class HelloWorld* implements HelloWorld { 
     ...
 }</programlisting></para>
+            <para>Do not forget to rename the <code>hello-world-provider.bnd</code> file witout
+                editing its content.</para>
             <para>Yeah that is all. Not so difficult actualy ! Weld-OSGi now automaticaly publish
                 our three implementation as OSGi services under the interface
                     <code>HelloWorld</code>. Every bundle (even regular OSGi bundles) in the OSGi
@@ -473,6 +475,78 @@ from hello-world-provider</programlisting>That
                 </itemizedlist></para>
             <para>Using these rules we can specify what language we want for our consumer
                 bundle:</para>
+            <para><code>com.sample.Activator.java</code><programlisting>package com.sample;
+
+import com.sample.api.HelloWorld;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+public class Activator implements BundleActivator {
+
+    HelloWorld helloWorldEnglish;
+    HelloWorld helloWorldFrench;
+    HelloWorld helloWorldGerman;
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        //say hello when the bundle has initialized
+
+        //first lookup the service using OSGi
+        ServiceReference helloWorldEnglishReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=ENGLISH)")[0];
+        ServiceReference helloWorldFrenchReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=FRENCH)")[0];
+        ServiceReference helloWorldGermanReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=GERMAN)")[0];
+        //obtain the service
+        helloWorldEnglish = (HelloWorld)context.getService(helloWorldEnglishReference);
+        helloWorldFrench = (HelloWorld)context.getService(helloWorldFrenchReference);
+        helloWorldGerman = (HelloWorld)context.getService(helloWorldGermanReference);
+
+        helloWorldEnglish.sayHello();
+        helloWorldFrench.sayHello();
+        helloWorldGerman.sayHello();
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        //say goodbye when the bundle has shutdown
+        helloWorldEnglish.sayGoodbye();
+        helloWorldFrench.sayGoodbye();
+        helloWorldGerman.sayGoodbye();
+    }
+}</programlisting></para>
+            <para>Compile, replace the <code>hello-world-osgi.jar</code> bundle in the OSGi
+                environment by the <code>hello-world-osgi-multilingual.jar</code> bundles and run
+                it:<programlisting>ERROR: Bundle com.sample.hello-world-osgi-multilingual [5] Error starting file:/home/matthieu/Documents/CDI-OSGi/felix-framework-3.2.2/bundle/hello-world-osgi-multilingual-1.0.jar (org.osgi.framework.BundleException: Activator start error in bundle com.sample.hello-world-osgi-multilingual [5].)
+java.lang.NullPointerException
+	at com.sample.Activator.start(Activator.java:19)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:629)
+	at org.apache.felix.framework.Felix.activateBundle(Felix.java:1904)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1822)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:1192)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:266)
+	at java.lang.Thread.run(Thread.java:662)
+____________________________
+Welcome to Apache Felix Gogo
+
+g! Hello World!
+from hello-world-provider
+Bonjour le Monde !
+from hello-world-provider
+Hallo Welt!
+from hello-world-provider</programlisting>We
+                got the usual error due to Felix framework starting all bundles in the same time.
+                The provider bunde still work just fine.</para>
+            <para>Now we start the consumer
+                bundle:<programlisting>start 5
+Hello World!
+from hello-world-provider
+Bonjour le Monde !
+from hello-world-provider
+Hallo Welt!
+from hello-world-provider
+g!</programlisting>It
+                greets us in the three languages and it is still intercepted by the provider
+                bundle.</para>
         </section>
     </section>
     <section>
