@@ -1,250 +1,6 @@
 <chapter>
     <title>Weld-OSGi usages</title>
     <section>
-        <title>Using Weld in your OSGi bundles</title>
-        <para>We have seen that we can use CDI in bean bundle thank to Weld-OSGi. But what exactly
-            is happening and what is the limit of the CDI usage in bean bundle.</para>
-        <section>
-            <title>CDI usage in bean bundles</title>
-            <para>In Weld-OSGi every bean gets its own Weld container, so the CDI usage may stay
-                within the bean bundle boundary:<itemizedlist>
-                    <listitem>
-                        <para>Any bean in the bean bundle can be injected only in that bean bundle,
-                            so the imported package classes cannot act like CDI bean in the bean
-                            bundle</para>
-                    </listitem>
-                    <listitem>
-                        <para>Reciprocally a bean from a bean bundle cannot be injected into another
-                            bean bundle, event if the class is in an exported package</para>
-                    </listitem>
-                    <listitem>
-                        <para>Any decorator, interceptor or alternative declaration in the
-                                <code>beans.xml</code> file of a bean bundle applies only for this
-                            bean bundle</para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>Weld-OSGi provides the Weld container to the bean bundle only after it has
-                started, so CDI usage are available only after the Weld container is initialized. In
-                the same way CDI usage are unavailable once the Weld container has shutdown. That's
-                the reason of <code>onStartup</code> and <code>onShutdown</code> methods from
-                previous chapter:<itemizedlist>
-                    <listitem>
-                        <para>A <code>BundleContainerEvents.BundleContainerInitialized</code> event
-                            is fired when CDI usages get available for the bean bundle</para>
-                    </listitem>
-                    <listitem>
-                        <para>A <code>BundleContainerEvents.BundleContainerShutdown</code> event is
-                            fired when CDI usages get unavailable for the bean bundle</para>
-                    </listitem>
-                </itemizedlist>These two events are CDI events and may be observed with regular CDI
-                mechanisms.</para>
-            <para><programlisting>public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
-    //CDI usage are available in the bean bundle
-}
-
-public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
-    //CDI usage are unavailable in the bean bundle
-}</programlisting>Try
-                to use CDI mechanisms before the
-                    <code>BundleContainerEvents.BundleContainerInitialized</code> or after the
-                    <code>BundleContainerEvents.BundleContainerShutdown</code> event may result in
-                errors.</para>
-        </section>
-        <section>
-            <title>Upgrade the previous example</title>
-            <para>Here we assume that you know how to use Weld so we rapidly upgrade the hello-world
-                example from the previous chapter to make it a bit more complex using some of the
-                CDI features.</para>
-            <para>Let our bean bundle say hello (and good bye) to the World in various languages,
-                say english, french and german. It may also present himself when it says hello (and
-                good bye):<itemizedlist>
-                    <listitem>
-                        <para>In order to make our bean bundle multilingual we add a qualifier and
-                            three implementations of the <code>HelloWorld</code> service:</para>
-                        <para><code>com.sample.api.Language.java</code><programlisting>package com.sample.api;
-
-import javax.inject.Qualifier;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.*;
-
-@Target({ TYPE, METHOD, PARAMETER, FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Qualifier
-public @interface Language {
-    String value() default "ENGLISH";
-}</programlisting></para>
-                        <para><code>com.sample.impl.HelloWorldEnglish.java</code><programlisting>package com.sample.impl;
-
-import com.sample.api.HelloWorld;
-import com.sample.api.Language;
-
-<emphasis role="bold">@Language("ENGLISH")</emphasis>
-public class HelloWorldEnglish implements HelloWorld {
-
-    @Override
-    public void sayHello() {
-        System.out.println("<emphasis role="bold">Hello World!</emphasis>");
-    }
-
-    @Override
-    public void sayGoodbye() {
-        System.out.println("<emphasis role="bold">Goodbye World!</emphasis>");
-    }
-}
-</programlisting></para>
-                        <para><code>com.sample.impl.HelloWorldFrench.java</code><programlisting>package com.sample.impl;
-
-import com.sample.api.HelloWorld;
-import com.sample.api.Language;
-
-<emphasis role="bold">@Language("FRENCH")</emphasis>
-public class HelloWorldFrench implements HelloWorld {
-
-    @Override
-    public void sayHello() {
-        System.out.println("<emphasis role="bold">Bonjour le Monde !</emphasis>");
-    }
-
-    @Override
-    public void sayGoodbye() {
-        System.out.println("<emphasis role="bold">Au revoir le Monde !</emphasis>");
-    }
-}
-</programlisting></para>
-                        <para><code>com.sample.impl.HelloWorldGerman.java</code><programlisting>package com.sample.impl;
-
-import com.sample.api.HelloWorld;
-import com.sample.api.Language;
-
-<emphasis role="bold">@Language("GERMAN")</emphasis>
-public class HelloWorldGerman implements HelloWorld {
-    
-    @Override
-    public void sayHello() {
-        System.out.println("<emphasis role="bold">Hallo Welt!</emphasis>");
-    }
-
-    @Override
-    public void sayGoodbye() {
-        System.out.println("<emphasis role="bold">Auf Wiedersehen Welt!</emphasis>");
-    }
-}</programlisting></para>
-                    </listitem>
-                    <listitem>
-                        <para>Now we use an interceptor to present the bean bundle every time it
-                            says hello:</para>
-                        <para><code>com.sample.api.Presentation.java</code><programlisting>package com.sample.api;
-
-import javax.interceptor.InterceptorBinding;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.*;
-
-@Target({ TYPE, METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@InterceptorBinding
-public @interface Presentation {
-}</programlisting></para>
-                        <para>Modifications in
-                            <code>com.sample.impl.HelloWorld*.java</code><programlisting>@Override <emphasis role="bold">@Presentation</emphasis>
-public void sayHello() {
-    System.out.println("Hello World!");
-}</programlisting></para>
-                        <para><code>com.sample.impl.PresentationInterceptor.java</code><programlisting>package com.sample.impl;
-
-import com.sample.api.Presentation;
-
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
-
-@Interceptor
-@Presentation
-public class PresentationInterceptor {
-
-    @AroundInvoke
-    public Object present(InvocationContext ctx) throws Exception {
-        ctx.proceed();
-        System.out.println("from hello-world-multilingual");
-        return null;
-    }
-}</programlisting></para>
-                        <para><code>META-INF/beans.xml</code><programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;beans xmlns="http://java.sun.com/xml/ns/javaee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
-    &lt;interceptors>
-        &lt;class>com.sample.impl.PresentationInterceptor&lt;/class>
-    &lt;/interceptors>
-&lt;/beans></programlisting></para>
-                    </listitem>
-                    <listitem>
-                        <para>Finaly we update the <code>com.sample.App.java</code>
-                            file:<programlisting>package com.sample;
-
-import com.sample.api.HelloWorld;
-import com.sample.api.Language;
-import org.osgi.cdi.api.extension.events.BundleContainerEvents;
-
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-public class App {
-
-    @Inject <emphasis role="bold">@Language()</emphasis>
-    HelloWorld helloWorldEnglish;
-
-    @Inject <emphasis role="bold">@Language("FRENCH")</emphasis>
-    HelloWorld helloWorldFrench;
-
-    @Inject <emphasis role="bold">@Language("GERMAN")</emphasis>
-    HelloWorld helloWorldGerman;
-
-    public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
-        //say hello when the bundle has initialized
-        helloWorldEnglish.sayHello();
-        helloWorldFrench.sayHello();
-        helloWorldGerman.sayHello();
-    }
-
-    public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
-        //say goodbye when the bundle has shutdown
-        helloWorldEnglish.sayGoodbye();
-        helloWorldFrench.sayGoodbye();
-        helloWorldGerman.sayGoodbye();
-    }
-}</programlisting></para>
-                    </listitem>
-                </itemizedlist></para>
-            <para>Compile, replace the <code>hello-world.jar</code> bundle in the OSGi environment
-                by the <code>hello-world-multiligual.jar</code> bundle and run
-                it:<programlisting>Welcome to Apache Felix Gogo
-
-g! Hello World!
-from hello-world-multilingual
-Bonjour le Monde !
-from hello-world-multilingual
-Hallo Welt!
-from hello-world-multilingual
-stop 5
-g! Goodbye World!
-Au revoir le Monde !
-Auf Wiedersehen Welt!</programlisting>CDI
-                seems to respond perfectly in an OSGi environment thank to Weld-OSGi. But it is sad
-                to use only one bean bundle, in the next section we will see how Weld-OSGi allow to
-                use OSGi powerfulness coupled with CDI easiness.</para>
-        </section>
-    </section>
-    <section>
         <title>Publishing and consuming services is easy</title>
         <para>CDI is great but if you choose an OSGi environment it is for using OSGi. Weld-OSGi
             provides numerous features helping you with OSGi in addition with providing CDI usage in
@@ -260,15 +16,15 @@ Auf Wiedersehen Welt!</programlisting>CDI
             <para>Happylly Weld-OSGi provides a CDI bean injection like OSGi service
                 management.</para>
             <para>We will use it to allow a new bean bundle to use our hello-world service. First we
-                need to publish our beans as OSGi services through a very dificult operation: </para>
+                need to publish our beans as OSGi services through a very difficult operation: </para>
             <para><code>com.sample.impl.HelloWorld*.java</code><programlisting>@Language("*")
 <emphasis role="bold">@Publish</emphasis>
 public class HelloWorld* implements HelloWorld { 
     ...
 }</programlisting></para>
-            <para>Do not forget to rename the <code>hello-world-provider.bnd</code> file witout
+            <para>Do not forget to rename the <code>hello-world-provider.bnd</code> file without
                 editing its content.</para>
-            <para>Yeah that is all. Not so difficult actualy ! Weld-OSGi now automaticaly publish
+            <para>Yeah that is all. Not so difficult actually ! Weld-OSGi now automatically publish
                 our three implementation as OSGi services under the interface
                     <code>HelloWorld</code>. Every bundle (even regular OSGi bundles) in the OSGi
                 environment can now access the <code>HelloWorld</code> service and its three
@@ -363,7 +119,7 @@ public class Activator implements BundleActivator {
                             OSGi bundle.</para>
                     </listitem>
                 </itemizedlist></para>
-            <para>Compile, replace the <code>hello-world-multiligual.jar</code> bundle in the OSGi
+            <para>Compile, replace the <code>hello-world-multilingual.jar</code> bundle in the OSGi
                 environment by the <code>hello-world-provider.jar</code> and
                     <code>hello-world-osgi.jar</code> bundles and run
                 it:<programlisting>ERROR: Bundle com.sample.hello-world-osgi [5] Error starting file:/home/matthieu/Documents/CDI-OSGi/felix-framework-3.2.2/bundle/hello-world-osgi-1.0.jar (org.osgi.framework.BundleException: Activator start error in bundle com.sample.hello-world-osgi [5].)
@@ -386,7 +142,7 @@ from hello-world-provider
 Hallo Welt!
 from hello-world-provider</programlisting></para>
             <para>Hey ! We got an error, what happened ? The problem is that Felix framework start
-                all bundles immediatly. So our consumer bundle start at the same time that our
+                all bundles immediatlly. So our consumer bundle start at the same time that our
                 provider bundle, so the <code>HelloWorld</code> service is not avaiable soon enough.
                 In the same time the provider bundle has a normal behavior, publishing the
                     <code>HelloWorld</code> service do not alter it.</para>
@@ -396,11 +152,11 @@ Hallo Welt!
 from hello-world-provider</programlisting>That
                 is better, it is greeting. But how did it choose its language. And why is it
                 thinking it is the <code>hello-world-provider</code>.</para>
-            <para>The first question will be asnwer in the next section. For the second one we need
+            <para>The first question will be answer in the next section. For the second one we need
                 to look what happen when Weld-OSGi publish a service. What is published is the Weld
                 contextual instance of the implementation bean, so when an external bundle obtain
-                the service instance it is actualy getting an CDI bean. For that reason obtaining an
-                Weld-OSGi auto-publicated service means:<itemizedlist>
+                the service instance it is actually getting an CDI bean. For that reason obtaining an
+                Weld-OSGi auto-published service means:<itemizedlist>
                     <listitem>
                         <para>that the obtained instance is contextual</para>
                     </listitem>

@@ -2,17 +2,17 @@
     <title>Weld-OSGi user documentation</title>
     <section>
         <title>What is this documentation for</title>
-        <para>This documentation allows new users of to quickly setup and try Weld-OSGi. It covers
-            most of Weld-OSGi features with lot of practical code examples allowing users to
+        <para>This documentation allows new users of Weld-OSGi to quickly setup and try it. It
+            covers most of Weld-OSGi features with lot of practical code examples allowing users to
             directly get their hands dirty.</para>
-        <para>The final chapter offers a complete walkthrough of a sample application showing the
+        <para>The final chapter offers a complete walk-through of a sample application showing the
             power of Weld-OSGi.</para>
     </section>
     <section>
         <title>What is Weld-OSGi</title>
         <para>Weld-OSGi is a framework that allows CDI usages within an OSGi environment. It is an
             extension of Weld providing CDI for OSGi environment (like Weld-SE for Java SE
-            environment) but it also brings numerous OSGi facilitations. </para>
+            environment) but it also brings numerous pieces of OSGi facilitation. </para>
         <para>It is a set of five bundles that extends the behavior of client bundles once they are
             deployed in an OSGi framework.</para>
         <para>Weld-OSGi provides:<itemizedlist>
@@ -41,6 +41,23 @@
             extension bundle.</para>
         <para>The API bundles are the Weld-OSGi bundles that provide all necessary API in order to
             use Weld-OSGi in bean bundles.</para>
+    </section>
+    <section>
+        <title>What tools are used in this documentation</title>
+        <para>All examples in this user documentation are made with these tools:<itemizedlist>
+                <listitem>
+                    <para>Maven for managing dependencies at compile time and building the
+                        bundles</para>
+                </listitem>
+                <listitem>
+                    <para>Java 6 for the java sources</para>
+                </listitem>
+                <listitem>
+                    <para>Felix framework as the OSGi environment</para>
+                </listitem>
+            </itemizedlist>All examples were tested on a Linux system with the latest version of
+            each tools at the moment of redaction. Version may have evolved so little ajustement
+            might be needed (like for utility bundle versions).</para>
     </section>
     <section>
         <title>References and other documentations</title>

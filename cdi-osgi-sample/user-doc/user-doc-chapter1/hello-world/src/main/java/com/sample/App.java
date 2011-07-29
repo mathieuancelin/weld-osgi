@@ -12,12 +12,10 @@ public class App {
     HelloWorld helloWorld;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
-        //say hello when the bundle has initialized
         helloWorld.sayHello();
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
-        //say goodbye when the bundle has shutdown
         helloWorld.sayGoodbye();
     }
 }
