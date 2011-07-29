@@ -11,19 +11,13 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        //say hello when the bundle has initialized
-
-        //first lookup the service using OSGi
         ServiceReference helloWorldReference = context.getServiceReference(HelloWorld.class.getName());
-        //obtain the service
         helloWorld = (HelloWorld)context.getService(helloWorldReference);
-
         helloWorld.sayHello();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        //say goodbye when the bundle has shutdown
         helloWorld.sayGoodbye();
     }
 }

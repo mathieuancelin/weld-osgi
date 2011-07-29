@@ -7,11 +7,9 @@
     <groupId>com.sample</groupId>
     <artifactId>hello-world-provider</artifactId>
     <version>1.0</version>
-    <!-- Here we say that we want an OSGi bundle -->
     <packaging>bundle</packaging>
 
     <dependencies>
-        <!-- We add CDI dependency -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -22,7 +20,6 @@
             <artifactId>cdi-api</artifactId>
             <version>1.0-SP4</version>
         </dependency>
-        <!-- We add Weld-OSGi dependency -->
         <dependency>
             <groupId>org.osgi.cdi</groupId>
             <artifactId>cdi-osgi-extension-api</artifactId>
@@ -30,7 +27,6 @@
         </dependency>
     </dependencies>
 
-    <!-- Use of the maven-bundle-plugin -->
     <build>
         <plugins>
             <plugin>
@@ -39,7 +35,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!-- The OSGi information are provided using the bnd file -->
                         <_include>-target/classes/META-INF/${project.artifactId}.bnd</_include>
                     </instructions>
                 </configuration>

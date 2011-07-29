@@ -241,7 +241,7 @@ public class HelloWorldImpl implements HelloWorld {
                 </listitem>
             </itemizedlist>Nothing fancy here.</para>
         <para>Next you need to write the entry point of your application (i.e the main class of the
-            bean bundle. That is the <code>com.sample.App.java</code> main
+            bean bundle). That is the <code>com.sample.App.java</code> main
             class<programlisting>package com.sample;
 
 import com.sample.api.HelloWorld; <emphasis role="bold">(1)</emphasis>
@@ -261,17 +261,16 @@ public class App {
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) { <emphasis role="bold">(5)</emphasis>
         helloWorld.sayGoodbye();
     }
-}</programlisting>In
-                <emphasis role="bold">(1)</emphasis> you import your service interface and in
-                <emphasis role="bold">(2)</emphasis> the CDI and Weld-OSGi dependencies. In
-                <emphasis role="bold">(3)</emphasis> yu ask CDI for an injection of the
-                <code>HelloWorld</code> service. <emphasis role="bold">(4)</emphasis> and <emphasis
-                role="bold">(5)</emphasis> will be explain in chapter 4 for now you should only that
-            method are called when CDI usage is enable for the bean bundle <emphasis role="bold"
-                >(4)</emphasis> (i.e the bean bundle application can start) or when CDI usage is
-            disable for the bean bundle <emphasis role="bold">(5)</emphasis> (i.e the bean bundle
-            application may stop).</para>
-        <para>Finaly you should write the configuration file of your bean bundle:<itemizedlist>
+}</programlisting>You
+            import your service interface <emphasis role="bold">(1)</emphasis> and the CDI and
+            Weld-OSGi dependencies <emphasis role="bold">(2)</emphasis>. You ask CDI for an
+            injection of the <code>HelloWorld</code> service <emphasis role="bold">(3)</emphasis>.
+                <emphasis role="bold">(4)</emphasis> and <emphasis role="bold">(5)</emphasis> will
+            be explain in chapter 4 for now you should only that method are called when CDI usage is
+            enable for the bean bundle <emphasis role="bold">(4)</emphasis> (i.e the bean bundle
+            application can start) or when CDI usage is disable for the bean bundle <emphasis
+                role="bold">(5)</emphasis> (i.e the bean bundle application may stop).</para>
+        <para>Finaly you should write the configuration files of your bean bundle:<itemizedlist>
                 <listitem>
                     <para>The <code>pom.xml</code> Maven configuration
                         file<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
@@ -318,14 +317,14 @@ public class App {
         &lt;/plugins>
     &lt;/build>
 
-&lt;/project></programlisting>In
-                            <emphasis role="bold">(2)</emphasis> you settup the dependencies for the
-                            <code>com.sample.App.java</code> main class. With <emphasis role="bold"
-                            >(1)</emphasis> you say that Maven may build an OSGi bundle using
-                            <emphasis role="bold">(3)</emphasis> the
-                            <code>maven-bundle-plugin</code> with the <emphasis role="bold"
-                            >(4)</emphasis>
-                        <code>META-INF/hello-world.bnd</code> configuration file.</para>
+&lt;/project></programlisting>You
+                        settup the dependencies for the <code>com.sample.App.java</code> main class
+                            <emphasis role="bold">(2)</emphasis>. You say that Maven may build an
+                        OSGi bundle <emphasis role="bold">(1)</emphasis> using the
+                            <code>maven-bundle-plugin</code>
+                        <emphasis role="bold">(3)</emphasis> with the
+                            <code>META-INF/hello-world.bnd</code>
+                        <emphasis role="bold">(4)</emphasis> configuration file.</para>
                 </listitem>
                 <listitem>
                     <para>The <code>META-INF\beans.xml</code> CDI marker
@@ -426,6 +425,7 @@ g! Goodbye World!</programlisting>and it says
         <para>
             <note>
                 <title>CDI usage limits in bean bundle</title>
+                <para>TODO rework it</para>
                 <para>In Weld-OSGi every bean bundle gets its own Weld container, so the CDI usage
                     may stay within the bean bundle boundary:<itemizedlist>
                         <listitem>
@@ -752,9 +752,15 @@ public class App {
                             >(1)</emphasis>.</para>
                 </listitem>
                 <listitem>
-                    <para>The <code>META-INF\hello-world.bnd</code> OSGi configuration
+                    <para>The <code>META-INF\hello-world-multilingual.bnd</code> OSGi configuration
                         file<programlisting># Let bnd handle the MANIFEST.MF generation</programlisting>Nothing
-                        has changed here.</para>
+                        has changed here.<note>
+                            <title>Update bnd files</title>
+                            <para>Every time you change the <code>artifactId</code> of one of your
+                                bean bundle you may also update the name of its bnd file.
+                                    <code>artifactId</code> and bnd file name should be the same in
+                                order to generate a bundle.</para>
+                        </note></para>
                 </listitem>
             </itemizedlist></para>
         <para>Your project should now looks like

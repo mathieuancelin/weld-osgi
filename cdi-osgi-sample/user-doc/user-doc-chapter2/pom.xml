@@ -19,7 +19,7 @@
 
     <modules>
         <module>hello-world-provider</module>
-        <module>hello-world-osgi</module>
+        <module>hello-world-consumer</module>
         <module>hello-world-osgi-multilingual</module>
     </modules>
 

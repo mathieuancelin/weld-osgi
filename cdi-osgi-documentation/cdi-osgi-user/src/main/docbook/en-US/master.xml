@@ -19,6 +19,8 @@
 
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/preface.xml" />
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/gettingstarted.xml" />
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/features.xml" />
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/services.xml" />
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/events.xml" />
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/utility.xml" />
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"  href="modules/samples.xml" />
 </book>

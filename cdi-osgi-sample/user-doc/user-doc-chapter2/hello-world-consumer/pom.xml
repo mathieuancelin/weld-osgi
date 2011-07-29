@@ -5,19 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sample</groupId>
-    <artifactId>hello-world-osgi</artifactId>
+    <artifactId>hello-world-consumer</artifactId>
     <version>1.0</version>
-    <!-- Here we say that we want an OSGi bundle -->
     <packaging>bundle</packaging>
 
     <dependencies>
-        <!-- We will use OSGi mechanisms for this bundle -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>4.2.0</version>
         </dependency>
-        <!-- We need the HelloWorld services interface -->
         <dependency>
             <groupId>com.sample</groupId>
             <artifactId>hello-world-provider</artifactId>
@@ -25,7 +22,6 @@
         </dependency>
     </dependencies>
 
-    <!-- Use of the maven-bundle-plugin -->
     <build>
         <plugins>
             <plugin>
@@ -34,7 +30,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!-- The OSGi information are provided using the bnd file -->
                         <_include>-target/classes/META-INF/${project.artifactId}.bnd</_include>
                     </instructions>
                 </configuration>

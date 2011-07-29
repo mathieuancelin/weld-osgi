@@ -3,8 +3,10 @@ package com.sample.impl;
 import com.sample.api.HelloWorld;
 import com.sample.api.Language;
 import com.sample.api.Presentation;
+import org.osgi.cdi.api.extension.annotation.Publish;
 
 @Language("FRENCH")
+@Publish
 public class HelloWorldFrench implements HelloWorld {
 
     @Override @Presentation

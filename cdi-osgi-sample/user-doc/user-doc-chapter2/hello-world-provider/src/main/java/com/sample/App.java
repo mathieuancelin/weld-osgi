@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 public class App {
 
-    @Inject @Language()
+    @Inject @Language("ENGLISH")
     HelloWorld helloWorldEnglish;
 
     @Inject @Language("FRENCH")
@@ -19,14 +19,12 @@ public class App {
     HelloWorld helloWorldGerman;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
-        //say hello when the bundle has initialized
         helloWorldEnglish.sayHello();
         helloWorldFrench.sayHello();
         helloWorldGerman.sayHello();
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
-        //say goodbye when the bundle has shutdown
         helloWorldEnglish.sayGoodbye();
         helloWorldFrench.sayGoodbye();
         helloWorldGerman.sayGoodbye();
