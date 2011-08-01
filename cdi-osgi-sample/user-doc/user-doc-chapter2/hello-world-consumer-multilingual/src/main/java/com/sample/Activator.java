@@ -13,13 +13,10 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        //say hello when the bundle has initialized
-
-        //first lookup the service using OSGi
         ServiceReference helloWorldEnglishReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=ENGLISH)")[0];
         ServiceReference helloWorldFrenchReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=FRENCH)")[0];
         ServiceReference helloWorldGermanReference = context.getServiceReferences(HelloWorld.class.getName(),"(language.value=GERMAN)")[0];
-        //obtain the service
+
         helloWorldEnglish = (HelloWorld)context.getService(helloWorldEnglishReference);
         helloWorldFrench = (HelloWorld)context.getService(helloWorldFrenchReference);
         helloWorldGerman = (HelloWorld)context.getService(helloWorldGermanReference);
@@ -31,7 +28,6 @@ public class Activator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        //say goodbye when the bundle has shutdown
         helloWorldEnglish.sayGoodbye();
         helloWorldFrench.sayGoodbye();
         helloWorldGerman.sayGoodbye();

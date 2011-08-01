@@ -97,7 +97,7 @@ file:bundle/org.apache.felix.gogo.shell-0.8.0.jar</programlisting>
         <para>Install Weld-OSGi in the Felix framework:<itemizedlist>
                 <listitem>
                     <para>Add some bundle in the Felix framework by simply drop the corresponding
-                            <code>jar</code> file into the <code>bundle</code> directory of Felix
+                            <code>jar</code> files into the <code>bundle</code> directory of Felix
                         home</para>
                 </listitem>
                 <listitem>
@@ -109,11 +109,23 @@ file:bundle/org.apache.felix.gogo.shell-0.8.0.jar</programlisting>
                         home</para>
                     <note>
                         <title>Get Felix up to date</title>
-                        <para>When you add or remove bundles in the Felix home <code>bundle</code>
-                            directory you may remove the Felix home <code>felix-cache</code>
+                        <para>Felix framework keeps a cache of old bundles and actions you
+                            performed. You may  remove the Felix home <code>felix-cache</code>
                             directory to avoid older versions of bundle and configuration to be
-                            taken into account. You may also remove this directory between excution
-                            of the Felix framework.</para>
+                            taken into account when:<itemizedlist>
+                                <listitem>
+                                    <para>You add/remove bundles from <code>bundle</code>
+                                        directory</para>
+                                </listitem>
+                                <listitem>
+                                    <para>You modify the <code>conf/config.properties</code>
+                                        file</para>
+                                </listitem>
+                                <listitem>
+                                    <para>You restart the Felix framework after running some
+                                        commands</para>
+                                </listitem>
+                            </itemizedlist></para>
                     </note>
                 </listitem>
                 <listitem>
@@ -265,12 +277,13 @@ public class App {
             import your service interface <emphasis role="bold">(1)</emphasis> and the CDI and
             Weld-OSGi dependencies <emphasis role="bold">(2)</emphasis>. You ask CDI for an
             injection of the <code>HelloWorld</code> service <emphasis role="bold">(3)</emphasis>.
-                <emphasis role="bold">(4)</emphasis> and <emphasis role="bold">(5)</emphasis> will
-            be explain in chapter 4 for now you should only that method are called when CDI usage is
-            enable for the bean bundle <emphasis role="bold">(4)</emphasis> (i.e the bean bundle
-            application can start) or when CDI usage is disable for the bean bundle <emphasis
-                role="bold">(5)</emphasis> (i.e the bean bundle application may stop).</para>
-        <para>Finaly you should write the configuration files of your bean bundle:<itemizedlist>
+                <code>onStartup</code> method<emphasis role="bold">(4)</emphasis> and
+                <code>onShutdown</code> method <emphasis role="bold">(5)</emphasis> are called when
+            CDI usage is enable for the bean bundle <emphasis role="bold">(4)</emphasis> (i.e the
+            bean bundle application can start) or when CDI usage is disable for the bean bundle
+                <emphasis role="bold">(5)</emphasis> (i.e the bean bundle application may
+            stop).</para>
+        <para>Finally you should write the configuration files of your bean bundle:<itemizedlist>
                 <listitem>
                     <para>The <code>pom.xml</code> Maven configuration
                         file<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
@@ -318,7 +331,7 @@ public class App {
     &lt;/build>
 
 &lt;/project></programlisting>You
-                        settup the dependencies for the <code>com.sample.App.java</code> main class
+                        setup the dependencies for the <code>com.sample.App.java</code> main class
                             <emphasis role="bold">(2)</emphasis>. You say that Maven may build an
                         OSGi bundle <emphasis role="bold">(1)</emphasis> using the
                             <code>maven-bundle-plugin</code>
@@ -406,8 +419,8 @@ g! Goodbye World!</programlisting>and it says
         <para>Congratulations, you just use CDI in an OSGi environment thank to Weld-OSGi. When you
             started your bean bundle Weld-OSGi started to manage it by providing it a Weld
             container. Once the container was completely started (and so the <code>HelloWorld</code>
-            service injection completed) the <code>onStartup</code> is called and the bean bundle
-            application starts.</para>
+            service injection completed) the <code>onStartup</code> method was called and the bean
+            bundle application started.</para>
     </section>
     <section>
         <title>CDI usage in bean bundle: a more complex example</title>
@@ -425,38 +438,35 @@ g! Goodbye World!</programlisting>and it says
         <para>
             <note>
                 <title>CDI usage limits in bean bundle</title>
-                <para>TODO rework it</para>
-                <para>In Weld-OSGi every bean bundle gets its own Weld container, so the CDI usage
-                    may stay within the bean bundle boundary:<itemizedlist>
+                <para>Every bean bundle gets its own Weld container from the extension bundle, so
+                    the CDI usage may stay within the bean bundle boundary:<itemizedlist>
                         <listitem>
                             <para>Any bean in the bean bundle can be injected only in that bean
-                                bundle, so the imported package classes cannot act like CDI bean in
-                                the bean bundle</para>
+                                bundle (even exported package classes)</para>
                         </listitem>
                         <listitem>
-                            <para>Reciprocally a bean from a bean bundle cannot be injected into
-                                another bean bundle, even if the class is in an exported
-                                package</para>
+                            <para>Reciprocally, a bean from another bean bundle cannot be injected
+                                in the bean bundle (even imported package classes)</para>
                         </listitem>
                         <listitem>
                             <para>Any decorator, interceptor or alternative declaration in the
                                     <code>beans.xml</code> file of a bean bundle applies only for
                                 this bean bundle</para>
                         </listitem>
-                    </itemizedlist></para>
-                <para>Weld-OSGi provides the Weld container to the bean bundle only after it has
-                    started, so CDI usage are available only after the Weld container is
-                    initialized. In the same way CDI usage are unavailable once the Weld container
-                    has shutdown. That's the reason of <code>onStartup</code> and
-                        <code>onShutdown</code> methods from previous chapter:<itemizedlist>
+                    </itemizedlist>Furthermore, Weld-OSGi provides Weld container to a bean bundle
+                    when it becomes active in the OSGi environment, so any bundle in another state
+                    is not managed by Weld-OSGi. And an active bean bundle has CDI usage available
+                    only after the Weld container has initialized. In the same way CDI usage is
+                    unavailable once the Weld container has shutdown. That's the reason of
+                        <code>onStartup</code> and <code>onShutdown</code> methods from previous section:<itemizedlist>
                         <listitem>
                             <para>A <code>BundleContainerEvents.BundleContainerInitialized</code>
-                                event is fired when CDI usages get available for the bean
+                                event is fired when CDI usage gets available for the bean
                                 bundle</para>
                         </listitem>
                         <listitem>
                             <para>A <code>BundleContainerEvents.BundleContainerShutdown</code> event
-                                is fired when CDI usages get unavailable for the bean bundle</para>
+                                is fired when CDI usage gets unavailable for the bean bundle</para>
                         </listitem>
                     </itemizedlist>These two events are CDI events and may be observed with regular
                     CDI mechanisms.</para>
@@ -503,8 +513,8 @@ public @interface Language {
     String value() default "ENGLISH"; <emphasis role="bold">(2)</emphasis>
 }</programlisting>You
                         create a regular CDI qualifier <emphasis role="bold">(1)</emphasis> in order
-                        to choose the language of your been bundle. The language will be choose by
-                        providing an string (ENGLISH, FRENCH or GERMAN) to the qualifier <emphasis
+                        to choose the language of your bean bundle. The language will be choose by
+                        providing a string (ENGLISH, FRENCH or GERMAN) to the qualifier <emphasis
                             role="bold">(2)</emphasis>.</para>
                 </listitem>
                 <listitem>
@@ -563,7 +573,7 @@ public class HelloWorldGerman implements HelloWorld {
 }</programlisting>Here
                         you just give the language of the implementation using the
                             <code>Language</code> qualifier <emphasis role="bold">(1)</emphasis>,
-                        then you translate the ouputs <emphasis role="bold">(2)</emphasis>
+                        then you translate the outputs <emphasis role="bold">(2)</emphasis>
                         <emphasis role="bold">(3)</emphasis>.</para>
                 </listitem>
             </itemizedlist></para>
@@ -685,10 +695,10 @@ public class App {
             injection, one for each language <emphasis role="bold">(1)</emphasis>
             <emphasis role="bold">(2)</emphasis>
             <emphasis role="bold">(3)</emphasis>. You also update <code>onStartup</code> and
-                <code>onShutdown</code> methods to greet in the three language <emphasis role="bold"
-                >(4)</emphasis>
+                <code>onShutdown</code> methods to greet and say goodbye in the three languages
+                <emphasis role="bold">(4)</emphasis>
             <emphasis role="bold">(5)</emphasis>.</para>
-        <para>Finaly you should write the configuration file of your bean bundle:<itemizedlist>
+        <para>Finally you should write the configuration files of your bean bundle:<itemizedlist>
                 <listitem>
                     <para>The <code>pom.xml</code> Maven configuration
                         file<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
@@ -755,7 +765,7 @@ public class App {
                     <para>The <code>META-INF\hello-world-multilingual.bnd</code> OSGi configuration
                         file<programlisting># Let bnd handle the MANIFEST.MF generation</programlisting>Nothing
                         has changed here.<note>
-                            <title>Update bnd files</title>
+                            <title>Update bnd files name</title>
                             <para>Every time you change the <code>artifactId</code> of one of your
                                 bean bundle you may also update the name of its bnd file.
                                     <code>artifactId</code> and bnd file name should be the same in
@@ -840,6 +850,7 @@ Auf Wiedersehen Welt!</programlisting>and
             </itemizedlist></para>
         <para>CDI seems to respond perfectly in an OSGi environment, thank to Weld-OSGi. But it is
             sad to use only one bundle for your application, in the next chapter we will see how
-            Weld-OSGi allow to use OSGi powerfulness coupled with CDI easiness.</para>
+            Weld-OSGi allow to use OSGi powerfulness coupled with CDI easiness in multi bundles
+            application.</para>
     </section>
 </chapter>

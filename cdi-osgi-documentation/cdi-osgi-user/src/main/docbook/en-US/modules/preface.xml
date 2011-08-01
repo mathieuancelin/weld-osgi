@@ -1,10 +1,10 @@
 <chapter>
     <title>Weld-OSGi user documentation</title>
     <section>
-        <title>What is this documentation for</title>
-        <para>This documentation allows new users of Weld-OSGi to quickly setup and try it. It
-            covers most of Weld-OSGi features with lot of practical code examples allowing users to
-            directly get their hands dirty.</para>
+        <title>What is this documentation</title>
+        <para>This documentation allows new users to quickly setup and try Weld-OSGi. It covers most
+            of Weld-OSGi features with lot of practical code examples allowing users to directly get
+            their hands dirty.</para>
         <para>The final chapter offers a complete walk-through of a sample application showing the
             power of Weld-OSGi.</para>
     </section>
@@ -33,8 +33,7 @@
     </section>
     <section>
         <title>Naming convention</title>
-        <para>A bean bundle is an OSGi bundle managed by Weld-OSGi. It has one or more <code
-                xmlns:xi="http://www.w3.org/2001/XInclude">META-INF/bean.xml</code> marker
+        <para>A bean bundle is an OSGi bundle managed by Weld-OSGi. It has one or more valid <code>META-INF/bean.xml</code> marker
             files.</para>
         <para>The extension bundle is the Weld-OSGi bundle that manages the bean bundles.</para>
         <para>The implementation bundle is the Weld-OSGi bundle that provide Weld container to the
@@ -57,7 +56,7 @@
                 </listitem>
             </itemizedlist>All examples were tested on a Linux system with the latest version of
             each tools at the moment of redaction. Version may have evolved so little ajustement
-            might be needed (like for utility bundle versions).</para>
+            might be needed (like for bundle or package versions).</para>
     </section>
     <section>
         <title>References and other documentations</title>
