@@ -57,6 +57,27 @@ public class HelloWorld* implements HelloWorld {
             put the <code>Publish</code> annotation on the implementation classes <emphasis
                 role="bold">(1)</emphasis> and that is it ! Every time Weld-OSGi finds a CDI bean
             with the <code>Publish</code> annotation, it registers it as a new OSGi service.</para>
+        <para>Your project should now looks like
+            that:<programlisting>hello-world-provider
+      pom.xml
+    - src
+        - main
+            - java
+                - com.sample
+                  App.java
+                    - api
+                      HelloWorld.java
+                      Language.java
+                      Presentation.java
+                    - impl
+                      HelloWorldEnglish.java
+                      HelloWorldFrench.java
+                      HelloWorldGerman.java
+                      PresentationInterceptor.java
+            - resources
+                - META-INF
+                  beans.xml
+                  hello-world-provider.bnd </programlisting></para>
         <para>Try your new <code>hello-world-provider</code> bean bundle in the OSGi environment:<itemizedlist>
                 <listitem>
                     <para>Build your project using Maven: <code>mvn clean install</code></para>
@@ -295,6 +316,17 @@ Bundle-Activator com.sample.Activator</programlisting>The
                     listening method always occurs after <code>BundleActivator</code> class
                         <code>stop</code> method in a bean bundle.</para>
             </note></para>
+        <para>Your project should now looks like
+            that:<programlisting>hello-world-consumer
+      pom.xml
+    - src
+        - main
+            - java
+                - com.sample
+                  Activator.java
+            - resources
+                - META-INF
+                  hello-world-consumer.bnd </programlisting></para>
         <para>Try your new <code>hello-world-consumer</code> bean bundle in the OSGi environment:<itemizedlist>
                 <listitem>
                     <para>Build your project using Maven: <code>mvn clean install</code></para>
@@ -488,6 +520,17 @@ public class Activator implements BundleActivator {
                 >(4)</emphasis>. Then you greet <emphasis role="bold">(5)</emphasis> and say goodbye
                 <emphasis role="bold">(7)</emphasis> to the World at the start <emphasis role="bold"
                 >(3)</emphasis> and stop <emphasis role="bold">(6)</emphasis> of your bundle.</para>
+        <para>Your project should now looks like
+            that:<programlisting>hello-world-consumer-multilingual
+      pom.xml
+    - src
+        - main
+            - java
+                - com.sample
+                  Activator.java
+            - resources
+                - META-INF
+                  hello-world-consumer-multilingual.bnd </programlisting></para>
         <para>Try your new <code>hello-world-consumer-multilingual</code> bean bundle in the OSGi environment:<itemizedlist>
                 <listitem>
                     <para>Build your project using Maven: <code>mvn clean install</code></para>
@@ -565,6 +608,235 @@ Auf Wiedersehen Welt!</programlisting>The
     </section>
     <section>
         <title>Injecting OSGi service in bean bundle</title>
-        <para/>
+        <para>Create a new bean bundle that will use the auto published services by injection. It
+            will be the <code>hello-world-consumer2-multilingual</code> bean bundle.</para>
+        <para>The entry point of your bean bundle, the <code>com.sample.App.java</code> main
+            class<programlisting>package com.sample;
+
+import com.sample.api.HelloWorld;
+import com.sample.api.Language;
+import org.osgi.cdi.api.extension.Service;
+import org.osgi.cdi.api.extension.annotation.OSGiService;
+import org.osgi.cdi.api.extension.events.BundleContainerEvents;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Inject;
+
+public class App {
+
+    @Inject <emphasis role="bold">(1)</emphasis>
+    @OSGiService
+    HelloWorld helloWorld;
+
+    @Inject <emphasis role="bold">(2)</emphasis>
+    Service&lt;HelloWorld> helloWorldService;
+
+    @Inject <emphasis role="bold">(3)</emphasis>
+    @OSGiService
+    @Language("ENGLISH")
+    HelloWorld helloWorldEnglish;
+
+    @Inject
+    Service&lt;HelloWorld> helloWorldServiceEnglish;
+
+    @Inject
+    @OSGiService
+    @Language("FRENCH")
+    HelloWorld helloWorldFrench;
+
+    @Inject
+    Service&lt;HelloWorld> helloWorldServiceFrench;
+
+    @Inject
+    @OSGiService
+    @Language("GERMAN")
+    HelloWorld helloWorldGerman;
+
+    @Inject
+    Service&lt;HelloWorld> helloWorldServiceGerman;
+
+    HelloWorld helloWorld2;
+    HelloWorld helloWorldEnglish2;
+    HelloWorld helloWorldFrench2;
+    HelloWorld helloWorldGerman2;
+
+    public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) { <emphasis role="bold">(4)</emphasis>
+        helloWorld2 = helloWorldService.get(); <emphasis role="bold">(5)</emphasis>
+        helloWorldEnglish2 = helloWorldServiceEnglish.select(new LanguageAnnotationEnglish()).get(); <emphasis role="bold">(6)</emphasis>
+        helloWorldFrench2 = helloWorldServiceFrench.select("(language.value=FRENCH)").get(); <emphasis role="bold">(7)</emphasis>
+        helloWorldGerman2 = helloWorldServiceGerman.select("(language.value=GERMAN)").get();
+
+        helloWorld.sayHello(); <emphasis role="bold">(8)</emphasis>
+        helloWorld2.sayHello();
+        helloWorldEnglish.sayHello();
+        helloWorldEnglish2.sayHello();
+        helloWorldFrench.sayHello();
+        helloWorldFrench2.sayHello();
+        helloWorldGerman.sayHello();
+        helloWorldGerman2.sayHello();
+
+        for (HelloWorld service : helloWorldService) { <emphasis role="bold">(9)</emphasis>
+            service.sayHello();
+        }
+    }
+
+    public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) { <emphasis role="bold">(10)</emphasis>
+        helloWorld.sayGoodbye(); <emphasis role="bold">(11)</emphasis>
+        helloWorld2.sayGoodbye();
+        helloWorldEnglish.sayGoodbye();
+        helloWorldEnglish2.sayGoodbye();
+        helloWorldFrench.sayGoodbye();
+        helloWorldFrench2.sayGoodbye();
+        helloWorldGerman.sayGoodbye();
+        helloWorldGerman2.sayGoodbye();
+
+        for (HelloWorld service : helloWorldService) {
+            service.sayGoodbye();
+        }
+    }
+
+    private class LanguageAnnotationEnglish extends AnnotationLiteral&lt;Language> implements Language {
+        @Override
+        public String value() {
+            return "ENGLISH";
+        }
+    }
+}</programlisting>A
+            lot of things to discuss here. There is two ways to get an OSGi service injected:<itemizedlist>
+                <listitem>
+                    <para>You put the <code>OSGiService</code> annotation on a regular injection
+                        point <emphasis role="bold">(1)</emphasis></para>
+                </listitem>
+                <listitem>
+                    <para>You get a <code>Service&lt;T></code> injected with <code>T</code> the
+                        service type <emphasis role="bold">(2)</emphasis>, then you get the service
+                            <emphasis role="bold">(5)</emphasis></para>
+                </listitem>
+            </itemizedlist>If you want to choose the implementation:<itemizedlist>
+                <listitem>
+                    <para>Qualify the <code>OSGiService</code> annotated injection with CDI
+                        qualifiers <emphasis role="bold">(3)</emphasis></para>
+                </listitem>
+                <listitem>
+                    <para>Select the instance with the injected <code>Service&lt;T> select</code>
+                        method and a set of CDI qualifier annotation <emphasis role="bold"
+                            >(6)</emphasis> or an OSGi service filter <emphasis role="bold"
+                            >(7)</emphasis></para>
+                </listitem>
+                <listitem>
+                    <para>Iterate through the implementation of an injected
+                            <code>Service&lt;T></code>
+                        <emphasis role="bold">(9)</emphasis></para>
+                </listitem>
+            </itemizedlist>Finally you say hello <emphasis role="bold">(8)</emphasis> and goodbye
+                <emphasis role="bold">(11)</emphasis> when its right <emphasis role="bold"
+                >(4)</emphasis>
+            <emphasis role="bold">(10)</emphasis> in all languages with all technique.</para>
+        <para>Same old configuration files:<itemizedlist>
+                <listitem>
+                    <para>The <code>pom.xml</code> Maven configuration
+                        file<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    &lt;modelVersion>4.0.0&lt;/modelVersion>
+
+    &lt;groupId>com.sample&lt;/groupId>
+    &lt;artifactId>hello-world-consumer2-multilingual&lt;/artifactId>
+    &lt;version>1.0&lt;/version>
+    &lt;packaging>bundle&lt;/packaging>
+
+    &lt;dependencies>
+        &lt;dependency>
+            &lt;groupId>javax.inject&lt;/groupId>
+            &lt;artifactId>javax.inject&lt;/artifactId>
+            &lt;version>1&lt;/version>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>javax.enterprise&lt;/groupId>
+            &lt;artifactId>cdi-api&lt;/artifactId>
+            &lt;version>1.0-SP4&lt;/version>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>org.osgi.cdi&lt;/groupId>
+            &lt;artifactId>cdi-osgi-extension-api&lt;/artifactId>
+            &lt;version>1.0-SNAPSHOT&lt;/version>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>com.sample&lt;/groupId>
+            &lt;artifactId>hello-world-provider&lt;/artifactId>
+            &lt;version>1.0&lt;/version>
+        &lt;/dependency>
+    &lt;/dependencies>
+
+    &lt;build>
+        &lt;plugins>
+            &lt;plugin>
+                &lt;groupId>org.apache.felix&lt;/groupId>
+                &lt;artifactId>maven-bundle-plugin&lt;/artifactId>
+                &lt;extensions>true&lt;/extensions>
+                &lt;configuration>
+                    &lt;instructions>
+                        &lt;_include>-target/classes/META-INF/${project.artifactId}.bnd&lt;/_include>
+                    &lt;/instructions>
+                &lt;/configuration>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build>
+
+&lt;/project></programlisting></para>
+                </listitem>
+                <listitem>
+                    <para>The <code>META-INF\hello-world-consumer2-multilingual.bnd</code> OSGi
+                        configuration
+                        file<programlisting># Let bnd handle the MANIFEST.MF generation</programlisting></para>
+                </listitem>
+                <listitem>
+                    <para>The <code>META-INF\beans.xml</code> CDI marker
+                        file:<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+&lt;/beans></programlisting></para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Your project should now looks like
+            that:<programlisting>hello-world-consumer2-multilingual
+      pom.xml
+    - src
+        - main
+            - java
+                - com.sample
+                  App.java
+            - resources
+                - META-INF
+                  beans.xml
+                  hello-world-consumer2-multilingual.bnd </programlisting></para>
+        <para>Try your new <code>hello-world-consumer2-multilingual</code> bean bundle in the OSGi environment:<itemizedlist>
+                <listitem>
+                    <para>Build your project using Maven: <code>mvn clean install</code></para>
+                </listitem>
+                <listitem>
+                    <para>Copy the generated <code>hello-world-consumer2-multilingual.jar</code>
+                        file to the Felix home <code>bundle</code> directory (keep the
+                            <code>hello-world-provider-1.0.jar</code> and
+                            <code>hello-world-consumer-multilingual.jar</code> files).</para>
+                </listitem>
+                <listitem>
+                    <para>Update the Felix configuration file to auto install the bean
+                        bundle<programlisting>felix.auto.install.1= file:bundle/cdi-osgi-extension-api-1.0-SNAPSHOT.jar \
+file:bundle/cdi-osgi-integration-api-1.0-SNAPSHOT.jar \
+file:bundle/cdi-osgi-mandatory-1.0-SNAPSHOT.jar \
+file:bundle/hello-world-provider-1.0.jar \
+file:bundle/hello-world-consumer-multilingual-1.0.jar \
+<emphasis role="bold">file:bundle/hello-world-consumer2-multilingual-1.0.jar</emphasis></programlisting></para>
+                </listitem>
+                <listitem>
+                    <para>Start the Felix framework and test everything out:
+                        <programlisting>NOT WORKING WHEN THE NEW BUNDLE STOP</programlisting>It
+                        becomes a bit cacaphonic but everything should be here.</para>
+                </listitem>
+            </itemizedlist></para>
     </section>
 </chapter>

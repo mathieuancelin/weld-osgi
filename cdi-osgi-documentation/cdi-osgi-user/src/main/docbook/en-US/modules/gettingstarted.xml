@@ -793,7 +793,7 @@ public class App {
             - resources
                 - META-INF
                   beans.xml
-                  hello-world.bnd </programlisting></para>
+                  hello-world-multilingual.bnd </programlisting></para>
         <para>It is time to try out these CDI features in an OSGi environment:<itemizedlist>
                 <listitem>
                     <para>Build your project using Maven: <code>mvn clean install</code></para>

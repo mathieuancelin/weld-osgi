@@ -21,6 +21,7 @@
         <module>hello-world-provider</module>
         <module>hello-world-consumer</module>
         <module>hello-world-consumer-multilingual</module>
+        <module>hello-world-consumer2-multilingual</module>
     </modules>
 
 </project>
