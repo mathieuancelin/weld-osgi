@@ -96,7 +96,9 @@ public class CDIOSGiProducer {
     @Produces @BundleName("") @BundleVersion("")
     public BundleContext getSpecificContext(BundleHolder holder, InjectionPoint p) {
         logger.debug("External bundle context from bundle {} producer", holder.getBundle());
-        return getSpecificBundle(holder,p).getBundleContext();
+        return (BundleContext) Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class[] {BundleContext.class},
+                new BundleContextHandler(getSpecificBundle(holder, p)));
     }
 
     @Produces @BundleName("") @BundleVersion("") @BundleDataFile("")
@@ -193,7 +195,7 @@ public class CDIOSGiProducer {
             Bundle[] bundles = context.getBundles();
             if (bundles != null) {
                 for (Bundle b : bundles) {
-                    if (b.getSymbolicName().equals(symbolicName) && b.getState() == Bundle.ACTIVE) {
+                    if (b.getSymbolicName().equals(symbolicName)) {
                         if (version != null) {
                             if (version.equals(b.getVersion())) {
                                 bundle = b;
@@ -213,6 +215,29 @@ public class CDIOSGiProducer {
                 return null;
             }
             return method.invoke(bundle, args);
+        }
+    }
+
+    private static class BundleContextHandler implements InvocationHandler {
+
+        Bundle bundle;
+
+        private BundleContextHandler(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            int state = 0;
+            try {
+                state = bundle.getState();
+            } catch (Exception e) {
+                return null;
+            }
+            if(state != Bundle.ACTIVE) {
+                return null;
+            }
+            return method.invoke(bundle.getBundleContext(), args);
         }
     }
 }
