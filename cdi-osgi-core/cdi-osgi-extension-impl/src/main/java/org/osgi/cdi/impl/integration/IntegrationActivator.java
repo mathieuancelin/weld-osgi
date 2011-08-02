@@ -112,8 +112,8 @@ public class IntegrationActivator implements BundleActivator, SynchronousBundleL
                 if (started.get())
                     startManagement(event.getBundle());
                 break;
-            case BundleEvent.STOPPED:
-                logger.debug("Bundle {} stopped", event.getBundle().getSymbolicName());
+            case BundleEvent.STOPPING:
+                logger.debug("Bundle {} stopping", event.getBundle().getSymbolicName());
                 stopManagement(event.getBundle());
                 break;
         }
@@ -207,7 +207,19 @@ public class IntegrationActivator implements BundleActivator, SynchronousBundleL
             if(started.get()) {
                 factory().removeContainer(bundle);
             }
+            logger.trace("The container {} has been unregistered",holder);
+            logger.trace("Firing the BundleContainerEvents.BundleContainerShutdown event");
+            holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerShutdown(bundle.getBundleContext()));
+
+            BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
+            if (bundleHolder.getState().equals(BundleState.VALID)) {
+                logger.trace("Firing the BundleState.INVALID event");
+                bundleHolder.setState(BundleState.INVALID);
+                holder.getBeanManager().fireEvent(new Invalid());
+            }
+
             Collection<ServiceRegistration> regs = holder.getRegistrations();
+            logger.trace("Unregistering the container registrations");
             for (ServiceRegistration reg : regs) {
                 try {
                     reg.unregister();
@@ -216,8 +228,8 @@ public class IntegrationActivator implements BundleActivator, SynchronousBundleL
                 }
             }
             try {
-                holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerShutdown(bundle.getBundleContext()));
                 // unregistration for managed services. It should be done by the OSGi framework
+                logger.trace("Unregistering the container managed services");
                 RegistrationsHolderImpl regsHolder = holder.getInstance().select(RegistrationsHolderImpl.class).get();
                 for (ServiceRegistration r : regsHolder.getRegistrations()) {
                     try {
@@ -231,11 +243,8 @@ public class IntegrationActivator implements BundleActivator, SynchronousBundleL
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-            BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
-            if (bundleHolder.getState().equals(BundleState.VALID)) {
-                bundleHolder.setState(BundleState.INVALID);
-                holder.getBeanManager().fireEvent(new Invalid());
-            }
+
+            logger.trace("Shutting down the container {}", holder);
             holder.shutdown();
             managed.remove(bundle.getBundleId());
             logger.debug("Bundle {} is unmanaged", bundle.getSymbolicName());
