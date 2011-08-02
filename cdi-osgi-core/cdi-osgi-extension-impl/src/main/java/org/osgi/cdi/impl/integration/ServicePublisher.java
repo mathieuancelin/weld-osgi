@@ -122,8 +122,15 @@ public class ServicePublisher {
         if (contracts.length > 0) {// if there are contracts
             String[] names = new String[contracts.length];
             for (int i = 0; i < contracts.length; i++) {
-                names[i] = contracts[i].getName();
-                logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
+                if(contracts[i].isAssignableFrom(clazz)) {
+                    names[i] = contracts[i].getName();
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
+                } else {
+                    RuntimeException e = new RuntimeException("Contract " + contracts[i] + " is not assignable from "
+                                                                + clazz + ". Unable to publish the service " + clazz);
+                    logger.error(e.getMessage());
+                    throw e;
+                }
             }
             registration = bundle.getBundleContext().registerService(names, service, properties);
         } else {
