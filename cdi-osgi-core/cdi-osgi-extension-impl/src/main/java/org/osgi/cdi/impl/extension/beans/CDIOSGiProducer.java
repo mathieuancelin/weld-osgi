@@ -122,10 +122,7 @@ public class CDIOSGiProducer {
     }
 
     @Produces
-    public <T> Registration<T> getRegistrations(
-            BundleHolder bundleHolder,
-            RegistrationHolder holder,
-            InjectionPoint p) {
+    public <T> Registration<T> getRegistrations(BundleHolder bundleHolder, RegistrationHolder holder, InjectionPoint p) {
         logger.debug("Registrations from bundle {} producer", bundleHolder.getBundle());
         Class<T> contract = ((Class<T>) ((ParameterizedType) p.getType()).getActualTypeArguments()[0]);
         return new RegistrationImpl<T>(contract,bundleHolder.getContext(),bundleHolder.getBundle(),holder);
@@ -191,18 +188,21 @@ public class CDIOSGiProducer {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            logger.trace("Call method {} with args {} on bundle {}:{}", new Object[] {method, args, symbolicName, version == null?"no_version_provided":version});
             Bundle bundle = null;
             Bundle[] bundles = context.getBundles();
             if (bundles != null) {
                 for (Bundle b : bundles) {
-                    if (b.getSymbolicName().equals(symbolicName)) {
+                    if (b.getSymbolicName().equals(symbolicName) && b.getState() == Bundle.ACTIVE) {
                         if (version != null) {
                             if (version.equals(b.getVersion())) {
                                 bundle = b;
+                                logger.warn("Bundle {}:{} found", symbolicName, version);
                                 break;
                             }
                         } else {
                             bundle = b;
+                            logger.warn("Bundle {}:{} found", symbolicName,"no_version_provided");
                             break;
                         }
                     }

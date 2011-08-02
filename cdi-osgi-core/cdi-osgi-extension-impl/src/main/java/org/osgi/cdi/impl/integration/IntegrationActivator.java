@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-public class IntegrationActivator implements BundleActivator, BundleListener, ServiceListener {
+public class IntegrationActivator implements BundleActivator, SynchronousBundleListener, ServiceListener {
 
     private static Logger logger = LoggerFactory.getLogger(IntegrationActivator.class);
 

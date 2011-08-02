@@ -21,6 +21,7 @@ import com.sample.osgi.bundle1.api.PersonalizedHashCodeService;
 import com.sample.osgi.bundle1.api.PropertyService;
 import com.sample.osgi.bundle1.util.ServiceProvider;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;

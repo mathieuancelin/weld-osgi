@@ -110,12 +110,12 @@ public class EventTest {
         int bundleUpdated = eventListener.getBundleUpdated();
         int bundleLazyActivation = eventListener.getBundleLazyActivation();
 
-        // can't listen its own BundleResolved (left us with bundle2 and bundle3's)
+        // can't listen its own BundleResolved or BundleStarting (left us with bundle2 and bundle3's)
         Assert.assertEquals("The number of listened BundleInstalled event was wrong", 0, bundleInstalled);
         Assert.assertEquals("The number of listened BundleUninstalled event was wrong", 0, bundleUninstalled);
         Assert.assertEquals("The number of listened BundleResolved event was wrong", 2, bundleResolved);
         Assert.assertEquals("The number of listened BundleUnresolved event was wrong", 0, bundleUnresolved);
-        Assert.assertEquals("The number of listened BundleStarting event was wrong", 0, bundleStarting);
+        Assert.assertEquals("The number of listened BundleStarting event was wrong", 2, bundleStarting);
         Assert.assertEquals("The number of listened BundleStarted event was wrong", 3, bundleStarted);
         Assert.assertEquals("The number of listened BundleStopping event was wrong", 0, bundleStopping);
         Assert.assertEquals("The number of listened BundleStopped event was wrong", 0, bundleStopped);
@@ -130,7 +130,7 @@ public class EventTest {
         Assert.assertEquals("The second number of listened BundleUnresolved event was wrong", bundleUnresolved, eventListener.getBundleUnresolved());
         Assert.assertEquals("The second number of listened BundleStarting event was wrong", bundleStarting, eventListener.getBundleStarting());
         Assert.assertEquals("The second number of listened BundleStarted event was wrong", bundleStarted, eventListener.getBundleStarted());
-//        Assert.assertEquals("The second number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
+        Assert.assertEquals("The second number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
         Assert.assertEquals("The second number of listened BundleStopped event was wrong", bundleStopped + 1, eventListener.getBundleStopped());
         Assert.assertEquals("The second number of listened BundleUpdated event was wrong", bundleUpdated, eventListener.getBundleUpdated());
         Assert.assertEquals("The second number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
@@ -141,9 +141,9 @@ public class EventTest {
         Assert.assertEquals("The third number of listened BundleUninstalled event was wrong", bundleUninstalled, eventListener.getBundleUninstalled());
         Assert.assertEquals("The third number of listened BundleResolved event was wrong", bundleResolved, eventListener.getBundleResolved());
         Assert.assertEquals("The third number of listened BundleUnresolved event was wrong", bundleUnresolved, eventListener.getBundleUnresolved());
-//        Assert.assertEquals("The third number of listened BundleStarting event was wrong", bundleStarting + 1, eventListener.getBundleStarting());
+        Assert.assertEquals("The third number of listened BundleStarting event was wrong", bundleStarting + 1, eventListener.getBundleStarting());
         Assert.assertEquals("The third number of listened BundleStarted event was wrong", bundleStarted + 1, eventListener.getBundleStarted());
-//        Assert.assertEquals("The third number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
+        Assert.assertEquals("The third number of listened BundleStopping event was wrong", bundleStopping + 1, eventListener.getBundleStopping());
         Assert.assertEquals("The third number of listened BundleStopped event was wrong", bundleStopped + 1, eventListener.getBundleStopped());
         Assert.assertEquals("The third number of listened BundleUpdated event was wrong", bundleUpdated, eventListener.getBundleUpdated());
         Assert.assertEquals("The third number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
@@ -155,9 +155,9 @@ public class EventTest {
         Assert.assertEquals("The forth number of listened BundleUninstalled event was wrong", bundleUninstalled, eventListener.getBundleUninstalled());
         Assert.assertEquals("The forth number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
         Assert.assertEquals("The forth number of listened BundleUnresolved event was wrong", bundleUnresolved + 1, eventListener.getBundleUnresolved());
-//        Assert.assertEquals("The forth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The forth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
         Assert.assertEquals("The forth number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
-//        Assert.assertEquals("The forth number of listened BundleStopping event was wrong", bundleStopping + 2, eventListener.getBundleStopping());
+        Assert.assertEquals("The forth number of listened BundleStopping event was wrong", bundleStopping + 2, eventListener.getBundleStopping());
         Assert.assertEquals("The forth number of listened BundleStopped event was wrong", bundleStopped + 2, eventListener.getBundleStopped());
         Assert.assertEquals("The forth number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
         Assert.assertEquals("The forth number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
@@ -170,9 +170,9 @@ public class EventTest {
         Assert.assertEquals("The fifth number of listened BundleUninstalled event was wrong", bundleUninstalled + 1, eventListener.getBundleUninstalled());
         Assert.assertEquals("The fifth number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
         Assert.assertEquals("The fifth number of listened BundleUnresolved event was wrong", bundleUnresolved + 2, eventListener.getBundleUnresolved());
-//        Assert.assertEquals("The fifth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The fifth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
         Assert.assertEquals("The fifth number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
-//        Assert.assertEquals("The fifth number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
+        Assert.assertEquals("The fifth number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
         Assert.assertEquals("The fifth number of listened BundleStopped event was wrong", bundleStopped + 3, eventListener.getBundleStopped());
         Assert.assertEquals("The fifth number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
         Assert.assertEquals("The fifth number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
@@ -183,9 +183,9 @@ public class EventTest {
         Assert.assertEquals("The sixth number of listened BundleUninstalled event was wrong", bundleUninstalled + 1, eventListener.getBundleUninstalled());
         Assert.assertEquals("The sixth number of listened BundleResolved event was wrong", bundleResolved + 1, eventListener.getBundleResolved());
         Assert.assertEquals("The sixth number of listened BundleUnresolved event was wrong", bundleUnresolved + 2, eventListener.getBundleUnresolved());
-//        Assert.assertEquals("The sixth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
+        Assert.assertEquals("The sixth number of listened BundleStarting event was wrong", bundleStarting + 2, eventListener.getBundleStarting());
         Assert.assertEquals("The sixth number of listened BundleStarted event was wrong", bundleStarted + 2, eventListener.getBundleStarted());
-//        Assert.assertEquals("The sixth number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
+        Assert.assertEquals("The sixth number of listened BundleStopping event was wrong", bundleStopping + 3, eventListener.getBundleStopping());
         Assert.assertEquals("The sixth number of listened BundleStopped event was wrong", bundleStopped + 3, eventListener.getBundleStopped());
         Assert.assertEquals("The sixth number of listened BundleUpdated event was wrong", bundleUpdated + 1, eventListener.getBundleUpdated());
         Assert.assertEquals("The sixth number of listened BundleLazyActivation event was wrong", bundleLazyActivation, eventListener.getBundleLazyActivation());
