@@ -69,6 +69,11 @@ public class App {
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
+        helloWorld2 = helloWorldService.get();
+        helloWorldEnglish2 = helloWorldServiceEnglish.select(new LanguageAnnotationEnglish()).get();
+        helloWorldFrench2 = helloWorldServiceFrench.select("(language.value=FRENCH)").get();
+        helloWorldGerman2 = helloWorldServiceGerman.select("(language.value=GERMAN)").get();
+
         helloWorld.sayGoodbye();
         helloWorld2.sayGoodbye();
         helloWorldEnglish.sayGoodbye();

@@ -5,17 +5,17 @@
         CDI way.</para>
     <para>In this chapter you will see:<itemizedlist>
             <listitem>
-                <para>how to publish your CDI beans as OSGi services</para>
+                <para>How to publish your CDI beans as OSGi services</para>
             </listitem>
             <listitem>
-                <para>how to consume these new services in regular OSGi bundles</para>
+                <para>How to consume these new services in regular OSGi bundles</para>
             </listitem>
             <listitem>
-                <para>how to match a auto published qualified CDI bean and a propertied OSGi
+                <para>How to match a auto published qualified CDI bean and a propertied OSGi
                     service</para>
             </listitem>
             <listitem>
-                <para>how to inject OSGi services in bean bundle</para>
+                <para>How to inject OSGi services in bean bundle</para>
             </listitem>
         </itemizedlist></para>
     <section>
@@ -417,7 +417,7 @@ Auf Wiedersehen Welt!</programlisting>It
         <title>Select the service instance</title>
         <para>Now you  need to decide what language your consumer bundle will speak. To do so you
             cannot use CDI qualifier like in provider bundle because you are using OSGi mechanisms
-            to obtain the service instance. Fortunately Weld-OSGi provides a bindind between CDI
+            to obtain the service instance. Fortunately Weld-OSGi provides a binding between CDI
             service qualification and OSGi service properties.</para>
         <note>
             <title>Conversion CDI qualifiers to OSGi service properties</title>
@@ -834,8 +834,111 @@ file:bundle/hello-world-consumer-multilingual-1.0.jar \
                 </listitem>
                 <listitem>
                     <para>Start the Felix framework and test everything out:
-                        <programlisting>NOT WORKING WHEN THE NEW BUNDLE STOP</programlisting>It
+                        <programlisting>____________________________
+Welcome to Apache Felix Gogo
+
+<emphasis role="bold">g! lb </emphasis> 
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (3.2.2)
+    1|Active     |    1|Apache Felix Bundle Repository (1.6.2)
+    2|Active     |    1|Apache Felix Gogo Command (0.8.0)
+    3|Active     |    1|Apache Felix Gogo Runtime (0.8.0)
+    4|Active     |    1|Apache Felix Gogo Shell (0.8.0)
+    5|Active     |    1|CDI-OSGi :: Core :: Extension Impl (1.0.0.SNAPSHOT)
+    6|Active     |    1|CDI OSGi :: Implementation :: Weld Integration (1.0.0.SNAPSHOT)
+    7|Resolved   |    1|CDI-OSGi :: Core :: Extension API (1.0.0.SNAPSHOT)
+    8|Resolved   |    1|CDI-OSGi :: Core :: Integration API (1.0.0.SNAPSHOT)
+    9|Resolved   |    1|CDI-OSGi :: Core :: Mandatory (1.0.0.SNAPSHOT)
+   10|Installed  |    1|hello-world-provider (1.0.0)
+   11|Installed  |    1|hello-world-consumer-multilingual (1.0.0)
+   12|Installed  |    1|hello-world-consumer2-multilingual (1.0.0)
+<emphasis role="bold">g! start 10</emphasis>
+Hello World!
+I am the bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+<emphasis role="bold">g! start 11</emphasis>
+Hello World!
+I am the bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+<emphasis role="bold">g! start 12</emphasis>
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Hello World!
+I am the bundle hello-world-provider
+Hello World!
+I am the bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+Bonjour le Monde !
+Je suis le bundle hello-world-provider
+Hello World!
+I am the bundle hello-world-provider
+Hallo Welt!
+Ich bin das bundle hello-world-provider
+<emphasis role="bold">g! stop 12</emphasis>
+Auf Wiedersehen Welt!
+Au revoir le Monde !
+Goodbye World!
+Goodbye World!
+Au revoir le Monde !
+Au revoir le Monde !
+Auf Wiedersehen Welt!
+Auf Wiedersehen Welt!
+Au revoir le Monde !
+Goodbye World!
+Auf Wiedersehen Welt!
+<emphasis role="bold">g! stop 11</emphasis>
+Goodbye World!
+Au revoir le Monde !
+Auf Wiedersehen Welt!
+<emphasis role="bold">g! stop 10</emphasis>
+Goodbye World!
+Au revoir le Monde !
+Auf Wiedersehen Welt!
+<emphasis role="bold">g! lb</emphasis>
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (3.2.2)
+    1|Active     |    1|Apache Felix Bundle Repository (1.6.2)
+    2|Active     |    1|Apache Felix Gogo Command (0.8.0)
+    3|Active     |    1|Apache Felix Gogo Runtime (0.8.0)
+    4|Active     |    1|Apache Felix Gogo Shell (0.8.0)
+    5|Active     |    1|CDI-OSGi :: Core :: Extension Impl (1.0.0.SNAPSHOT)
+    6|Active     |    1|CDI OSGi :: Implementation :: Weld Integration (1.0.0.SNAPSHOT)
+    7|Resolved   |    1|CDI-OSGi :: Core :: Extension API (1.0.0.SNAPSHOT)
+    8|Resolved   |    1|CDI-OSGi :: Core :: Integration API (1.0.0.SNAPSHOT)
+    9|Resolved   |    1|CDI-OSGi :: Core :: Mandatory (1.0.0.SNAPSHOT)
+   10|Resolved   |    1|hello-world-provider (1.0.0)
+   11|Resolved   |    1|hello-world-consumer-multilingual (1.0.0)
+   12|Resolved   |    1|hello-world-consumer2-multilingual (1.0.0)
+g! 
+</programlisting>It
                         becomes a bit cacaphonic but everything should be here.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>You know now how to use the OSGi service layer using Weld-OSGi. Howover you may refer
+            to the specification to specific usage and niceties. In the next chapters you will see
+            what other things Weld-OSGi can do, helping you using OSGi framework for your application:<itemizedlist>
+                <listitem>
+                    <para>Event management and inter-bundle communication</para>
+                </listitem>
+                <listitem>
+                    <para>OSGi framework utility</para>
                 </listitem>
             </itemizedlist></para>
     </section>

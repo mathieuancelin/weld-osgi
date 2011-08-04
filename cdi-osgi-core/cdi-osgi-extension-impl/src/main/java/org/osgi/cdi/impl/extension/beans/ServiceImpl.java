@@ -21,11 +21,12 @@ import org.osgi.cdi.api.extension.Service;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.FilterGenerator;
 import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -56,7 +57,7 @@ public class ServiceImpl<T> implements Service<T> {
     }
 
     public ServiceImpl(Type t, BundleContext registry, Filter filter) {
-        logger.debug("Creation of a new service provider for bundle {} as {} with filter {}", new Object[] {registry.getBundle(), t, filter});
+        logger.debug("Creation of a new service provider for bundle {} as {} with filter {}", new Object[]{registry.getBundle(), t, filter});
         serviceClass = (Class) t;
         serviceName = serviceClass.getName();
         this.registry = registry;
@@ -65,7 +66,7 @@ public class ServiceImpl<T> implements Service<T> {
 
     @Override
     public T get() {
-        if(service == null) {
+        if (service == null) {
             try {
                 populateServices();
             } catch (Exception e) {
@@ -82,22 +83,27 @@ public class ServiceImpl<T> implements Service<T> {
         if (filter != null && !filter.value().equals("")) {
             filterString = filter.value();
         }
-        ServiceTracker tracker = new ServiceTracker(registry, registry.createFilter(
-                "(&(objectClass=" + serviceName + ")" + filterString + ")"), null);
-        tracker.open();
-//        ServiceReference[] refs = registry.getServiceReferences(serviceName, filterString);
-        Object[] instances = tracker.getServices();
-        if (instances != null) {
-            for (Object ref : instances) {
-                services.add((T) ref);
-//                if (!serviceClass.isInterface()) {
-//                    beans.add((T) registry.getService(ref));
-//                } else {
-//                    beans.add((T) Proxy.newProxyInstance(
-//                            getClass().getClassLoader(),
-//                            new Class[]{(Class) serviceClass},
-//                            new ServiceReferenceHandler(ref, registry)));
-//                }
+//        ServiceTracker tracker = new ServiceTracker(registry, registry.createFilter(
+//                "(&(objectClass=" + serviceName + ")" + filterString + ")"), null);
+//        tracker.open();
+//        Object[] instances = tracker.getServices();
+//        if (instances != null) {
+//            for (Object ref : instances) {
+//                services.add((T) ref);
+//            }
+//        }
+//        service = services.size() > 0 ? services.get(0) : null;
+        ServiceReference[] refs = registry.getServiceReferences(serviceName, filterString);
+        if (refs != null) {
+            for (ServiceReference ref : refs) {
+                if (!serviceClass.isInterface()) {
+                    services.add((T) registry.getService(ref));
+                } else {
+                    services.add((T) Proxy.newProxyInstance(
+                            getClass().getClassLoader(),
+                            new Class[]{(Class) serviceClass},
+                            new ServiceReferenceHandler(ref, registry)));
+                }
             }
         }
         service = services.size() > 0 ? services.get(0) : null;
@@ -113,7 +119,7 @@ public class ServiceImpl<T> implements Service<T> {
     @Override
     public Service<T> select(String filter) {
         service = null;
-        this.filter = FilterGenerator.makeFilter(this.filter,filter);
+        this.filter = FilterGenerator.makeFilter(this.filter, filter);
         return this;
     }
 
@@ -129,7 +135,7 @@ public class ServiceImpl<T> implements Service<T> {
 
     @Override
     public int size() {
-        if(service == null) {
+        if (service == null) {
             try {
                 populateServices();
             } catch (Exception e) {

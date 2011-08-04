@@ -108,13 +108,16 @@ public class IntegrationActivator implements BundleActivator, SynchronousBundleL
     public void bundleChanged(BundleEvent event) {
         switch (event.getType()) {
             case BundleEvent.STARTED:
-                logger.debug("Bundle {} started", event.getBundle().getSymbolicName());
-                if (started.get())
+                logger.debug("Bundle {} has started", event.getBundle().getSymbolicName());
+                if (started.get()) {
                     startManagement(event.getBundle());
+                }
                 break;
             case BundleEvent.STOPPING:
-                logger.debug("Bundle {} stopping", event.getBundle().getSymbolicName());
-                stopManagement(event.getBundle());
+                logger.debug("Bundle {} is stopping", event.getBundle().getSymbolicName());
+                if (started.get()) {
+                    stopManagement(event.getBundle());
+                }
                 break;
         }
     }

@@ -30,7 +30,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-import java.io.File;
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -91,9 +90,9 @@ public class OSGiFacilitationTest {
         Assert.assertNotNull("The injected bundle symbolic name was null",symbolicName);
         Assert.assertEquals("The injected symbolic name was not the bundle1 symbolic name",bundle1.getSymbolicName(),symbolicName);
 
-        File file = bundleProvider.getFile();
-        Assert.assertNotNull("The injected bundle file was null",file);
-        Assert.assertEquals("The injected bundle file was not the bundle1 file",injectedContext.getDataFile("test.txt"),file);
+//        File file = bundleProvider.getFile();
+//        Assert.assertNotNull("The injected bundle file was null",file);
+//        Assert.assertEquals("The injected bundle file was not the bundle1 file",injectedContext.getDataFile("test.txt"),file);
 
         Bundle injectedBundle2 = bundleProvider.getBundle2();
         Assert.assertNotNull("The injected bundle2 was null", injectedBundle2);

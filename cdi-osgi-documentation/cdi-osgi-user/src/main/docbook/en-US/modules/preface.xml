@@ -33,8 +33,10 @@
     </section>
     <section>
         <title>Naming convention</title>
+        <para>An OSGi bundle is a regular bundle that is not managed by Weld-OSGi.</para>
         <para>A bean bundle is an OSGi bundle managed by Weld-OSGi. It has one or more valid <code>META-INF/bean.xml</code> marker
             files.</para>
+        <para>A bundle refers indifferently to an OSGi bundle or a bean bundle.</para>
         <para>The extension bundle is the Weld-OSGi bundle that manages the bean bundles.</para>
         <para>The implementation bundle is the Weld-OSGi bundle that provide Weld container to the
             extension bundle.</para>

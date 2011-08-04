@@ -20,7 +20,6 @@ package org.osgi.cdi.test.event;
 import com.sample.osgi.bundle1.api.MovingService;
 import com.sample.osgi.bundle1.util.EventListener;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
