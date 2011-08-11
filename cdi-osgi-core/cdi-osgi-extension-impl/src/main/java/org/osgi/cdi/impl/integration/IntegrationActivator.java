@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-public class IntegrationActivator implements BundleActivator, BundleListener, ServiceListener {
+public class IntegrationActivator implements BundleActivator, SynchronousBundleListener, ServiceListener {
 
     private static Logger logger = LoggerFactory.getLogger(IntegrationActivator.class);
 
@@ -108,13 +108,16 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
     public void bundleChanged(BundleEvent event) {
         switch (event.getType()) {
             case BundleEvent.STARTED:
-                logger.debug("Bundle {} started", event.getBundle().getSymbolicName());
-                if (started.get())
+                logger.debug("Bundle {} has started", event.getBundle().getSymbolicName());
+                if (started.get()) {
                     startManagement(event.getBundle());
+                }
                 break;
-            case BundleEvent.STOPPED:
-                logger.debug("Bundle {} stopped", event.getBundle().getSymbolicName());
-                stopManagement(event.getBundle());
+            case BundleEvent.STOPPING:
+                logger.debug("Bundle {} is stopping", event.getBundle().getSymbolicName());
+                if (started.get()) {
+                    stopManagement(event.getBundle());
+                }
                 break;
         }
     }
@@ -207,7 +210,19 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             if(started.get()) {
                 factory().removeContainer(bundle);
             }
+            logger.trace("The container {} has been unregistered",holder);
+            logger.trace("Firing the BundleContainerEvents.BundleContainerShutdown event");
+            holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerShutdown(bundle.getBundleContext()));
+
+            BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
+            if (bundleHolder.getState().equals(BundleState.VALID)) {
+                logger.trace("Firing the BundleState.INVALID event");
+                bundleHolder.setState(BundleState.INVALID);
+                holder.getBeanManager().fireEvent(new Invalid());
+            }
+
             Collection<ServiceRegistration> regs = holder.getRegistrations();
+            logger.trace("Unregistering the container registrations");
             for (ServiceRegistration reg : regs) {
                 try {
                     reg.unregister();
@@ -216,8 +231,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
                 }
             }
             try {
-                holder.getBeanManager().fireEvent(new BundleContainerEvents.BundleContainerShutdown(bundle.getBundleContext()));
                 // unregistration for managed services. It should be done by the OSGi framework
+                logger.trace("Unregistering the container managed services");
                 RegistrationsHolderImpl regsHolder = holder.getInstance().select(RegistrationsHolderImpl.class).get();
                 for (ServiceRegistration r : regsHolder.getRegistrations()) {
                     try {
@@ -231,11 +246,8 @@ public class IntegrationActivator implements BundleActivator, BundleListener, Se
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-            BundleHolder bundleHolder = holder.getInstance().select(BundleHolder.class).get();
-            if (bundleHolder.getState().equals(BundleState.VALID)) {
-                bundleHolder.setState(BundleState.INVALID);
-                holder.getBeanManager().fireEvent(new Invalid());
-            }
+
+            logger.trace("Shutting down the container {}", holder);
             holder.shutdown();
             managed.remove(bundle.getBundleId());
             logger.debug("Bundle {} is unmanaged", bundle.getSymbolicName());

@@ -19,7 +19,6 @@ package org.osgi.cdi.test.service;
 
 import com.sample.osgi.bundle1.api.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -119,8 +118,8 @@ public class ServicePublishingTest {
             }
         }
         Assert.assertNotNull("The contract published service was null", contractPublishedService);
-        ServiceReference[] notNontractPublishedServiceReferences = context.getServiceReferences(NotContractInterface.class.getName(),null);
-        Assert.assertNull("The not contract published service reference array was not null", notNontractPublishedServiceReferences);
+        ServiceReference[] notContractPublishedServiceReferences = context.getServiceReferences(NotContractInterface.class.getName(),null);
+        Assert.assertNull("The not contract published service reference array was not null", notContractPublishedServiceReferences);
 
         ServiceReference[] blackListedServiceReferences = context.getServiceReferences(Serializable.class.getName(),null);
         Assert.assertNotNull("The black list service reference array was null",blackListedServiceReferences);

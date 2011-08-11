@@ -46,7 +46,7 @@ import java.util.Set;
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  * @author Matthieu CLOCHARD - SERLI (matthieu.clochard@serli.com)
  */
-public class ExtensionActivator implements BundleActivator, BundleListener, ServiceListener {
+public class ExtensionActivator implements BundleActivator, SynchronousBundleListener, ServiceListener {
 
     private static Logger logger = LoggerFactory.getLogger(ExtensionActivator.class);
 

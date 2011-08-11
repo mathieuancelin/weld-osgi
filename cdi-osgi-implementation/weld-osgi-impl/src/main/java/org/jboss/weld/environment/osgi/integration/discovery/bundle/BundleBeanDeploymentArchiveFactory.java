@@ -74,7 +74,7 @@ public class BundleBeanDeploymentArchiveFactory {
         }
 
         if (discoveredBeanXmlUrls.size() < 1) {
-            logger.warn("No beans.xml file found for bundle {}", bundle);
+            logger.debug("No beans.xml file found for bundle {}", bundle);
             return null;
         }
 
