@@ -62,6 +62,12 @@ public interface Service<T> extends Iterable<T> {
      * @return an instance of the service.
      */
     T get();
+    
+    /**
+     * Obtain a subset of the service implementations containing the first implementation found.
+     * @return a subset of the service implementations as another {@link Service}.
+     */
+    Iterable<T> first();
 
     /**
      * Obtain a subset of the service implementations that matches the given {@link javax.inject.Qualifier}

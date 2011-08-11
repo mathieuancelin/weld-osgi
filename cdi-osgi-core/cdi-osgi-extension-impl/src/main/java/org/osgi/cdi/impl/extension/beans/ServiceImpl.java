@@ -163,4 +163,23 @@ public class ServiceImpl<T> implements Service<T> {
                serviceName + " with filter " +
                filter.value() + '}';
     }
+
+    @Override
+    public Iterable<T> first() {
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                try {
+                    populateServices();
+                } catch (Exception ex) {
+                    return Collections.<T>emptyList().iterator();
+                }
+                if (services.isEmpty()) {
+                    return Collections.<T>emptyList().iterator();
+                } else {
+                    return Collections.singletonList(services.get(0)).iterator();
+                }
+            }
+        };
+    }
 }
