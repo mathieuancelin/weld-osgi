@@ -23,6 +23,7 @@
         <module>calculator</module>
         <module>web</module>
 		<module>standalone</module>
+        <module>user-doc</module>
     </modules>
     
 </project>

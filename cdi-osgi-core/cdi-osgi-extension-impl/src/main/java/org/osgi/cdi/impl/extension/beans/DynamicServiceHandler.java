@@ -20,7 +20,7 @@ package org.osgi.cdi.impl.extension.beans;
 import org.osgi.cdi.api.extension.annotation.Filter;
 import org.osgi.cdi.impl.extension.CDIOSGiExtension;
 import org.osgi.framework.Bundle;
-import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class DynamicServiceHandler implements InvocationHandler {
     private final Bundle bundle;
     private final String name;
     private Filter filter;
-    private final ServiceTracker tracker;
+//    private final ServiceTracker tracker;
     private final long timeout;
     private Set<Annotation> qualifiers;
     boolean stored = false;
@@ -54,24 +54,24 @@ public class DynamicServiceHandler implements InvocationHandler {
         this.filter = filter;
         this.timeout = timeout;
         this.qualifiers = qualifiers;
-        try {
-            if (filter != null && filter.value() != null && filter.value().length() > 0) {
-                this.tracker = new ServiceTracker(bundle.getBundleContext(),
-                    bundle.getBundleContext().createFilter(
-                        "(&(objectClass=" + name + ")" + filter.value() + ")"),
-                    null);
-            } else {
-                this.tracker = new ServiceTracker(bundle.getBundleContext(), name, null);
-            }
-        } catch (Exception e) {
-            logger.error("Unable to create the DynamicServiceHandler.",e);
-            throw new RuntimeException(e);
-        }
-        this.tracker.open();
+//        try {
+//            if (filter != null && filter.value() != null && filter.value().length() > 0) {
+//                this.tracker = new ServiceTracker(bundle.getBundleContext(),
+//                    bundle.getBundleContext().createFilter(
+//                        "(&(objectClass=" + name + ")" + filter.value() + ")"),
+//                    null);
+//            } else {
+//                this.tracker = new ServiceTracker(bundle.getBundleContext(), name, null);
+//            }
+//        } catch (Exception e) {
+//            logger.error("Unable to create the DynamicServiceHandler.",e);
+//            throw new RuntimeException(e);
+//        }
+//        this.tracker.open();
     }
 
     public void closeHandler() {
-        this.tracker.close();
+//        this.tracker.close();
     }
 
     public void setStored(boolean stored) {
@@ -82,20 +82,42 @@ public class DynamicServiceHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.trace("Call on the DynamicServiceHandler {} for method {}", this, method);
         CDIOSGiExtension.currentBundle.set(bundle.getBundleId());
-        Object instanceToUse = this.tracker.waitForService(timeout);
         if(!stored && method.getName().equals("hashCode")) { //intercept hashCode method
             int result = name.hashCode();
             result = 31 * result + filter.value().hashCode();
             result = 31 * result + qualifiers.hashCode();
             return result;
         }
+        ServiceReference reference = null;
+        if (filter != null && filter.value() != null && filter.value().length() > 0) {
+            ServiceReference[] refs =
+                    bundle.getBundleContext().getServiceReferences(name, filter.value());
+            if (refs != null && refs.length > 0) {
+                reference = refs[0];
+            }
+        } else {
+            reference = bundle.getBundleContext().getServiceReference(name);
+        }
+        if (reference == null) {
+            throw new IllegalStateException("Can't call service " + name + ". No matching service found.");
+        }
+        Object instanceToUse = bundle.getBundleContext().getService(reference);
         try {
             return method.invoke(instanceToUse, args);
         } catch(Throwable t) {
-            logger.error("Unable to find a matching service for {} with filter {} due to {}", new Object[] {name, filter.value(), t});
             throw new RuntimeException(t);
         } finally {
+            bundle.getBundleContext().ungetService(reference);
             CDIOSGiExtension.currentBundle.remove();
         }
+//        Object instanceToUse = this.tracker.waitForService(timeout);
+//        try {
+//            return method.invoke(instanceToUse, args);
+//        } catch(Throwable t) {
+//            logger.error("Unable to find a matching service for {} with filter {} due to {}", new Object[] {name, filter.value(), t});
+//            throw new RuntimeException(t);
+//        } finally {
+//            CDIOSGiExtension.currentBundle.remove();
+//        }
     }
 }

@@ -30,6 +30,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
@@ -120,8 +122,15 @@ public class ServicePublisher {
         if (contracts.length > 0) {// if there are contracts
             String[] names = new String[contracts.length];
             for (int i = 0; i < contracts.length; i++) {
-                names[i] = contracts[i].getName();
-                logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
+                if(contracts[i].isAssignableFrom(clazz)) {
+                    names[i] = contracts[i].getName();
+                    logger.info("Registering OSGi service {} as {}", clazz.getName(), names[i]);
+                } else {
+                    RuntimeException e = new RuntimeException("Contract " + contracts[i] + " is not assignable from "
+                                                                + clazz + ". Unable to publish the service " + clazz);
+                    logger.error(e.getMessage());
+                    throw e;
+                }
             }
             registration = bundle.getBundleContext().registerService(names, service, properties);
         } else {
@@ -166,22 +175,29 @@ public class ServicePublisher {
                     for (Property property : ((org.osgi.cdi.api.extension.annotation.Properties) qualifier).value()) {
                         properties.setProperty(property.name(), property.value());
                     }
-                } else {
-                    for (Method m : qualifier.annotationType().getDeclaredMethods()) {
-                        if (!m.isAnnotationPresent(Nonbinding.class)) {
-                            try {
-                                String key = qualifier.annotationType().getSimpleName() + "." + m.getName();
-                                Object value = m.invoke(qualifier);
-                                if (value == null) {
-                                    value = m.getDefaultValue();
+                } else if(!qualifier.annotationType().equals(Default.class) && !qualifier.annotationType().equals(Any.class)) {
+                    if (qualifier.annotationType().getDeclaredMethods().length > 0) {
+                        for (Method m : qualifier.annotationType().getDeclaredMethods()) {
+                            if (!m.isAnnotationPresent(Nonbinding.class)) {
+                                try {
+                                    String key = qualifier.annotationType().getSimpleName().toLowerCase()
+                                                 + "." + m.getName().toLowerCase();
+                                    Object value = m.invoke(qualifier);
+                                    if (value == null) {
+                                        value = m.getDefaultValue();
+                                        if (value == null) {
+                                            value = "*";
+                                        }
+                                    }
+                                    properties.setProperty(key, value.toString());
+                                } catch (Throwable t) {// ignore
                                 }
-                                properties.setProperty(key, value.toString());
-                            } catch (Throwable t) {// ignore
                             }
                         }
+                    } else {
+                        properties.setProperty(qualifier.annotationType().getSimpleName().toLowerCase(),"*");
                     }
                 }
-
             }
         }
         return properties;
