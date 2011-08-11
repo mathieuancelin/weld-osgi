@@ -21,6 +21,9 @@
         <module>welcoming-tom</module>
         <module>welcoming-dick</module>
         <module>welcoming-harry</module>
+        <module>talkative-tom</module>
+        <module>talkative-dick</module>
+        <module>talkative-harry</module>
     </modules>
 
 </project>
