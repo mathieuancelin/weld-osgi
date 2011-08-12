@@ -14,6 +14,7 @@
     <groupId>com.sample.osgi</groupId>
     <artifactId>cdi-osgi-tests-scanner-inner</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>CDI-OSGi :: Tests :: Scanner Inner</name>
     <packaging>bundle</packaging>
 
     <build>
