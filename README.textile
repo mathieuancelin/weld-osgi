@@ -1,4 +1,9 @@
-h1. WARNING : the project moved to https://github.com/mathieuancelin/core. This project is only used for wiki and issues tracker.
+h1. WARNING : this project is no longer updated
+
+the project has moved to "https://github.com/mathieuancelin/core":https://github.com/mathieuancelin/core on the weld-osgi branch. 
+This project is only used for wiki and issues tracker about Weld-OSGi.
+
+If you want to use and hack Weld-OSGi, please fork "https://github.com/mathieuancelin/core":https://github.com/mathieuancelin/core
 
 You can find actual documentation at : "http://mathieuancelin.github.com/weld-osgi/":http://mathieuancelin.github.com/weld-osgi/
 
