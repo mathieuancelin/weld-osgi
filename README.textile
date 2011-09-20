@@ -1,3 +1,5 @@
+h1. WARNING : the project moved to https://github.com/mathieuancelin/core. This project is only used for wiki and issues tracker.
+
 You can find actual documentation at : "http://mathieuancelin.github.com/weld-osgi/":http://mathieuancelin.github.com/weld-osgi/
 
 h1. Weld OSGi integration
