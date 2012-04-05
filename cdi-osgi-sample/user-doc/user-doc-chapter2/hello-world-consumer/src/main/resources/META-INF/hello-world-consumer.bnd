@@ -1,3 +1,0 @@
-# Let bnd handle the MANIFEST.MF generation
-# Just precise that this bundle as an activator
-Bundle-Activator com.sample.Activator

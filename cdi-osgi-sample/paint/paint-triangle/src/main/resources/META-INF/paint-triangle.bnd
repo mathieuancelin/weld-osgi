@@ -1,1 +1,0 @@
-Export-Package com.sample.osgi.paint.triangle;version=${pom.version}
