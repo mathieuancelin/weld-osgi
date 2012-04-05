@@ -1,0 +1,3 @@
+[submodule "actual-weld-osgi"]
+	path = actual-weld-osgi
+	url = git://github.com/mathieuancelin/core.git
