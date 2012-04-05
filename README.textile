@@ -242,13 +242,13 @@ and the "square bundle" :
 
 <pre><code>start 5</code></pre>
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/sample3.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/images/sample3.png!
 
 you can also stop bundles. When a bundle is stopped, existing shapes of this bundle are deleted :
 
 <pre><code>stop 4</code></pre>
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/sample4.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/images/sample4.png!
 
 
 Other samples are available in the sample container (calculator, webapp), don't hesitate to try them :)
