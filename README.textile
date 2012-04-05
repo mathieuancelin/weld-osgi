@@ -14,7 +14,7 @@ This project will take full advantage of OSGi like frameworks such as iPojo, Blu
 
 h3. How does it works
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-documentation/cdi-osgi-design/src/main/docbook/en-US/images/diagrams.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/images/diagrams.png!
 
 h3. How to use it
 
@@ -217,7 +217,7 @@ then launch the sample with :
 
 this script will launch an Apache Felix container with the right bundles within. A swing window should be displayed :
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-documentation/cdi-osgi-design/src/main/docbook/en-US/images/sample1.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/images/sample1.png!
 
 You can play with it by clicking on the red shape and drawing circles in the white area.
 
@@ -236,19 +236,19 @@ Now you can start the "triangle bundle" by typing in the Felix terminal :
 
 <pre><code>start 4</code></pre>
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-documentation/cdi-osgi-design/src/main/docbook/en-US/images/sample2.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/images/sample2.png!
 
 and the "square bundle" :
 
 <pre><code>start 5</code></pre>
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-documentation/cdi-osgi-design/src/main/docbook/en-US/images/sample3.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample3.png!
 
 you can also stop bundles. When a bundle is stopped, existing shapes of this bundle are deleted :
 
 <pre><code>stop 4</code></pre>
 
-!https://github.com/mathieuancelin/weld-osgi/raw/master/cdi-osgi-documentation/cdi-osgi-design/src/main/docbook/en-US/images/sample4.png!
+!https://github.com/mathieuancelin/weld-osgi/raw/master/sample4.png!
 
 
 Other samples are available in the sample container (calculator, webapp), don't hesitate to try them :)
