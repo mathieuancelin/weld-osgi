@@ -1,6 +1,6 @@
 h1. WARNING : this project is no longer updated
 
-the project has moved to "https://github.com/weld/core":https://github.com/weld/core on the weld-osgi branch. 
+the project has moved to "https://github.com/weld/core":https://github.com/weld/core on the master (environments/osgi) branch. 
 This project is only used for wiki and issues tracker about Weld-OSGi.
 
 If you want to use and hack Weld-OSGi, please fork "https://github.com/weld/core":https://github.com/weld/core
